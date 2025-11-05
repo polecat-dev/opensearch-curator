@@ -1,0 +1,17 @@
+# UV Configuration for OpenSearch Curator
+
+# This file configures UV package manager settings for faster dependency resolution
+# UV is a drop-in replacement for pip that's written in Rust and significantly faster
+
+# Install UV:
+# Windows: pip install uv
+# Linux/Mac: curl -LsSf https://astral.sh/uv/install.sh | sh
+
+# Usage:
+# uv pip install -r requirements.txt
+# uv pip install -e .
+# uv pip install -e ".[test]"
+# uv venv .venv
+
+# Hatch will automatically use UV if available via the installer = "uv" config
+# in pyproject.toml [tool.hatch.envs.*] sections
