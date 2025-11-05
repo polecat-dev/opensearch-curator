@@ -161,8 +161,10 @@ def get_repository(client, repository=''):
     try:
         return client.snapshot.get_repository(name=repository)
     except (opensearch_exceptions.TransportError, opensearch_exceptions.NotFoundError) as err:
+        # Extract status code for better error message
+        status = getattr(err, 'status_code', getattr(err, 'status', 'Unknown'))
         msg = (
-            f'Unable to get repository {repository}.  Error: {err} Check Elasticsearch '
+            f'Unable to get repository {repository}.  Error: {status} {err} Check Elasticsearch '
             f'logs for more information.'
         )
         raise CuratorException(msg) from err

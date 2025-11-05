@@ -422,7 +422,9 @@ def get_datemath(client, datemath, random_element=None):
     except NotFoundError as err:
         # This is the magic.  Elasticsearch still gave us the formatted
         # index name in the error results.
-        faux_index = err.body['error']['index']
+        # opensearchpy uses .info instead of .body
+        error_info = err.info if hasattr(err, 'info') else err.body
+        faux_index = error_info['error']['index']
     logger.debug('Response index name for extraction: %s', faux_index)
     # Now we strip the random index prefix back out again
     # pylint: disable=consider-using-f-string
