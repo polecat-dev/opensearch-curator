@@ -3,8 +3,8 @@ from unittest import TestCase
 import pytest
 from unittest.mock import Mock
 from elastic_transport import ApiResponseMeta
-from elasticsearch8 import Elasticsearch
-from elasticsearch8.exceptions import AuthenticationException, NotFoundError
+from opensearchpy import OpenSearch
+from opensearchpy.exceptions import AuthenticationException, NotFoundError
 from curator.exceptions import (
      ConfigurationError, FailedExecution, MissingArgument, RepositoryException,
      SearchableSnapshotException)
@@ -169,7 +169,7 @@ class TestVerifyClientObject(TestCase):
 
         Should return a ``None`` value for a valid client object.
         """
-        test = Elasticsearch(hosts=["http://127.0.0.1:9200"])
+        test = OpenSearch(hosts=["http://127.0.0.1:9200"])
         assert None is verify_client_object(test)
 
     def test_is_not_client_object(self):

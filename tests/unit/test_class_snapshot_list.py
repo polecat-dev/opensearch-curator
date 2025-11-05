@@ -2,7 +2,7 @@
 from unittest import TestCase
 from unittest.mock import Mock
 import yaml
-from es_client.exceptions import FailedValidation
+from opensearch_client.exceptions import FailedValidation
 from curator import SnapshotList
 from curator.exceptions import ConfigurationError, FailedExecution, MissingArgument, NoSnapshots
 # Get test variables and constants from a single source

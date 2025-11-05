@@ -3,7 +3,7 @@ from datetime import datetime
 from unittest import TestCase
 from unittest.mock import Mock
 import pytest
-from elasticsearch8 import NotFoundError
+from opensearchpy import NotFoundError
 from elastic_transport import ApiResponseMeta
 from curator.exceptions import ConfigurationError
 from curator.helpers.date_ops import (
