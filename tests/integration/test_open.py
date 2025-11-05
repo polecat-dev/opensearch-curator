@@ -3,7 +3,7 @@
 # pylint: disable=C0115, C0116, invalid-name
 import os
 import warnings
-from elasticsearch8.exceptions import ElasticsearchWarning
+from opensearchpy.exceptions import OpenSearchWarning
 from . import CuratorTestCase
 from . import testvars
 
@@ -20,11 +20,11 @@ class TestActionFileOpenClosed(CuratorTestCase):
         idx1, idx2 = ('dummy', 'my_index')
         self.create_index(idx1)
         self.create_index(idx2)
-        # ElasticsearchWarning: the default value for the wait_for_active_shards
+        # OpenSearchWarning: the default value for the wait_for_active_shards
         # parameter will change from '0' to 'index-setting' in version 8;
         # specify 'wait_for_active_shards=index-setting' to adopt the future default
         # behaviour, or 'wait_for_active_shards=0' to preserve today's behaviour
-        warnings.filterwarnings("ignore", category=ElasticsearchWarning)
+        warnings.filterwarnings("ignore", category=OpenSearchWarning)
         self.client.indices.close(index=idx2, ignore_unavailable=True)
         self.invoke_runner()
         csi = self.client.cluster.state(metric=MET)[MET]['indices']
@@ -39,11 +39,11 @@ class TestActionFileOpenClosed(CuratorTestCase):
         idx1, idx2 = ('dummy', 'my_index')
         self.create_index(idx1)
         self.create_index(idx2)
-        # ElasticsearchWarning: the default value for the wait_for_active_shards
+        # OpenSearchWarning: the default value for the wait_for_active_shards
         # parameter will change from '0' to 'index-setting' in version 8;
         # specify 'wait_for_active_shards=index-setting' to adopt the future default
         # behaviour, or 'wait_for_active_shards=0' to preserve today's behaviour
-        warnings.filterwarnings("ignore", category=ElasticsearchWarning)
+        warnings.filterwarnings("ignore", category=OpenSearchWarning)
         self.client.indices.close(index=idx2, ignore_unavailable=True)
         self.invoke_runner()
         csi = self.client.cluster.state(metric=MET)[MET]['indices']
@@ -57,11 +57,11 @@ class TestCLIOpenClosed(CuratorTestCase):
         idx1, idx2 = ('dummy', 'my_index')
         self.create_index(idx1)
         self.create_index(idx2)
-        # ElasticsearchWarning: the default value for the wait_for_active_shards
+        # OpenSearchWarning: the default value for the wait_for_active_shards
         # parameter will change from '0' to 'index-setting' in version 8;
         # specify 'wait_for_active_shards=index-setting' to adopt the future default
         # behaviour, or 'wait_for_active_shards=0' to preserve today's behaviour
-        warnings.filterwarnings("ignore", category=ElasticsearchWarning)
+        warnings.filterwarnings("ignore", category=OpenSearchWarning)
         self.client.indices.close(index=idx2, ignore_unavailable=True)
         args = self.get_runner_args()
         args += [

@@ -14,11 +14,11 @@ import warnings
 from datetime import timedelta, datetime, date, timezone
 from subprocess import Popen, PIPE
 from unittest import SkipTest, TestCase
-from elasticsearch8 import Elasticsearch
-from elasticsearch8.exceptions import ConnectionError as ESConnectionError
-from elasticsearch8.exceptions import ElasticsearchWarning, NotFoundError
+from opensearchpy import OpenSearch
+from opensearchpy.exceptions import ConnectionError as ESConnectionError
+from opensearchpy.exceptions import OpenSearchWarning, NotFoundError
 from click import testing as clicktest
-from es_client.helpers.utils import get_version
+from opensearch_client.helpers.utils import get_version
 from curator.cli import cli
 
 from . import testvars
@@ -52,7 +52,7 @@ def get_client():
     if client is not None:
         return client
 
-    client = Elasticsearch(hosts=HOST, request_timeout=300)
+    client = OpenSearch(hosts=HOST, request_timeout=300)
 
     # wait for yellow status
     for _ in range(100):
@@ -64,7 +64,7 @@ def get_client():
         except ESConnectionError:
             continue
     # timeout
-    raise SkipTest("Elasticsearch failed to start.")
+    raise SkipTest("OpenSearch failed to start.")
 
 
 def setup():
@@ -137,18 +137,18 @@ class CuratorTestCase(TestCase):
         self.client.cluster.put_settings(transient=enable_allocation)
         self.delete_repositories()
         # 8.0 removes our ability to purge with wildcards...
-        # ElasticsearchWarning: this request accesses system indices: [.tasks],
+        # OpenSearchWarning: this request accesses system indices: [.tasks],
         # but in a future major version, direct access to system indices will be
         # prevented by default
-        warnings.filterwarnings("ignore", category=ElasticsearchWarning)
+        warnings.filterwarnings("ignore", category=OpenSearchWarning)
         indices = list(
             self.client.indices.get(index="*", expand_wildcards='open,closed').keys()
         )
         if len(indices) > 0:
-            # ElasticsearchWarning: this request accesses system indices: [.tasks],
+            # OpenSearchWarning: this request accesses system indices: [.tasks],
             # but in a future major version, direct access to system indices will be
             # prevented by default
-            warnings.filterwarnings("ignore", category=ElasticsearchWarning)
+            warnings.filterwarnings("ignore", category=OpenSearchWarning)
             self.client.indices.delete(index=','.join(indices))
         for path_arg in ['location', 'configdir']:
             if os.path.exists(self.args[path_arg]):
@@ -207,10 +207,10 @@ class CuratorTestCase(TestCase):
         request_body = {'index': {'number_of_shards': shards, 'number_of_replicas': 0}}
         if ilm_policy is not None:
             request_body['index']['lifecycle'] = {'name': ilm_policy}
-        # ElasticsearchWarning: index name [.shouldbehidden] starts with a dot '.',
+        # OpenSearchWarning: index name [.shouldbehidden] starts with a dot '.',
         # in the next major version, index names starting with a dot are reserved
         # for hidden indices and system indices
-        warnings.filterwarnings("ignore", category=ElasticsearchWarning)
+        warnings.filterwarnings("ignore", category=OpenSearchWarning)
         self.client.indices.create(
             index=name,
             settings=request_body,

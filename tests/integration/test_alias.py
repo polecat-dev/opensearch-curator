@@ -5,7 +5,7 @@ import os
 import logging
 from datetime import datetime, timedelta, timezone
 import pytest
-from elasticsearch8.exceptions import NotFoundError
+from opensearchpy.exceptions import NotFoundError
 from . import CuratorTestCase
 from . import testvars
 

@@ -313,7 +313,7 @@ def epoch2iso(epoch: int) -> str:
     #
     # As a result, we will use this function to prune away the timezone if it is +00:00
     # and replace it with Z, which is shorter Zulu notation for UTC (which
-    # Elasticsearch uses)
+    # OpenSearch uses)
     #
     # We are MANUALLY, FORCEFULLY declaring timezone.utc, so it should ALWAYS be
     # +00:00, but could in theory sometime show up as a Z, so we test for that.
@@ -392,12 +392,12 @@ def get_date_regex(timestring):
 def get_datemath(client, datemath, random_element=None):
     """
     :param client: A client connection object
-    :param datemath: An elasticsearch datemath string
+    :param datemath: An OpenSearch datemath string
     :param random_element: This allows external randomization of the name and is only
         useful for tests so that you can guarantee the output because you provided the
         random portion.
 
-    :type client: :py:class:`~.elasticsearch.Elasticsearch`
+    :type client: :py:class:`~.opensearchpy.Elasticsearch`
     :type datemath: :py:class:`~.datemath.datemath`
     :type random_element: str
 
@@ -420,7 +420,7 @@ def get_datemath(client, datemath, random_element=None):
     try:
         client.indices.get(index=datemath_dummy)
     except NotFoundError as err:
-        # This is the magic.  Elasticsearch still gave us the formatted
+        # This is the magic.  OpenSearch still gave us the formatted
         # index name in the error results.
         # opensearchpy uses .info instead of .body
         error_info = err.info if hasattr(err, 'info') else err.body
@@ -600,7 +600,7 @@ def parse_date_pattern(name):
     Scan and parse ``name`` for :py:func:`~.time.strftime` strings, replacing them with
     the associated value when found, but otherwise returning lowercase values, as
     uppercase snapshot names are not allowed. It will detect if the first character is
-    a ``<``, which would indicate ``name`` is going to be using Elasticsearch date math
+    a ``<``, which would indicate ``name`` is going to be using OpenSearch date math
     syntax, and skip accordingly.
 
     The :py:func:`~.time.strftime` identifiers that Curator currently recognizes as
@@ -628,7 +628,7 @@ def parse_date_pattern(name):
     for idx, char in enumerate(name):
         logger.debug('Current character in provided name: %s, position: %s', char, idx)
         if char == '<':
-            logger.info('"%s" is probably using Elasticsearch date math.', name)
+            logger.info('"%s" is probably using OpenSearch date math.', name)
             rendered = name
             break
         if char == '%':
@@ -646,14 +646,14 @@ def parse_date_pattern(name):
 def parse_datemath(client, value):
     """
     Validate that ``value`` looks like proper datemath. If it passes this test, then
-    try to ship it to Elasticsearch for real. It may yet fail this test, and if it
+    try to ship it to OpenSearch for real. It may yet fail this test, and if it
     does, it will raise a :py:exc:`~.curator.exceptions.ConfigurationError` exception.
     If it passes, return the fully parsed string.
 
     :param client: A client connection object
     :param value: A string to check for datemath
 
-    :type client: :py:class:`~.elasticsearch.Elasticsearch`
+    :type client: :py:class:`~.opensearchpy.Elasticsearch`
     :type value: str
 
     :returns: A datemath indexname, fully rendered by Elasticsearch

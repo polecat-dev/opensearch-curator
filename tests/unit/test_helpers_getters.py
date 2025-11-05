@@ -129,7 +129,7 @@ class TestGetRepository(TestCase):
         client.snapshot.get_repository.side_effect = TransportError(
             503, ('exception', 'reason')
         )
-        with pytest.raises(CuratorException, match=r'503 Check Elasticsearch logs'):
+        with pytest.raises(CuratorException, match=r'503 Check OpenSearch logs'):
             getters.get_repository(client, repository=REPO_NAME)
 
     def test_get_repository_notfounderror_negative(self):

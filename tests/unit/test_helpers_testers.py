@@ -226,7 +226,7 @@ class TestVerifyRepository(TestCase):
         # 3 positional args for NotFoundError: message, meta, body
         effect = AuthenticationException(msg, meta, body)
         client.snapshot.verify_repository.side_effect = effect
-        with pytest.raises(RepositoryException, match=r'Got a 401 response from Elasticsearch'):
+        with pytest.raises(RepositoryException, match=r'Got a 401 response from OpenSearch'):
             verify_repository(client, repository=self.REPO_NAME)
     def test_raises_other(self):
         """test_raises_other

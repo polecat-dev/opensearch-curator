@@ -62,12 +62,12 @@ def is_idx_partial(idx_settings):
 def ilm_policy_check(client, alias):
     """Test if alias is associated with an ILM policy
 
-    Calls :py:meth:`~.elasticsearch.client.IndicesClient.get_settings`
+    Calls :py:meth:`~.OpenSearch.client.IndicesClient.get_settings`
 
     :param client: A client connection object
     :param alias: The alias name
 
-    :type client: :py:class:`~.elasticsearch.Elasticsearch`
+    :type client: :py:class:`~.OpenSearch.OpenSearch`
     :type alias: str
     :rtype: bool
     """
@@ -87,12 +87,12 @@ def ilm_policy_check(client, alias):
 
 def repository_exists(client, repository=None):
     """
-    Calls :py:meth:`~.elasticsearch.client.SnapshotClient.get_repository`
+    Calls :py:meth:`~.OpenSearch.client.SnapshotClient.get_repository`
 
     :param client: A client connection object
-    :param repository: The Elasticsearch snapshot repository to use
+    :param repository: The OpenSearch snapshot repository to use
 
-    :type client: :py:class:`~.elasticsearch.Elasticsearch`
+    :type client: :py:class:`~.OpenSearch.OpenSearch`
     :type repository: str
 
     :returns: ``True`` if ``repository`` exists, else ``False``
@@ -118,12 +118,12 @@ def repository_exists(client, repository=None):
 
 def rollable_alias(client, alias):
     """
-    Calls :py:meth:`~.elasticsearch.client.IndicesClient.get_alias`
+    Calls :py:meth:`~.OpenSearch.client.IndicesClient.get_alias`
 
     :param client: A client connection object
-    :param alias: An Elasticsearch alias
+    :param alias: An OpenSearch alias
 
-    :type client: :py:class:`~.elasticsearch.Elasticsearch`
+    :type client: :py:class:`~.OpenSearch.OpenSearch`
     :type alias: str
 
 
@@ -169,13 +169,13 @@ def rollable_alias(client, alias):
 
 def snapshot_running(client):
     """
-    Calls :py:meth:`~.elasticsearch.client.SnapshotClient.get_repository`
+    Calls :py:meth:`~.OpenSearch.client.SnapshotClient.get_repository`
 
     Return ``True`` if a snapshot is in progress, and ``False`` if not
 
     :param client: A client connection object
 
-    :type client: :py:class:`~.elasticsearch.Elasticsearch`
+    :type client: :py:class:`~.OpenSearch.OpenSearch`
 
     :rtype: bool
     """
@@ -319,9 +319,9 @@ def verify_client_object(test):
     """
     :param test: The variable or object to test
 
-    :type test: :py:class:`~.elasticsearch.Elasticsearch`
+    :type test: :py:class:`~.OpenSearch.OpenSearch`
 
-    :returns: ``True`` if ``test`` is a proper :py:class:`~.elasticsearch.Elasticsearch`
+    :returns: ``True`` if ``test`` is a proper :py:class:`~.OpenSearch.OpenSearch`
         client object and raise a :py:exc:`TypeError` exception if it is not.
     :rtype: bool
     """
@@ -360,14 +360,14 @@ def verify_index_list(test):
 
 def verify_repository(client, repository=None):
     """
-    Do :py:meth:`~.elasticsearch.snapshot.verify_repository` call. If it fails, raise a
+    Do :py:meth:`~.OpenSearch.snapshot.verify_repository` call. If it fails, raise a
     :py:exc:`~.curator.exceptions.RepositoryException`.
 
     :param client: A client connection object
-    :type client: :py:class:`~.elasticsearch.Elasticsearch`
+    :type client: :py:class:`~.OpenSearch.OpenSearch`
     :param repository: A repository name
 
-    :type client: :py:class:`~.elasticsearch.Elasticsearch`
+    :type client: :py:class:`~.OpenSearch.OpenSearch`
     :type repository: str
 
     :rtype: None
@@ -390,7 +390,7 @@ def verify_repository(client, repository=None):
         if status == 404:
             msg = f'--- Repository "{repository}" not found.'
         elif status:
-            msg = f'--- Got a {status} response from Elasticsearch.'
+            msg = f'--- Got a {status} response from OpenSearch.'
         else:
             msg = f'--- Error message: {err}'
         

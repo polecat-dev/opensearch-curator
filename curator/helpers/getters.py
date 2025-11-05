@@ -57,7 +57,7 @@ def get_alias_actions(oldidx, newidx, aliases):
     :type aliases: dict
 
     :returns: A list of actions suitable for
-        :py:meth:`~.elasticsearch.client.IndicesClient.update_aliases` ``actions``
+        :py:meth:`~.OpenSearch.client.IndicesClient.update_aliases` ``actions``
         kwarg.
     :rtype: list
     """
@@ -74,7 +74,7 @@ def get_data_tiers(client):
     polling each node
 
     :param client: A client connection object
-    :type client: :py:class:`~.elasticsearch.Elasticsearch`
+    :type client: :py:class:`~.OpenSearch.OpenSearch`
 
     :returns: The available data tiers in ``tier: bool`` form.
     :rtype: dict
@@ -103,7 +103,7 @@ def get_data_tiers(client):
 
 def get_indices(client, search_pattern='*', include_hidden=False):
     """
-    Calls :py:meth:`~.elasticsearch.client.CatClient.indices`
+    Calls :py:meth:`~.OpenSearch.client.CatClient.indices`
 
     Will use the provided ``search_pattern`` to get a list of indices from the
     cluster. If ``include_hidden`` is ``True``, it will include hidden indices
@@ -114,7 +114,7 @@ def get_indices(client, search_pattern='*', include_hidden=False):
         search_pattern: The index search pattern to use
         include_hidden: Include hidden indices in the list
     :type
-        client: :py:class:`~.elasticsearch.Elasticsearch`
+        client: :py:class:`~.OpenSearch.OpenSearch`
         search_pattern: str
         include_hidden: bool
 
@@ -147,12 +147,12 @@ def get_indices(client, search_pattern='*', include_hidden=False):
 
 def get_repository(client, repository=''):
     """
-    Calls :py:meth:`~.elasticsearch.client.SnapshotClient.get_repository`
+    Calls :py:meth:`~.OpenSearch.client.SnapshotClient.get_repository`
 
     :param client: A client connection object
-    :param repository: The Elasticsearch snapshot repository to use
+    :param repository: The OpenSearch snapshot repository to use
 
-    :type client: :py:class:`~.elasticsearch.Elasticsearch`
+    :type client: :py:class:`~.OpenSearch.OpenSearch`
     :type repository: str
 
     :returns: Configuration information for ``repository``.
@@ -168,7 +168,7 @@ def get_repository(client, repository=''):
             status = getattr(err, 'status_code', getattr(err, 'status', 'Unknown'))
             error_str = str(status)
         msg = (
-            f'Unable to get repository {repository}.  Error: {error_str} Check Elasticsearch '
+            f'Unable to get repository {repository}.  Error: {error_str} Check OpenSearch '
             f'logs for more information.'
         )
         raise CuratorException(msg) from err
@@ -176,13 +176,13 @@ def get_repository(client, repository=''):
 
 def get_snapshot(client, repository=None, snapshot=''):
     """
-    Calls :py:meth:`~.elasticsearch.client.SnapshotClient.get`
+    Calls :py:meth:`~.OpenSearch.client.SnapshotClient.get`
 
     :param client: A client connection object
-    :param repository: The Elasticsearch snapshot repository to use
+    :param repository: The OpenSearch snapshot repository to use
     :param snapshot: The snapshot name, or a comma-separated list of snapshots
 
-    :type client: :py:class:`~.elasticsearch.Elasticsearch`
+    :type client: :py:class:`~.OpenSearch.OpenSearch`
     :type repository: str
     :type snapshot: str
 
@@ -214,12 +214,12 @@ def get_snapshot(client, repository=None, snapshot=''):
 def get_snapshot_data(client, repository=None):
     """
     Get all snapshots from repository and return a list.
-    Calls :py:meth:`~.elasticsearch.client.SnapshotClient.get`
+    Calls :py:meth:`~.OpenSearch.client.SnapshotClient.get`
 
     :param client: A client connection object
-    :param repository: The Elasticsearch snapshot repository to use
+    :param repository: The OpenSearch snapshot repository to use
 
-    :type client: :py:class:`~.elasticsearch.Elasticsearch`
+    :type client: :py:class:`~.OpenSearch.OpenSearch`
     :type repository: str
 
     :returns: The list of all snapshots from ``repository``
@@ -250,7 +250,7 @@ def get_tier_preference(client, target_tier='data_frozen'):
     :param client: A client connection object
     :param target_tier: The target data tier, e.g. data_warm.
 
-    :type client: :py:class:`~.elasticsearch.Elasticsearch`
+    :type client: :py:class:`~.OpenSearch.OpenSearch`
     :type target_tier: str
 
     :returns: A suitable tier preference string in csv format
@@ -289,12 +289,12 @@ def get_tier_preference(client, target_tier='data_frozen'):
 
 def get_write_index(client, alias):
     """
-    Calls :py:meth:`~.elasticsearch.client.IndicesClient.get_alias`
+    Calls :py:meth:`~.OpenSearch.client.IndicesClient.get_alias`
 
     :param client: A client connection object
     :param alias: An alias name
 
-    :type client: :py:class:`~.elasticsearch.Elasticsearch`
+    :type client: :py:class:`~.OpenSearch.OpenSearch`
     :type alias: str
 
     :returns: The the index name associated with the alias that is designated
@@ -325,13 +325,13 @@ def get_write_index(client, alias):
 
 def index_size(client, idx, value='total'):
     """
-    Calls :py:meth:`~.elasticsearch.client.IndicesClient.stats`
+    Calls :py:meth:`~.OpenSearch.client.IndicesClient.stats`
 
     :param client: A client connection object
     :param idx: An index name
     :param value: One of either ``primaries`` or ``total``
 
-    :type client: :py:class:`~.elasticsearch.Elasticsearch`
+    :type client: :py:class:`~.OpenSearch.OpenSearch`
     :type idx: str
     :type value: str
 
@@ -346,14 +346,14 @@ def index_size(client, idx, value='total'):
 
 def meta_getter(client, idx, get=None):
     """Meta Getter
-    Calls :py:meth:`~.elasticsearch.client.IndicesClient.get_settings` or
-    :py:meth:`~.elasticsearch.client.IndicesClient.get_alias`
+    Calls :py:meth:`~.OpenSearch.client.IndicesClient.get_settings` or
+    :py:meth:`~.OpenSearch.client.IndicesClient.get_alias`
 
     :param client: A client connection object
-    :param idx: An Elasticsearch index
+    :param idx: An OpenSearch index
     :param get: The kind of get to perform, e.g. settings or alias
 
-    :type client: :py:class:`~.elasticsearch.Elasticsearch`
+    :type client: :py:class:`~.OpenSearch.OpenSearch`
     :type idx: str
     :type get: str
 
@@ -386,12 +386,12 @@ def meta_getter(client, idx, get=None):
 
 def name_to_node_id(client, name):
     """
-    Calls :py:meth:`~.elasticsearch.client.NodesClient.info`
+    Calls :py:meth:`~.OpenSearch.client.NodesClient.info`
 
     :param client: A client connection object
     :param name: The node ``name``
 
-    :type client: :py:class:`~.elasticsearch.Elasticsearch`
+    :type client: :py:class:`~.OpenSearch.OpenSearch`
     :type name: str
 
     :returns: The node_id of the node identified by ``name``
@@ -410,12 +410,12 @@ def name_to_node_id(client, name):
 
 def node_id_to_name(client, node_id):
     """
-    Calls :py:meth:`~.elasticsearch.client.NodesClient.info`
+    Calls :py:meth:`~.OpenSearch.client.NodesClient.info`
 
     :param client: A client connection object
     :param node_id: The node ``node_id``
 
-    :type client: :py:class:`~.elasticsearch.Elasticsearch`
+    :type client: :py:class:`~.OpenSearch.OpenSearch`
     :type node_id: str
 
     :returns: The name of the node identified by ``node_id``
@@ -435,12 +435,12 @@ def node_id_to_name(client, node_id):
 
 def node_roles(client, node_id):
     """
-    Calls :py:meth:`~.elasticsearch.client.NodesClient.info`
+    Calls :py:meth:`~.OpenSearch.client.NodesClient.info`
 
     :param client: A client connection object
     :param node_id: The node ``node_id``
 
-    :type client: :py:class:`~.elasticsearch.Elasticsearch`
+    :type client: :py:class:`~.OpenSearch.OpenSearch`
     :type node_id: str
 
     :returns: The list of roles assigned to the node identified by ``node_id``
@@ -453,12 +453,12 @@ def node_roles(client, node_id):
 def single_data_path(client, node_id):
     """
     In order for a shrink to work, it should be on a single filesystem, as shards
-    cannot span filesystems. Calls :py:meth:`~.elasticsearch.client.NodesClient.stats`
+    cannot span filesystems. Calls :py:meth:`~.OpenSearch.client.NodesClient.stats`
 
     :param client: A client connection object
     :param node_id: The node ``node_id``
 
-    :type client: :py:class:`~.elasticsearch.Elasticsearch`
+    :type client: :py:class:`~.OpenSearch.OpenSearch`
     :type node_id: str
 
     :returns: ``True`` if the node has a single filesystem, else ``False``

@@ -4,8 +4,8 @@
 import os
 import warnings
 import pytest
-from elasticsearch8 import Elasticsearch
-from elasticsearch8.exceptions import ElasticsearchWarning, NotFoundError
+from opensearchpy import OpenSearch
+from opensearchpy.exceptions import OpenSearchWarning, NotFoundError
 from curator.exceptions import ConfigurationError
 from curator.helpers.getters import get_indices
 from curator import IndexList
@@ -145,11 +145,11 @@ class TestIndexList(CuratorTestCase):
         assert ilo.indices == [self.IDX1, self.IDX2]
         assert ilo.index_info[self.IDX1]['state'] == 'open'
         assert ilo.index_info[self.IDX2]['state'] == 'open'
-        # ElasticsearchWarning: the default value for the wait_for_active_shards
+        # OpenSearchWarning: the default value for the wait_for_active_shards
         # parameter will change from '0' to 'index-setting' in version 8;
         # specify 'wait_for_active_shards=index-setting' to adopt the future default
         # behaviour, or 'wait_for_active_shards=0' to preserve today's behaviour
-        warnings.filterwarnings("ignore", category=ElasticsearchWarning)
+        warnings.filterwarnings("ignore", category=OpenSearchWarning)
         self.client.indices.close(index=self.IDX2)
         ilo.get_index_state()
         assert ilo.index_info[self.IDX2]['state'] == 'close'
@@ -243,8 +243,8 @@ def cleanup(client, idx):
 def test_include_hidden_index(idx, pattern, hidden, response):
     """Test that a hidden index is included when include_hidden is True"""
     host = os.environ.get('TEST_ES_SERVER', 'http://127.0.0.1:9200')
-    client = Elasticsearch(hosts=host, request_timeout=300)
-    warnings.filterwarnings("ignore", category=ElasticsearchWarning)
+    client = OpenSearch(hosts=host, request_timeout=300)
+    warnings.filterwarnings("ignore", category=OpenSearchWarning)
     cleanup(client, idx)
     client.indices.create(index=idx)
     client.indices.put_settings(index=idx, body={'index': {'hidden': True}})
@@ -273,8 +273,8 @@ def test__bug__include_hidden_dot_prefix_index(idx, pattern, hidden, response):
     https://github.com/elastic/elasticsearch/issues/124167
     """
     host = os.environ.get('TEST_ES_SERVER', 'http://127.0.0.1:9200')
-    client = Elasticsearch(hosts=host, request_timeout=300)
-    warnings.filterwarnings("ignore", category=ElasticsearchWarning)
+    client = OpenSearch(hosts=host, request_timeout=300)
+    warnings.filterwarnings("ignore", category=OpenSearchWarning)
     cleanup(client, idx)
     client.indices.create(index=idx)
     client.indices.put_settings(index=idx, body={'index': {'hidden': True}})

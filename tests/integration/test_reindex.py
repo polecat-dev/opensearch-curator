@@ -152,7 +152,7 @@ class TestActionFileReindex(CuratorTestCase):
         # Build remote client
         try:
             remote_args = DotMap({'hosts': RHOST})
-            remote_config = {'elasticsearch': {'client': remote_args.toDict()}}
+            remote_config = {'opensearch': {'client': remote_args.toDict()}}
             builder = Builder(configdict=remote_config)
             builder.version_min = (5, 0, 0)
             builder.connect()
@@ -199,7 +199,7 @@ class TestActionFileReindex(CuratorTestCase):
         # Build remote client
         try:
             remote_args = DotMap({'hosts': RHOST})
-            remote_config = {'elasticsearch': {'client': remote_args.toDict()}}
+            remote_config = {'opensearch': {'client': remote_args.toDict()}}
             builder = Builder(configdict=remote_config)
             builder.version_min = (5, 0, 0)
             builder.connect()
@@ -251,7 +251,7 @@ class TestActionFileReindex(CuratorTestCase):
         # Build remote client
         try:
             remote_args = DotMap({'hosts': RHOST})
-            remote_config = {'elasticsearch': {'client': remote_args.toDict()}}
+            remote_config = {'opensearch': {'client': remote_args.toDict()}}
             builder = Builder(configdict=remote_config)
             builder.version_min = (5, 0, 0)
             builder.connect()
@@ -324,7 +324,7 @@ class TestActionFileReindex(CuratorTestCase):
         # Build remote client
         try:
             remote_args = DotMap({'hosts': RHOST})
-            remote_config = {'elasticsearch': {'client': remote_args.toDict()}}
+            remote_config = {'opensearch': {'client': remote_args.toDict()}}
             builder = Builder(configdict=remote_config)
             builder.version_min = (5, 0, 0)
             builder.connect()
