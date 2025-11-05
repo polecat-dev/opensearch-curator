@@ -161,10 +161,14 @@ def get_repository(client, repository=''):
     try:
         return client.snapshot.get_repository(name=repository)
     except (opensearch_exceptions.TransportError, opensearch_exceptions.NotFoundError) as err:
-        # Extract status code for better error message
-        status = getattr(err, 'status_code', getattr(err, 'status', 'Unknown'))
+        # For NotFoundError, use class name; for TransportError, include status code only
+        if isinstance(err, opensearch_exceptions.NotFoundError):
+            error_str = err.__class__.__name__
+        else:
+            status = getattr(err, 'status_code', getattr(err, 'status', 'Unknown'))
+            error_str = str(status)
         msg = (
-            f'Unable to get repository {repository}.  Error: {status} {err} Check Elasticsearch '
+            f'Unable to get repository {repository}.  Error: {error_str} Check Elasticsearch '
             f'logs for more information.'
         )
         raise CuratorException(msg) from err
@@ -194,9 +198,15 @@ def get_snapshot(client, repository=None, snapshot=''):
     try:
         return client.snapshot.get(repository=repository, snapshot=snapshot)
     except (opensearch_exceptions.TransportError, opensearch_exceptions.NotFoundError) as err:
+        # For NotFoundError, use class name; for TransportError, include status code only
+        if isinstance(err, opensearch_exceptions.NotFoundError):
+            error_str = err.__class__.__name__
+        else:
+            status = getattr(err, 'status_code', getattr(err, 'status', 'Unknown'))
+            error_str = str(status)
         msg = (
             f'Unable to get information about snapshot {snapname} from repository: '
-            f'{repository}.  Error: {err}'
+            f'{repository}.  Error: {error_str}'
         )
         raise FailedExecution(msg) from err
 
@@ -220,9 +230,15 @@ def get_snapshot_data(client, repository=None):
     try:
         return client.snapshot.get(repository=repository, snapshot="*")['snapshots']
     except (opensearch_exceptions.TransportError, opensearch_exceptions.NotFoundError) as err:
+        # For NotFoundError, use class name; for TransportError, include status code only
+        if isinstance(err, opensearch_exceptions.NotFoundError):
+            error_str = err.__class__.__name__
+        else:
+            status = getattr(err, 'status_code', getattr(err, 'status', 'Unknown'))
+            error_str = str(status)
         msg = (
             f'Unable to get snapshot information from repository: '
-            f'{repository}. Error: {err}'
+            f'{repository}. Error: {error_str}'
         )
         raise FailedExecution(msg) from err
 

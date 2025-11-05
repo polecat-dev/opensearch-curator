@@ -378,19 +378,22 @@ def verify_repository(client, repository=None):
         logger.debug('All nodes can write to the repository')
         logger.debug('Nodes with verified repository access: %s', nodes)
     except Exception as err:
-        try:
-            if err.status_code == 404:
-                msg = (
-                    f'--- Repository "{repository}" not found. Error: '
-                    f'{err.meta.status}, {err.error}'
-                )
-            else:
-                msg = (
-                    f'--- Got a {err.meta.status} response from Elasticsearch.  '
-                    f'Error message: {err.error}'
-                )
-        except AttributeError:
-            msg = f'--- Error message: {err}'.format()
+        # Extract status code from opensearchpy exceptions
+        # opensearchpy stores ApiResponseMeta in .error attribute (not .meta!)
+        status = None
+        if hasattr(err, 'error') and hasattr(err.error, 'status'):
+            status = err.error.status
+        # Otherwise try status_code attribute
+        if status is None:
+            status = getattr(err, 'status_code', None)
+        
+        if status == 404:
+            msg = f'--- Repository "{repository}" not found.'
+        elif status:
+            msg = f'--- Got a {status} response from Elasticsearch.'
+        else:
+            msg = f'--- Error message: {err}'
+        
         report = f'Failed to verify all nodes have repository access: {msg}'
         raise RepositoryException(report) from err
 
