@@ -6,11 +6,11 @@ from copy import deepcopy
 from click import Choice, Path
 from voluptuous import All, Any, Boolean, Coerce, Optional, Range, Schema
 
-VERSION_MIN: t.Tuple = (8, 0, 0)
-"""Minimum compatible Elasticsearch version"""
+VERSION_MIN: t.Tuple = (2, 0, 0)
+"""Minimum supported OpenSearch version."""
 
-VERSION_MAX: t.Tuple = (8, 99, 99)
-"""Maximum compatible Elasticsearch version"""
+VERSION_MAX: t.Tuple = (3, 99, 99)
+"""Maximum compatible OpenSearch version"""
 
 KEYS_TO_REDACT: t.List[str] = [
     "password",

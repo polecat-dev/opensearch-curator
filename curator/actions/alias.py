@@ -111,7 +111,7 @@ class Alias:
 
             # Re-raise the exceptions.NoIndices so it will behave as before
             raise NoIndices('No indices to remove from alias') from exc
-        aliases = self.client.indices.get_alias(expand_wildcards=['open', 'closed'])
+        aliases = self.client.indices.get_alias(params={'expand_wildcards': 'open,closed'})
         for index in ilo.working_list():
             if index in aliases:
                 self.loggit.debug('Index %s in get_aliases output', index)
@@ -167,7 +167,7 @@ class Alias:
         self.loggit.info('Updating aliases...')
         self.loggit.info('Alias actions: %s', self.actions)
         try:
-            self.client.indices.update_aliases(actions=self.actions)
+            self.client.indices.update_aliases(body={'actions': self.actions})
         # pylint: disable=broad-except
         except Exception as err:
             report_failure(err)

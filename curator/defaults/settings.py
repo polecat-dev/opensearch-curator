@@ -15,8 +15,8 @@ EXCLUDE_SYSTEM = (
     '-.kibana*,-.security*,-.watch*,-.triggered_watch*,'
     '-.ml*,-.geoip_databases*,-.logstash*,-.tasks*'
 )
-VERSION_MIN = (7, 14, 0)
-VERSION_MAX = (8, 99, 99)
+VERSION_MIN = (2, 0, 0)
+VERSION_MAX = (3, 99, 99)
 
 # Click specifics
 

@@ -134,7 +134,7 @@ class CuratorTestCase(TestCase):
         self.logger.debug('tearDown initiated...')
         # re-enable shard allocation for next tests
         enable_allocation = json.loads('{"cluster.routing.allocation.enable":null}')
-        self.client.cluster.put_settings(transient=enable_allocation)
+        self.client.cluster.put_settings(body={'transient': enable_allocation})
         self.delete_repositories()
         # 8.0 removes our ability to purge with wildcards...
         # OpenSearchWarning: this request accesses system indices: [.tasks],
@@ -213,8 +213,8 @@ class CuratorTestCase(TestCase):
         warnings.filterwarnings("ignore", category=OpenSearchWarning)
         self.client.indices.create(
             index=name,
-            settings=request_body,
-            wait_for_active_shards=wait_for_active_shards,
+            body={'settings': request_body},
+            params={'wait_for_active_shards': wait_for_active_shards},
         )
         if wait_for_yellow:
             self.wfy()
@@ -256,7 +256,7 @@ class CuratorTestCase(TestCase):
     def delete_repositories(self):
         result = []
         try:
-            result = self.client.snapshot.get_repository(name='*')
+            result = self.client.snapshot.get_repository(repository='*')
         except NotFoundError:
             pass
         for repo in result:

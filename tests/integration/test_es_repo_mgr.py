@@ -55,7 +55,7 @@ class TestCLIRepositoryCreate(CuratorTestCase):
             ],
         )
         assert 1 == len(
-            self.client.snapshot.get_repository(name=self.args['repository'])
+            self.client.snapshot.get_repository(repository=self.args['repository'])
         )
         assert 0 == result.exit_code
 
