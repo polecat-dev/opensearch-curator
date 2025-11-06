@@ -95,9 +95,7 @@ class Allocation:
         try:
             index_lists = chunk_index_list(self.index_list.indices)
             for lst in index_lists:
-                self.client.indices.put_settings(
-                    index=to_csv(lst), settings=self.settings
-                )
+                self.client.indices.put_settings(index=to_csv(lst), body=self.settings)
                 if self.wfc:
                     self.loggit.debug(
                         'Waiting for shards to complete relocation for indices: %s',

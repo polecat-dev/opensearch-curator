@@ -7,7 +7,8 @@ from . import testvars
 
 HOST = os.environ.get('TEST_ES_SERVER', 'http://127.0.0.1:9200')
 
-TIEREDROUTING = {'allocation': {'include': {'_tier_preference': 'data_content'}}}
+# OpenSearch 3.x does not populate index routing defaults; expect None unless set.
+TIEREDROUTING = None
 
 DELETE_COUNT_PATTERN = (
     '---\n'
@@ -104,9 +105,9 @@ class TestCLICountPattern(CuratorTestCase):
         for idx in (idx1, idx2):
             assert (
                 value
-                == response[idx]['settings']['index']['routing']['allocation'][alloc][
+                == response[idx]['settings']['index'].get('routing')['allocation'][alloc][
                     key
                 ]
             )
         for idx in idxlist:
-            assert TIEREDROUTING == response[idx]['settings']['index']['routing']
+            assert TIEREDROUTING == response[idx]['settings']['index'].get('routing')

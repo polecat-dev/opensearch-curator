@@ -4,8 +4,8 @@ import logging
 from voluptuous import Schema
 from opensearchpy import OpenSearch
 from opensearchpy.exceptions import NotFoundError
-from opensearch_client.helpers.schemacheck import SchemaCheck
-from opensearch_client.helpers.utils import prune_nones
+from opensearch_client.schemacheck import SchemaCheck
+from opensearch_client.utils import prune_nones
 from curator.helpers.getters import get_repository, get_write_index
 from curator.exceptions import (
     ConfigurationError,

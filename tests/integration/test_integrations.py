@@ -48,12 +48,14 @@ class TestFilters(CuratorTestCase):
             self.args['actionfile'],
             testvars.filter_by_alias.format('{"this":"isadict"}', False),
         )
+        baseline = set(get_indices(self.client))
         self.create_index('my_index')
         self.create_index('dummy')
         self.client.indices.put_alias(index='dummy', name=alias)
         self.invoke_runner()
         assert isinstance(self.result.exception, ConfigurationError)
-        assert 2 == len(get_indices(self.client))
+        remaining = set(get_indices(self.client)) - baseline
+        assert 2 == len(remaining)
 
     def test_filter_closed(self):
         idx1 = 'dummy'
@@ -90,8 +92,9 @@ class TestFilters(CuratorTestCase):
         zero = 'zero'
         field = '@timestamp'
         time = '2017-12-31T23:59:59.999Z'
+        baseline = set(get_indices(self.client))
         # Create idx with a single, @timestamped doc
-        self.client.create(index=idx, id=1, document={field: time})
+        self.client.create(index=idx, id=1, body={field: time})
         # Flush to ensure it's written
         # Decorators make this pylint exception necessary
         # pylint: disable=E1123
@@ -103,7 +106,8 @@ class TestFilters(CuratorTestCase):
         self.write_config(self.args['actionfile'], delete_field_stats.format(field))
         self.invoke_runner()
         # It should skip deleting 'zero', as it has 0 docs
-        assert [zero] == get_indices(self.client)
+        remaining = sorted(set(get_indices(self.client)) - baseline)
+        assert [zero] == remaining
 
 
 class TestIndexList(CuratorTestCase):
@@ -162,7 +166,7 @@ class TestIndexList(CuratorTestCase):
         ilo = IndexList(self.client)
         assert ilo.indices == [self.IDX1, self.IDX2]
         self.client.indices.delete(index=self.IDX2)
-        self.client.indices.create(index=self.IDX3, aliases=alias)
+        self.client.indices.create(index=self.IDX3, body={'aliases': alias})
         ilo.get_index_state()
         assert ilo.indices == [self.IDX1, self.IDX3]
 

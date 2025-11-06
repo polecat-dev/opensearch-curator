@@ -16,9 +16,9 @@ from subprocess import Popen, PIPE
 from unittest import SkipTest, TestCase
 from opensearchpy import OpenSearch
 from opensearchpy.exceptions import ConnectionError as ESConnectionError
-from opensearchpy.exceptions import OpenSearchWarning, NotFoundError
+from opensearchpy.exceptions import OpenSearchWarning, NotFoundError, TransportError
 from click import testing as clicktest
-from opensearch_client.helpers.utils import get_version
+from opensearch_client.utils import get_version
 from curator.cli import cli
 
 from . import testvars
@@ -221,7 +221,7 @@ class CuratorTestCase(TestCase):
 
     def add_docs(self, idx):
         for i in ["1", "2", "3"]:
-            self.client.create(index=idx, id=i, document={"doc" + i: 'TEST DOCUMENT'})
+            self.client.create(index=idx, id=i, body={"doc" + i: 'TEST DOCUMENT'})
             # This should force each doc to be in its own segment.
             # pylint: disable=E1123
             self.client.indices.flush(index=idx, force=True)
@@ -249,9 +249,23 @@ class CuratorTestCase(TestCase):
 
     def create_repository(self):
         request_body = {'type': 'fs', 'settings': {'location': self.args['location']}}
-        self.client.snapshot.create_repository(
-            name=self.args['repository'], body=request_body
-        )
+        try:
+            self.client.snapshot.create_repository(
+                repository=self.args['repository'], body=request_body
+            )
+        except TransportError as err:
+            error_info = getattr(err, 'info', {}) or {}
+            reason = ''
+            if isinstance(error_info, dict):
+                reason = (
+                    error_info.get('error', {})
+                    if isinstance(error_info.get('error'), dict)
+                    else ''
+                )
+            message = str(err) if not reason else str(reason)
+            if 'path.repo' in message:
+                raise SkipTest('path.repo is not configured on the cluster.') from err
+            raise
 
     def delete_repositories(self):
         result = []

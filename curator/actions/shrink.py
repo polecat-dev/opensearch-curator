@@ -259,7 +259,7 @@ class Shrink:
         bkey = f'index.routing.allocation.{allocation_type}.{key}'
         routing = {bkey: value}
         try:
-            self.client.indices.put_settings(index=idx, settings=routing)
+            self.client.indices.put_settings(index=idx, body=routing)
             if self.wait_for_rebalance:
                 wait_for_it(
                     self.client,
@@ -286,11 +286,11 @@ class Shrink:
 
     def _block_writes(self, idx):
         block = {'index.blocks.write': True}
-        self.client.indices.put_settings(index=idx, settings=block)
+        self.client.indices.put_settings(index=idx, body=block)
 
     def _unblock_writes(self, idx):
         unblock = {'index.blocks.write': False}
-        self.client.indices.put_settings(index=idx, settings=unblock)
+        self.client.indices.put_settings(index=idx, body=unblock)
 
     def _check_space(self, idx, dry_run=False):
         # Disk watermark calculation is already baked into `available_in_bytes`
@@ -416,7 +416,7 @@ class Shrink:
             alias_actions.append({'add': {'index': target_idx, 'alias': alias}})
         if alias_actions:
             self.loggit.info('Copy alias actions: %s', alias_actions)
-            self.client.indices.update_aliases(actions=alias_actions)
+            self.client.indices.update_aliases(body={'actions': alias_actions})
 
     def do_dry_run(self):
         """Show what a regular run would do, but don't actually do it."""

@@ -1,6 +1,7 @@
 """Open index action class"""
 
 import logging
+from copy import deepcopy
 from curator.exceptions import ConfigurationError
 from curator.helpers.date_ops import parse_date_pattern
 from curator.helpers.testers import rollable_alias, verify_client_object
@@ -104,11 +105,18 @@ class Rollover:
         :py:meth:`~.elasticsearch.client.IndicesClient.rollover` has its own
         ``dry_run`` flag.
         """
+        payload = deepcopy(self.conditions)
+        for key in ['max_docs', 'max_primary_shard_docs']:
+            if key in payload and isinstance(payload[key], str):
+                if payload[key].isdigit():
+                    payload[key] = int(payload[key])
+        body = {'conditions': payload}
+        if self.settings is not None:
+            body['settings'] = self.settings
         return self.client.indices.rollover(
             alias=self.name,
             new_index=self.new_index,
-            conditions=self.conditions,
-            settings=self.settings,
+            body=body,
             dry_run=dry_run,
             wait_for_active_shards=self.wait_for_active_shards,
         )

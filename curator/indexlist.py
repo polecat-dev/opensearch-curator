@@ -5,8 +5,8 @@ import re
 import itertools
 import logging
 from opensearchpy.exceptions import NotFoundError, TransportError
-from opensearch_client.helpers.schemacheck import SchemaCheck
-from opensearch_client.helpers.utils import ensure_list
+from opensearch_client.schemacheck import SchemaCheck
+from opensearch_client.utils import ensure_list
 from curator.defaults import settings
 from curator.exceptions import (
     ActionError,
@@ -509,11 +509,14 @@ class IndexList:
         index_lists = chunk_index_list(self.indices)
         for lst in index_lists:
             for index in lst:
-                aggs = {
+                body = {
+                    'size': 0,
+                    'aggs': {
                     'min': {'min': {'field': field}},
                     'max': {'max': {'field': field}},
+                    },
                 }
-                response = self.client.search(index=index, size=0, aggs=aggs)
+                response = self.client.search(index=index, body=body)
                 self.loggit.debug('RESPONSE: %s', response)
                 if response:
                     try:

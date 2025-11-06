@@ -1,7 +1,7 @@
 """Validate root ``actions`` and individual ``action`` Schemas"""
 
 from voluptuous import Any, In, Schema, Optional, Required
-from opensearch_client.helpers.schemacheck import SchemaCheck
+from opensearch_client.schemacheck import SchemaCheck
 from curator.defaults import settings
 
 

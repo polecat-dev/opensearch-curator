@@ -7,7 +7,8 @@ from . import testvars
 
 HOST = os.environ.get('TEST_ES_SERVER', 'http://127.0.0.1:9200')
 
-TIEREDROUTING = {'allocation': {'include': {'_tier_preference': 'data_content'}}}
+# OpenSearch 3.x does not populate index routing defaults; expect None unless set.
+TIEREDROUTING = None
 KEY = 'tag'
 VALUE = 'value'
 
@@ -26,15 +27,11 @@ class TestActionFileAllocation(CuratorTestCase):
         self.invoke_runner()
         assert (
             VALUE
-            == self.client.indices.get_settings(index=idx1)[idx1]['settings']['index'][
-                'routing'
-            ]['allocation'][alloc][KEY]
+            == self.client.indices.get_settings(index=idx1)[idx1]['settings']['index'].get('routing')['allocation'][alloc][KEY]
         )
         assert (
             TIEREDROUTING
-            == self.client.indices.get_settings(index=idx2)[idx2]['settings']['index'][
-                'routing'
-            ]
+            == self.client.indices.get_settings(index=idx2)[idx2]['settings']['index'].get('routing')
         )
 
     def test_require(self):
@@ -50,15 +47,11 @@ class TestActionFileAllocation(CuratorTestCase):
         self.invoke_runner()
         assert (
             VALUE
-            == self.client.indices.get_settings(index=idx1)[idx1]['settings']['index'][
-                'routing'
-            ]['allocation'][alloc][KEY]
+            == self.client.indices.get_settings(index=idx1)[idx1]['settings']['index'].get('routing')['allocation'][alloc][KEY]
         )
         assert (
             TIEREDROUTING
-            == self.client.indices.get_settings(index=idx2)[idx2]['settings']['index'][
-                'routing'
-            ]
+            == self.client.indices.get_settings(index=idx2)[idx2]['settings']['index'].get('routing')
         )
 
     def test_exclude(self):
@@ -74,15 +67,11 @@ class TestActionFileAllocation(CuratorTestCase):
         self.invoke_runner()
         assert (
             VALUE
-            == self.client.indices.get_settings(index=idx1)[idx1]['settings']['index'][
-                'routing'
-            ]['allocation'][alloc][KEY]
+            == self.client.indices.get_settings(index=idx1)[idx1]['settings']['index'].get('routing')['allocation'][alloc][KEY]
         )
         assert (
             TIEREDROUTING
-            == self.client.indices.get_settings(index=idx2)[idx2]['settings']['index'][
-                'routing'
-            ]
+            == self.client.indices.get_settings(index=idx2)[idx2]['settings']['index'].get('routing')
         )
 
     def test_remove_exclude_with_none_value(self):
@@ -98,27 +87,21 @@ class TestActionFileAllocation(CuratorTestCase):
         self.create_index(idx2)
         # Put a setting in place before we start the test.
         self.client.indices.put_settings(
-            index=idx1, settings={f'index.routing.allocation.{alloc}.{KEY}': 'bar'}
+            index=idx1, body={f'index.routing.allocation.{alloc}.{KEY}': 'bar'}
         )
         # Ensure we _have_ it here first.
         assert (
             'bar'
-            == self.client.indices.get_settings(index=idx1)[idx1]['settings']['index'][
-                'routing'
-            ]['allocation'][alloc][KEY]
+            == self.client.indices.get_settings(index=idx1)[idx1]['settings']['index'].get('routing')['allocation'][alloc][KEY]
         )
         self.invoke_runner()
         assert (
             TIEREDROUTING
-            == self.client.indices.get_settings(index=idx1)[idx1]['settings']['index'][
-                'routing'
-            ]
+            == self.client.indices.get_settings(index=idx1)[idx1]['settings']['index'].get('routing')
         )
         assert (
             TIEREDROUTING
-            == self.client.indices.get_settings(index=idx2)[idx2]['settings']['index'][
-                'routing'
-            ]
+            == self.client.indices.get_settings(index=idx2)[idx2]['settings']['index'].get('routing')
         )
 
     def test_invalid_allocation_type(self):
@@ -159,15 +142,11 @@ class TestActionFileAllocation(CuratorTestCase):
         self.invoke_runner()
         assert (
             TIEREDROUTING
-            == self.client.indices.get_settings(index=idx1)[idx1]['settings']['index'][
-                'routing'
-            ]
+            == self.client.indices.get_settings(index=idx1)[idx1]['settings']['index'].get('routing')
         )
         assert (
             TIEREDROUTING
-            == self.client.indices.get_settings(index=idx2)[idx2]['settings']['index'][
-                'routing'
-            ]
+            == self.client.indices.get_settings(index=idx2)[idx2]['settings']['index'].get('routing')
         )
 
     def test_wait_for_completion(self):
@@ -183,15 +162,11 @@ class TestActionFileAllocation(CuratorTestCase):
         self.invoke_runner()
         assert (
             VALUE
-            == self.client.indices.get_settings(index=idx1)[idx1]['settings']['index'][
-                'routing'
-            ]['allocation'][alloc][KEY]
+            == self.client.indices.get_settings(index=idx1)[idx1]['settings']['index'].get('routing')['allocation'][alloc][KEY]
         )
         assert (
             TIEREDROUTING
-            == self.client.indices.get_settings(index=idx2)[idx2]['settings']['index'][
-                'routing'
-            ]
+            == self.client.indices.get_settings(index=idx2)[idx2]['settings']['index'].get('routing')
         )
 
 
@@ -219,13 +194,9 @@ class TestCLIAllocation(CuratorTestCase):
         assert 0 == self.run_subprocess(args, logname='TestCLIAllocation.test_include')
         assert (
             VALUE
-            == self.client.indices.get_settings(index=idx1)[idx1]['settings']['index'][
-                'routing'
-            ]['allocation'][alloc][KEY]
+            == self.client.indices.get_settings(index=idx1)[idx1]['settings']['index'].get('routing')['allocation'][alloc][KEY]
         )
         assert (
             TIEREDROUTING
-            == self.client.indices.get_settings(index=idx2)[idx2]['settings']['index'][
-                'routing'
-            ]
+            == self.client.indices.get_settings(index=idx2)[idx2]['settings']['index'].get('routing')
         )

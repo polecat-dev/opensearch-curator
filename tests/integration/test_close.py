@@ -83,7 +83,7 @@ class TestActionFileClose(CuratorTestCase):
         self.create_index(idx1)
         # Disable shard allocation to make my_index go red
         disable_allocation = {"cluster.routing.allocation.enable": "none"}
-        self.client.cluster.put_settings(transient=disable_allocation)
+        self.client.cluster.put_settings(body={'transient': disable_allocation})
         self.create_index(idx2, wait_for_yellow=False, wait_for_active_shards=0)
         self.invoke_runner()
         state = get_state(self.client, indices)

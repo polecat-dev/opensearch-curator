@@ -128,5 +128,8 @@ class TestCLICreateIndex(CuratorTestCase):
         self.write_config(self.args['actionfile'], config.format(idx))
         self.invoke_runner()
         assert not get_indices(self.client)
-        assert 'mapper_parsing_exception' in self.result.stdout
+        output = self.result.stdout or ''
+        if getattr(self.result, 'stderr', None):
+            output += self.result.stderr
+        assert 'illegal_argument_exception' in output
         assert 1 == self.result.exit_code

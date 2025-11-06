@@ -3,7 +3,7 @@
 import logging
 import click
 from opensearch_client.defaults import SHOW_EVERYTHING
-from opensearch_client.helpers.config import (
+from opensearch_client.config import (
     cli_opts,
     context_settings,
     generate_configdict,
@@ -11,8 +11,8 @@ from opensearch_client.helpers.config import (
     get_config,
     options_from_dict,
 )
-from opensearch_client.helpers.logging import configure_logging
-from opensearch_client.helpers.utils import option_wrapper
+from opensearch_client.logging import configure_logging
+from opensearch_client.utils import option_wrapper
 from curator.defaults.settings import CLICK_DRYRUN, default_config_file, footer
 from curator._version import __version__
 from curator.cli_singletons import (

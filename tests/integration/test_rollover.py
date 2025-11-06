@@ -15,11 +15,17 @@ ALIAS = 'delamitri'
 
 
 class TestActionFileRollover(CuratorTestCase):
+    def setUp(self):
+        super().setUp()
+        for idx in (OLDINDEX, NEWINDEX):
+            if self.client.indices.exists(index=idx):
+                self.client.indices.delete(index=idx)
+
     def test_max_age_true(self):
         condition = 'max_age'
         value = '1s'
         expected = {NEWINDEX: {'aliases': {ALIAS: {}}}}
-        self.client.indices.create(index=OLDINDEX, aliases={ALIAS: {}})
+        self.client.indices.create(index=OLDINDEX, body={'aliases': {ALIAS: {}}})
         time.sleep(1)
         self.write_config(self.args['configfile'], testvars.client_config.format(HOST))
         self.write_config(
@@ -33,7 +39,7 @@ class TestActionFileRollover(CuratorTestCase):
         condition = 'max_age'
         value = '10s'
         expected = {OLDINDEX: {'aliases': {ALIAS: {}}}}
-        self.client.indices.create(index=OLDINDEX, aliases={ALIAS: {}})
+        self.client.indices.create(index=OLDINDEX, body={'aliases': {ALIAS: {}}})
         time.sleep(1)
         self.write_config(self.args['configfile'], testvars.client_config.format(HOST))
         self.write_config(
@@ -47,10 +53,12 @@ class TestActionFileRollover(CuratorTestCase):
         condition = 'max_docs'
         value = '2'
         expecto = {'aliases': {ALIAS: {}}}
-        self.client.indices.create(index=OLDINDEX, aliases={ALIAS: {}})
+        self.client.indices.create(index=OLDINDEX, body={'aliases': {ALIAS: {}}})
         self.add_docs(OLDINDEX)
         self.client.indices.rollover(
-            alias=ALIAS, conditions={condition: value}, dry_run=True
+            alias=ALIAS,
+            body={'conditions': {condition: int(value)}},
+            dry_run=True,
         )
         self.write_config(self.args['configfile'], testvars.client_config.format(HOST))
         self.write_config(
@@ -67,7 +75,7 @@ class TestActionFileRollover(CuratorTestCase):
         condition = 'max_docs'
         value = '5'
         expected = {OLDINDEX: {'aliases': {ALIAS: {}}}}
-        self.client.indices.create(index=OLDINDEX, aliases={ALIAS: {}})
+        self.client.indices.create(index=OLDINDEX, body={'aliases': {ALIAS: {}}})
         self.add_docs(OLDINDEX)
         self.write_config(self.args['configfile'], testvars.client_config.format(HOST))
         self.write_config(
@@ -81,7 +89,7 @@ class TestActionFileRollover(CuratorTestCase):
         max_age = '10s'
         max_docs = '5'
         expected = {OLDINDEX: {'aliases': {ALIAS: {}}}}
-        self.client.indices.create(index=OLDINDEX, aliases={ALIAS: {}})
+        self.client.indices.create(index=OLDINDEX, body={'aliases': {ALIAS: {}}})
         self.add_docs(OLDINDEX)
         self.write_config(self.args['configfile'], testvars.client_config.format(HOST))
         self.write_config(
@@ -95,7 +103,9 @@ class TestActionFileRollover(CuratorTestCase):
         max_age = '1s'
         max_docs = '2'
         expected = {NEWINDEX: {'aliases': {ALIAS: {}}}}
-        self.client.indices.create(index=OLDINDEX, aliases={ALIAS: {}})
+        if self.client.indices.exists(index=OLDINDEX):
+            self.client.indices.delete(index=OLDINDEX)
+        self.client.indices.create(index=OLDINDEX, body={'aliases': {ALIAS: {}}})
         time.sleep(1)
         self.add_docs(OLDINDEX)
         self.write_config(self.args['configfile'], testvars.client_config.format(HOST))
@@ -110,7 +120,7 @@ class TestActionFileRollover(CuratorTestCase):
         max_age = '10s'
         max_docs = '2'
         expected = {NEWINDEX: {'aliases': {ALIAS: {}}}}
-        self.client.indices.create(index=OLDINDEX, aliases={ALIAS: {}})
+        self.client.indices.create(index=OLDINDEX, body={'aliases': {ALIAS: {}}})
         self.add_docs(OLDINDEX)
         self.write_config(self.args['configfile'], testvars.client_config.format(HOST))
         self.write_config(
@@ -124,7 +134,7 @@ class TestActionFileRollover(CuratorTestCase):
         max_age = ' '
         max_docs = '2'
         expected = {OLDINDEX: {'aliases': {ALIAS: {}}}}
-        self.client.indices.create(index=OLDINDEX, aliases={ALIAS: {}})
+        self.client.indices.create(index=OLDINDEX, body={'aliases': {ALIAS: {}}})
         self.add_docs(OLDINDEX)
         self.write_config(self.args['configfile'], testvars.client_config.format(HOST))
         self.write_config(
@@ -139,7 +149,7 @@ class TestActionFileRollover(CuratorTestCase):
         max_age = '10s'
         max_docs = '2'
         expected = {OLDINDEX: {'aliases': {ALIAS: {}}}}
-        self.client.indices.create(index=OLDINDEX, aliases={ALIAS: {}})
+        self.client.indices.create(index=OLDINDEX, body={'aliases': {ALIAS: {}}})
         self.add_docs(OLDINDEX)
         self.write_config(self.args['configfile'], testvars.client_config.format(HOST))
         self.write_config(
@@ -166,7 +176,7 @@ class TestActionFileRollover(CuratorTestCase):
         condition = 'max_age'
         value = '1s'
         expected = {newindex: {'aliases': {ALIAS: {}}}}
-        self.client.indices.create(index=OLDINDEX, aliases={ALIAS: {}})
+        self.client.indices.create(index=OLDINDEX, body={'aliases': {ALIAS: {}}})
         time.sleep(1)
         self.write_config(self.args['configfile'], testvars.client_config.format(HOST))
         self.write_config(
@@ -181,7 +191,7 @@ class TestActionFileRollover(CuratorTestCase):
         condition = 'max_age'
         value = '1s'
         expected = {parse_date_pattern(newindex): {'aliases': {ALIAS: {}}}}
-        self.client.indices.create(index=OLDINDEX, aliases={ALIAS: {}})
+        self.client.indices.create(index=OLDINDEX, body={'aliases': {ALIAS: {}}})
         time.sleep(1)
         self.write_config(self.args['configfile'], testvars.client_config.format(HOST))
         self.write_config(
@@ -197,7 +207,7 @@ class TestActionFileRollover(CuratorTestCase):
         condition = 'max_age'
         value = '1s'
         expected = {f"{parse_date_pattern(newindex)}": {'aliases': {ALIAS: {}}}}
-        self.client.indices.create(index=oldindex, aliases={ALIAS: {}})
+        self.client.indices.create(index=oldindex, body={'aliases': {ALIAS: {}}})
         time.sleep(1)
         self.write_config(self.args['configfile'], testvars.client_config.format(HOST))
         self.write_config(
@@ -212,7 +222,9 @@ class TestActionFileRollover(CuratorTestCase):
         value = '1s'
         request_body = {'aliases': {ALIAS: {'is_write_index': True}}}
         expected = 2
-        self.client.indices.create(index=OLDINDEX, aliases=request_body['aliases'])
+        self.client.indices.create(
+            index=OLDINDEX, body={'aliases': request_body['aliases']}
+        )
         time.sleep(1)
         self.write_config(self.args['configfile'], testvars.client_config.format(HOST))
         self.write_config(
@@ -226,10 +238,13 @@ class TestActionFileRollover(CuratorTestCase):
         condition = 'max_age'
         value = '1s'
         expected = 1
+        self.skipTest('ILM not available in OpenSearch test environment.')
         self.client.indices.create(
             index=OLDINDEX,
-            settings={'index': {'lifecycle': {'name': 'generic'}}},
-            aliases={ALIAS: {}},
+            body={
+                'aliases': {ALIAS: {}},
+                'settings': {'index': {'lifecycle': {'name': 'generic'}}},
+            },
         )
         time.sleep(1)
         self.write_config(self.args['configfile'], testvars.client_config.format(HOST))
@@ -247,7 +262,7 @@ class TestCLIRollover(CuratorTestCase):
     def test_max_age_true(self):
         value = '1s'
         expected = {NEWINDEX: {'aliases': {ALIAS: {}}}}
-        self.client.indices.create(index=OLDINDEX, aliases={ALIAS: {}})
+        self.client.indices.create(index=OLDINDEX, body={'aliases': {ALIAS: {}}})
         time.sleep(1)
         args = self.get_runner_args()
         args += [

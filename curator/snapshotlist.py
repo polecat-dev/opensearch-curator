@@ -2,7 +2,7 @@
 
 import re
 import logging
-from opensearch_client.helpers.schemacheck import SchemaCheck
+from opensearch_client.schemacheck import SchemaCheck
 from curator.exceptions import (
     ConfigurationError,
     FailedExecution,

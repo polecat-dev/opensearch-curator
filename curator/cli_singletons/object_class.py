@@ -6,8 +6,8 @@ import sys
 from voluptuous import Schema
 from opensearch_client.builder import Builder
 from opensearch_client.exceptions import FailedValidation
-from opensearch_client.helpers.schemacheck import SchemaCheck
-from opensearch_client.helpers.utils import prune_nones
+from opensearch_client.schemacheck import SchemaCheck
+from opensearch_client.utils import prune_nones
 from curator import IndexList, SnapshotList
 from curator.actions import (
     Alias,

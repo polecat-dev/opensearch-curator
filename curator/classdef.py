@@ -2,8 +2,8 @@
 
 import logging
 from opensearch_client.exceptions import FailedValidation
-from opensearch_client.helpers.schemacheck import password_filter
-from opensearch_client.helpers.utils import get_yaml
+from opensearch_client.schemacheck import password_filter
+from opensearch_client.utils import get_yaml
 from curator import IndexList, SnapshotList
 from curator.actions import CLASS_MAP
 from curator.exceptions import ConfigurationError

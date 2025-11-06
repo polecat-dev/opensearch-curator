@@ -4,7 +4,7 @@ import re
 import time
 import logging
 from datetime import datetime, timedelta
-from opensearch_client.helpers.utils import ensure_list
+from opensearch_client.utils import ensure_list
 from curator.exceptions import FailedExecution
 
 logger = logging.getLogger(__name__)

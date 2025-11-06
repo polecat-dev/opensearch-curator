@@ -74,7 +74,8 @@ class Replicas:
             index_lists = chunk_index_list(self.index_list.indices)
             for lst in index_lists:
                 self.client.indices.put_settings(
-                    index=to_csv(lst), settings={'number_of_replicas': self.count}
+                    index=to_csv(lst),
+                    body={'index': {'number_of_replicas': self.count}},
                 )
                 if self.wfc and self.count > 0:
                     msg = (

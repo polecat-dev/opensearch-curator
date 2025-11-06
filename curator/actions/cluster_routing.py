@@ -92,7 +92,7 @@ class ClusterRouting:
         """
         self.loggit.info('Updating cluster settings: %s', self.settings)
         try:
-            self.client.cluster.put_settings(transient=self.settings)
+            self.client.cluster.put_settings(body={'transient': self.settings})
             if self.wfc:
                 self.loggit.debug(
                     'Waiting for shards to complete routing and/or rebalancing'

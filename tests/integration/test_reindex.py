@@ -5,7 +5,7 @@ import os
 from unittest.case import SkipTest
 import pytest
 from dotmap import DotMap  # type: ignore
-from es_client.builder import Builder
+from opensearch_client.builder import Builder
 from curator.helpers.getters import get_indices
 from . import CuratorTestCase
 from . import testvars
@@ -79,7 +79,7 @@ class TestActionFileReindex(CuratorTestCase):
         self.create_index(source2)
         for i in ["4", "5", "6"]:
             self.client.create(
-                index=source2, id=i, document={"doc" + i: 'TEST DOCUMENT'}
+                index=source2, id=i, body={"doc" + i: 'TEST DOCUMENT'}
             )
             # Decorators make this pylint exception necessary
             # pylint: disable=E1123
@@ -104,7 +104,7 @@ class TestActionFileReindex(CuratorTestCase):
         self.create_index(source2)
         for i in ["4", "5", "6"]:
             self.client.create(
-                index=source2, id=i, document={"doc" + i: 'TEST DOCUMENT'}
+                index=source2, id=i, body={"doc" + i: 'TEST DOCUMENT'}
             )
             # Decorators make this pylint exception necessary
             # pylint: disable=E1123
@@ -127,7 +127,7 @@ class TestActionFileReindex(CuratorTestCase):
         self.create_index(source2)
         for i in ["4", "5", "6"]:
             self.client.create(
-                index=source2, id=i, document={"doc" + i: 'TEST DOCUMENT'}
+                index=source2, id=i, body={"doc" + i: 'TEST DOCUMENT'}
             )
             # Decorators make this pylint exception necessary
             # pylint: disable=E1123
@@ -169,7 +169,7 @@ class TestActionFileReindex(CuratorTestCase):
                 rclient.create(
                     index=rindex,
                     id=str(counter + 1),
-                    document={"doc" + str(i): 'TEST DOCUMENT'},
+                    body={"doc" + str(i): 'TEST DOCUMENT'},
                 )
                 counter += 1
                 # Decorators make this pylint exception necessary
@@ -216,7 +216,7 @@ class TestActionFileReindex(CuratorTestCase):
                 rclient.create(
                     index=rindex,
                     id=str(counter + 1),
-                    document={"doc" + str(i): 'TEST DOCUMENT'},
+                    body={"doc" + str(i): 'TEST DOCUMENT'},
                 )
                 counter += 1
                 # Decorators make this pylint exception necessary
@@ -268,7 +268,7 @@ class TestActionFileReindex(CuratorTestCase):
                 rclient.create(
                     index=rindex,
                     id=str(counter + 1),
-                    document={"doc" + str(i): 'TEST DOCUMENT'},
+                    body={"doc" + str(i): 'TEST DOCUMENT'},
                 )
                 counter += 1
                 # Decorators make this pylint exception necessary
@@ -345,7 +345,7 @@ class TestActionFileReindex(CuratorTestCase):
                 rclient.create(
                     index=rindex,
                     id=str(counter + 1),
-                    document={"doc" + str(i): 'TEST DOCUMENT'},
+                    body={"doc" + str(i): 'TEST DOCUMENT'},
                 )
                 counter += 1
                 rclient.indices.flush(index=rindex, force=True)
@@ -367,7 +367,9 @@ class TestActionFileReindex(CuratorTestCase):
         dest = 'my_dest'
         expected = 3
         alias_dict = {dest: {}}
-        self.client.indices.create(index='dummy', aliases=alias_dict)
+        if self.client.indices.exists(index='dummy'):
+            self.client.indices.delete(index='dummy')
+        self.client.indices.create(index='dummy', body={'aliases': alias_dict})
         self.add_docs(source)
         self.write_config(self.args['configfile'], testvars.client_config.format(HOST))
         self.write_config(
@@ -401,10 +403,14 @@ class TestActionFileReindex(CuratorTestCase):
         settings = {"number_of_shards": 1, "number_of_replicas": 0}
         mappings1 = {"properties": {"doc1": {"type": "keyword"}}}
         mappings2 = {"properties": {"doc1": {"type": "integer"}}}
-        self.client.indices.create(index=source, settings=settings, mappings=mappings1)
+        self.client.indices.create(
+            index=source, body={'settings': settings, 'mappings': mappings1}
+        )
         self.add_docs(source)
         # Create the dest index with a different mapping.
-        self.client.indices.create(index=dest, settings=settings, mappings=mappings2)
+        self.client.indices.create(
+            index=dest, body={'settings': settings, 'mappings': mappings2}
+        )
         self.write_config(self.args['configfile'], testvars.client_config.format(HOST))
         self.write_config(
             self.args['actionfile'],

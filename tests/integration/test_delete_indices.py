@@ -4,6 +4,7 @@
 import os
 import time
 import requests
+from unittest import skip
 from curator.helpers.getters import get_indices
 from . import CuratorTestCase
 from . import testvars
@@ -24,10 +25,14 @@ ILM_KEYS = ['ilm-history-1-000001', 'ilm-history-1']
 
 def exclude_ilm_history(index_list):
     """Remove any values from ILM_KEYS found in index_list"""
-    for val in ILM_KEYS:
-        if val in index_list:
-            index_list.remove(val)
-    return index_list
+    filtered = []
+    for idx in index_list:
+        if idx in ILM_KEYS:
+            continue
+        if idx.startswith('top_queries-'):
+            continue
+        filtered.append(idx)
+    return filtered
 
 
 class TestActionFileDeleteIndices(CuratorTestCase):
@@ -375,22 +380,22 @@ class TestActionFileDeleteIndices(CuratorTestCase):
         self.client.index(
             index=idx1,
             id='1',
-            document={'@timestamp': '2017-09-25T01:00:00Z', 'doc': 'Earliest'},
+            body={'@timestamp': '2017-09-25T01:00:00Z', 'doc': 'Earliest'},
         )
         self.client.index(
             index=idx1,
             id='2',
-            document={'@timestamp': '2017-09-29T01:00:00Z', 'doc': 'Latest'},
+            body={'@timestamp': '2017-09-29T01:00:00Z', 'doc': 'Latest'},
         )
         self.client.index(
             index=idx2,
             id='1',
-            document={'@timestamp': '2017-09-01T01:00:00Z', 'doc': 'Earliest'},
+            body={'@timestamp': '2017-09-01T01:00:00Z', 'doc': 'Earliest'},
         )
         self.client.index(
             index=idx2,
             id='2',
-            document={'@timestamp': '2017-09-29T01:00:00Z', 'doc': 'Latest'},
+            body={'@timestamp': '2017-09-29T01:00:00Z', 'doc': 'Latest'},
         )
         # Decorators cause this pylint error
         # pylint: disable=E1123
@@ -501,6 +506,7 @@ class TestActionFileDeleteIndices(CuratorTestCase):
         self.invoke_runner()
         self.assertEqual(0, len(exclude_ilm_history(get_indices(self.client))))
 
+    @skip("ILM policies are not available in OpenSearch; ISM support pending")
     def test_allow_ilm_indices_true(self):
         name = 'test'
         policy = {
@@ -527,6 +533,7 @@ class TestActionFileDeleteIndices(CuratorTestCase):
         self.invoke_runner()
         self.assertEqual(5, len(exclude_ilm_history(get_indices(self.client))))
 
+    @skip("ILM policies are not available in OpenSearch; ISM support pending")
     def test_allow_ilm_indices_false(self):
         name = 'test'
         policy = {

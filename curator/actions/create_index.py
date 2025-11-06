@@ -72,14 +72,21 @@ class CreateIndex:
         by :py:attr:`name` with values from :py:attr:`aliases`, :py:attr:`mappings`,
         and :py:attr:`settings`
         """
-        msg = f'Creating index "{self.name}" with settings: {self.extra_settings}'
+        body = {}
+        if self.settings is not None:
+            body['settings'] = self.settings
+        if self.mappings is not None:
+            body['mappings'] = self.mappings
+        if self.aliases is not None:
+            body['aliases'] = self.aliases
+        if self.extra_settings:
+            body.update(self.extra_settings)
+        msg = f'Creating index "{self.name}" with settings: {body}'
         self.loggit.info(msg)
         try:
             self.client.indices.create(
                 index=self.name,
-                aliases=self.aliases,
-                mappings=self.mappings,
-                settings=self.settings,
+                body=body or None,
             )
         # Most likely error is a 400, `resource_already_exists_exception`
         except RequestError as err:

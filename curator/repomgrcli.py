@@ -9,15 +9,15 @@ import click
 from opensearchpy import TransportError, NotFoundError
 from opensearch_client.defaults import LOGGING_SETTINGS, SHOW_OPTION
 from opensearch_client.builder import Builder
-from opensearch_client.helpers.config import (
+from opensearch_client.config import (
     cli_opts,
     context_settings,
     generate_configdict,
     get_config,
     options_from_dict,
 )
-from opensearch_client.helpers.logging import configure_logging
-from opensearch_client.helpers.utils import option_wrapper
+from opensearch_client.logging import configure_logging
+from opensearch_client.utils import option_wrapper
 from curator.defaults.settings import (
     CLICK_DRYRUN,
     VERSION_MAX,
@@ -114,7 +114,7 @@ def create_repo(ctx, repo_name=None, repo_type=None, repo_settings=None, verify=
     request_body = {'type': repo_type, 'settings': repo_settings}
     try:
         client.snapshot.create_repository(
-            name=repo_name, body=request_body, verify=verify
+            repository=repo_name, body=request_body, verify=verify
         )
     except TransportError as exc:
         if exc.status_code >= 500:

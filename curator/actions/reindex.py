@@ -6,7 +6,7 @@ from dotmap import DotMap  # type: ignore
 
 # pylint: disable=broad-except, R0902,R0912,R0913,R0914,R0915
 from opensearch_client.builder import Builder
-from opensearch_client.helpers.utils import ensure_list, verify_url_schema
+from opensearch_client.utils import ensure_list, verify_url_schema
 from opensearch_client.exceptions import ConfigurationError
 from curator.exceptions import CuratorException, FailedExecution, NoIndices
 
@@ -107,9 +107,9 @@ class Reindex:
         self.requests_per_second = requests_per_second
         #: Object attribute that gets the value of param ``slices``.
         self.slices = slices
-        #: Object attribute that gets the value of param ``timeout``, convert to
-        #: :py:class:`str` and add ``s`` for seconds.
-        self.timeout = f'{timeout}s'
+        #: Object attribute storing timeout values for request and body.
+        self.request_timeout = timeout
+        self.body_timeout = f'{timeout}s'
         #: Object attribute that gets the value of param ``wait_for_active_shards``.
         self.wait_for_active_shards = wait_for_active_shards
         #: Object attribute that gets the value of param ``wait_for_completion``.
@@ -245,29 +245,20 @@ class Reindex:
         # Always set wait_for_completion to False. Let 'wait_for_it' do its
         # thing if wait_for_completion is set to True. Report the task_id
         # either way.
+        body = deepcopy(self.body)
+        body.setdefault('dest', {})
+        body.setdefault('source', {})
+        body['dest']['index'] = dest
+        body['source']['index'] = source
         reindex_args = {
+            'body': body,
             'refresh': self.refresh,
             'requests_per_second': self.requests_per_second,
             'slices': self.slices,
-            'timeout': self.timeout,
+            'timeout': self.request_timeout,
             'wait_for_active_shards': self.wait_for_active_shards,
             'wait_for_completion': False,
         }
-        for keyname in [
-            'dest',
-            'source',
-            'conflicts',
-            'max_docs',
-            'size',
-            '_source',
-            'script',
-        ]:
-            if keyname in self.body:
-                reindex_args[keyname] = self.body[keyname]
-        # Mimic the _get_request_body(source, dest) behavior by casting these values
-        # here instead
-        reindex_args['dest']['index'] = dest
-        reindex_args['source']['index'] = source
         return reindex_args
 
     def get_processed_items(self, task_id):
@@ -356,7 +347,7 @@ class Reindex:
             f'refresh={self.refresh} '
             f'requests_per_second={self.requests_per_second} '
             f'slices={self.slices} '
-            f'timeout={self.timeout} '
+                f'timeout={self.body_timeout} '
             f'wait_for_active_shards={self.wait_for_active_shards} '
             f'wait_for_completion={self.wfc}'
         )

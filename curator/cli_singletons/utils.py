@@ -2,7 +2,7 @@
 
 import json
 from click import BadParameter
-from opensearch_client.helpers.utils import ensure_list
+from opensearch_client.utils import ensure_list
 
 
 # Click functions require ctx and param to be passed positionally even if not used

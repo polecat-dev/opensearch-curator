@@ -3,6 +3,7 @@
 # pylint: disable=C0115, C0116, invalid-name
 import logging
 import os
+from unittest import SkipTest
 from click import testing as clicktest
 from curator import repo_mgr_cli
 from curator.helpers.testers import repository_exists
@@ -35,6 +36,12 @@ HOST = os.environ.get('TEST_ES_SERVER', 'http://127.0.0.1:9200')
 
 class TestCLIRepositoryCreate(CuratorTestCase):
     def test_create_fs_repository_success(self):
+        try:
+            self.create_repository()
+        except SkipTest as exc:  # type: ignore[attr-defined]
+            self.skipTest(str(exc))
+        else:
+            self.delete_repositories()
         self.write_config(
             self.args['configfile'],
             testvars.client_conf_logfile.format(HOST, os.devnull),

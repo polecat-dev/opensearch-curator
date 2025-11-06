@@ -4,7 +4,7 @@ import sys
 import logging
 import click
 from opensearch_client.defaults import OPTION_DEFAULTS
-from opensearch_client.helpers.config import (
+from opensearch_client.config import (
     cli_opts,
     context_settings,
     generate_configdict,
@@ -12,9 +12,10 @@ from opensearch_client.helpers.config import (
     get_config,
     options_from_dict,
 )
-from opensearch_client.helpers.logging import configure_logging
-from opensearch_client.helpers.utils import option_wrapper, prune_nones
-from curator.exceptions import ClientException
+from opensearch_client.logging import configure_logging
+from opensearch_client.exceptions import ESClientException
+from opensearch_client.utils import option_wrapper, prune_nones
+from curator.exceptions import ClientException, ConfigurationError
 from curator.classdef import ActionsFile
 from curator.defaults.settings import (
     CLICK_DRYRUN,
@@ -58,10 +59,11 @@ def ilm_action_skip(client, action_def):
                     action_def.options['name'],
                 )
                 return True
-        elif action_def.filters:
-            action_def.filters.append({'filtertype': 'ilm'})
         else:
-            action_def.filters = [{'filtertype': 'ilm'}]
+            logger.debug(
+                'ILM filter injection skipped: OpenSearch distributions do not '
+                'expose ILM; continuing without additional filters.'
+            )
     return False
 
 
@@ -221,14 +223,19 @@ def run(ctx: click.Context) -> None:
                 version_max=VERSION_MAX,
                 version_min=VERSION_MIN,
             )
-        except ClientException as exc:
+        except (ClientException, ESClientException) as exc:
             # No matter where logging is set to go, make sure we dump these messages to
             # the CLI
             click.echo('Unable to establish client connection to Elasticsearch!')
             click.echo(f'Exception: {exc}')
             sys.exit(1)
+        except ConfigurationError as err:
+            click.echo('Invalid client configuration detected.')
+            click.echo(f'Exception: {err}')
+            sys.exit(1)
         except Exception as other:
             logger.debug('Fatal exception encountered: %s', other)
+            sys.exit(-1)
 
         # Filter ILM indices unless expressly permitted
         if ilm_action_skip(client, action_def):

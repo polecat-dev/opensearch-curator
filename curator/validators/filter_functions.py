@@ -2,8 +2,8 @@
 
 import logging
 from voluptuous import Any, In, Required, Schema
-from opensearch_client.helpers.schemacheck import SchemaCheck
-from opensearch_client.helpers.utils import prune_nones
+from opensearch_client.schemacheck import SchemaCheck
+from opensearch_client.utils import prune_nones
 from curator.defaults import settings, filtertypes
 from curator.exceptions import ConfigurationError
 

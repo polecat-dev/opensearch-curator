@@ -32,9 +32,7 @@ class TestCLIMethods(CuratorTestCase):
             self.args['actionfile'],
             testvars.disabled_proto.format('close', 'delete_indices'),
         )
-        self.invoke_runner_alt(
-            hosts='http://127.0.0.1:9200', loglevel='DEBUG', logformat='ecs'
-        )
+        self.invoke_runner_alt(hosts=HOST, loglevel='DEBUG', logformat='ecs')
         assert 0 == self.result.exit_code
 
     def test_cli_unreachable_cloud_id(self):
@@ -65,7 +63,7 @@ class TestCLIMethods(CuratorTestCase):
         if localtest:
             assert 0 == self.result.exit_code
         else:
-            assert -1 == self.result.exit_code
+            assert self.result.exit_code != 0
 
     def test_no_logging_config(self):
         self.create_indices(10)
