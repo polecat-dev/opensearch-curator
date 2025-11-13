@@ -1,0 +1,214 @@
+---
+# Remember, leave a key empty if there is no value.  None will be a string,
+# not a Python "NoneType"
+#
+# Also remember that all examples have 'disable_action' set to True.  If you
+# want to use this action as a template, be sure to set this to False after
+# copying it.
+#
+# Convert Index to Remote Storage Action
+#
+# This action converts local indices to remote-backed storage by:
+# 1. Creating/verifying a snapshot
+# 2. Restoring with storage_type='remote_snapshot' to enable remote storage
+# 3. Optionally creating aliases pointing to remote indices
+# 4. Optionally deleting original indices (with safety checks)
+#
+# Requires OpenSearch cluster configured with remote repositories:
+#   node.attr.remote_store.segment.repository: my-segment-repo
+#   node.attr.remote_store.translog.repository: my-translog-repo
+#
+# The restore operation uses storage_type='remote_snapshot' parameter to
+# tell OpenSearch to create the index as a remote-backed index.
+#
+# See: https://opensearch.org/docs/latest/tuning-your-cluster/availability-and-recovery/remote-store/
+#
+actions:
+  1:
+    action: convert_index_to_remote
+    description: >-
+      Convert logs-* indices older than 7 days to remote-backed storage.
+      Creates a snapshot, restores as remote indices with '_remote' suffix,
+      creates aliases with original names, and deletes old local indices
+      after verification.
+    options:
+      # Snapshot repository for backup/restore operations (REQUIRED)
+      repository: my-snapshot-repo
+      
+      # Snapshot name (supports date math). Blank = curator-%Y%m%d%H%M%S
+      snapshot_name: 'remote-conversion-%Y%m%d'
+      
+      # Use existing snapshot instead of creating new one (default: False)
+      use_existing_snapshot: False
+      
+      # Remote store repository (if different from snapshot repository)
+      # Leave blank to use same as 'repository'
+      remote_store_repository:
+      
+      # Suffix to append to index names for remote versions (default: _remote)
+      remote_index_suffix: '_remote'
+      
+      # Create alias with original index name pointing to remote index
+      # (default: True)
+      create_alias: True
+      
+      # Custom alias name (only works for single index conversion)
+      alias_name:
+      
+      # Delete original local index after successful conversion (default: False)
+      # CAUTION: Set to True only after testing!
+      delete_after: True
+      
+      # Verify remote index availability and document count before deletion
+      # (default: True) - Recommended to keep enabled
+      verify_availability: True
+      
+      # Snapshot/restore options
+      ignore_unavailable: False
+      partial: False
+      wait_for_completion: True
+      wait_interval: 9
+      max_wait: -1
+      skip_repo_fs_check: False
+      
+      # Action control
+      timeout_override:
+      continue_if_exception: False
+      disable_action: True  # Set to False to enable!
+      
+    filters:
+    - filtertype: pattern
+      kind: prefix
+      value: logs-
+      exclude: False
+    - filtertype: age
+      source: creation_date
+      direction: older
+      unit: days
+      unit_count: 7
+      exclude: False
+
+  2:
+    action: convert_index_to_remote
+    description: >-
+      Convert specific indices to remote storage using an existing snapshot.
+      Useful when you already have a recent backup and want to avoid
+      creating a duplicate snapshot.
+    options:
+      repository: my-snapshot-repo
+      snapshot_name: 'existing-snapshot-2024-01-15'
+      use_existing_snapshot: True  # Use existing snapshot
+      remote_index_suffix: '_remote'
+      create_alias: True
+      delete_after: False  # Keep original indices
+      verify_availability: True
+      ignore_unavailable: False
+      partial: False
+      wait_for_completion: True
+      skip_repo_fs_check: False
+      disable_action: True
+      
+    filters:
+    - filtertype: pattern
+      kind: regex
+      value: '^(index1|index2|index3)$'
+      exclude: False
+
+  3:
+    action: convert_index_to_remote
+    description: >-
+      Safe conversion without deletion - creates remote copies and aliases,
+      but keeps original indices. Useful for testing or when you want to
+      compare performance before committing to remote storage.
+    options:
+      repository: my-snapshot-repo
+      snapshot_name:  # Blank = auto-generated name
+      use_existing_snapshot: False
+      remote_index_suffix: '_remote'
+      create_alias: False  # Don't create aliases (avoid conflicts)
+      delete_after: False  # Keep original indices
+      verify_availability: True
+      ignore_unavailable: False
+      partial: False
+      wait_for_completion: True
+      skip_repo_fs_check: False
+      disable_action: True
+      
+    filters:
+    - filtertype: pattern
+      kind: prefix
+      value: test-
+      exclude: False
+
+  4:
+    action: convert_index_to_remote
+    description: >-
+      Convert a single specific index with custom alias name.
+      This example shows how to use a custom alias name instead of
+      the original index name.
+    options:
+      repository: my-snapshot-repo
+      snapshot_name: 'single-index-conversion-%Y%m%d'
+      use_existing_snapshot: False
+      remote_index_suffix: '_remote_v2'
+      create_alias: True
+      alias_name: 'my-custom-alias'  # Only works for single index
+      delete_after: False
+      verify_availability: True
+      ignore_unavailable: False
+      partial: False
+      wait_for_completion: True
+      skip_repo_fs_check: False
+      disable_action: True
+      
+    filters:
+    - filtertype: pattern
+      kind: exact
+      value: 'important-index'
+      exclude: False
+
+  5:
+    action: convert_index_to_remote
+    description: >-
+      Production conversion workflow with all safety features enabled.
+      This is the recommended configuration for production use:
+      - Creates new snapshot for safety
+      - Verifies document counts
+      - Creates aliases for seamless cutover
+      - Deletes old indices only after full verification
+    options:
+      repository: prod-snapshot-repo
+      snapshot_name: 'prod-remote-migration-%Y%m%d-%H%M'
+      use_existing_snapshot: False
+      remote_store_repository:  # Uses same as snapshot repo
+      remote_index_suffix: '_remote'
+      create_alias: True
+      alias_name:  # Use original index names as aliases
+      delete_after: True  # Enable after testing!
+      verify_availability: True  # Always verify
+      ignore_unavailable: False  # Fail if any issues
+      partial: False  # Require complete operations
+      wait_for_completion: True  # Wait for all operations
+      wait_interval: 15  # Check every 15 seconds
+      max_wait: 3600  # Max 1 hour wait
+      skip_repo_fs_check: False  # Validate repository
+      timeout_override:
+      continue_if_exception: False  # Stop on any error
+      disable_action: True
+      
+    filters:
+    - filtertype: pattern
+      kind: prefix
+      value: production-
+      exclude: False
+    - filtertype: age
+      source: creation_date
+      direction: older
+      unit: days
+      unit_count: 30
+      exclude: False
+    - filtertype: space
+      disk_space: 100
+      use_age: True
+      source: creation_date
+      exclude: False

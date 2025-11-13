@@ -111,10 +111,13 @@ def restore_check(client, index_list):
     """
     logger = logging.getLogger(__name__)
     response = {}
+    empty_recovery_indices = []
 
     for chunk in chunk_index_list(index_list):
+        # chunk is a list of index names, join them for the API call
+        chunk_str = ','.join(chunk)
         try:
-            chunk_response = client.indices.recovery(index=chunk, human=True)
+            chunk_response = client.indices.recovery(index=chunk_str, human=True)
         except Exception as err:
             msg = (
                 f'Unable to obtain recovery information for specified indices. '
@@ -122,11 +125,34 @@ def restore_check(client, index_list):
             )
             raise CuratorException(msg) from err
         if chunk_response == {}:
-            logger.info('_recovery returned an empty response. Trying again.')
-            return False
-        response.update(chunk_response)
+            # Recovery API returned empty - check if indices actually exist
+            logger.debug('_recovery returned empty response for chunk: %s', chunk)
+            empty_recovery_indices.extend(chunk)  # chunk is already a list
+        else:
+            response.update(chunk_response)
+    
+    # If we got empty recovery for some indices, check if they exist
+    if empty_recovery_indices:
+        logger.info('Some indices had empty recovery info: %s', empty_recovery_indices)
+        for index in empty_recovery_indices:
+            try:
+                exists = client.indices.exists(index=index)
+                if not exists:
+                    logger.info('Index "%s" does not exist yet. Continuing wait.', index)
+                    return False
+                else:
+                    logger.warning(
+                        'Index "%s" exists but has no recovery info. '
+                        'This may indicate the index was restored but has no shards allocated. '
+                        'Treating as complete.',
+                        index
+                    )
+            except Exception as err:
+                logger.error('Error checking if index "%s" exists: %s', index, err)
+                return False
+    
     logger.info('Provided indices: %s', index_list)
-    logger.info('Found indices: %s', list(response.keys()))
+    logger.info('Found indices with recovery: %s', list(response.keys()))
     # pylint: disable=consider-using-dict-items
     for index in response:
         for shard in range(0, len(response[index]['shards'])):
@@ -135,7 +161,7 @@ def restore_check(client, index_list):
                 logger.info('Index "%s" is still in stage "%s"', index, stage)
                 return False
 
-    # If we've gotten here, all of the indices have recovered
+    # If we've gotten here, all of the indices have recovered (or exist with no recovery info)
     return True
 
 

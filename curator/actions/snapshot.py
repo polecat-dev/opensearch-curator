@@ -176,14 +176,18 @@ class Snapshot(object):
             # Always set wait_for_completion to False. Let 'wait_for_it' do its
             # thing if wait_for_completion is set to True. Report the task_id
             # either way.
+            # opensearch-py 3.0 uses a body parameter for snapshot options
+            snapshot_body = {
+                'indices': self.indices,
+                'ignore_unavailable': self.ignore_unavailable,
+                'include_global_state': self.include_global_state,
+                'partial': self.partial,
+            }
             self.client.snapshot.create(
                 repository=self.repository,
                 snapshot=self.name,
-                ignore_unavailable=self.ignore_unavailable,
-                include_global_state=self.include_global_state,
-                indices=self.indices,
-                partial=self.partial,
-                wait_for_completion=False,
+                body=snapshot_body,
+                params={'wait_for_completion': 'false'},
             )
             if self.wait_for_completion:
                 wait_for_it(
@@ -502,19 +506,27 @@ class Restore(object):
             # Always set wait_for_completion to False. Let 'wait_for_it' do its
             # thing if wait_for_completion is set to True. Report the task_id
             # either way.
+            # opensearch-py 3.0: restore parameters go in body dict, wait_for_completion in params
+            restore_body = {
+                'indices': self.indices,
+                'ignore_unavailable': self.ignore_unavailable,
+                'include_aliases': self.include_aliases,
+                'include_global_state': self.include_global_state,
+                'partial': self.partial,
+            }
+            # Add optional parameters only if they have values
+            if self.rename_pattern:
+                restore_body['rename_pattern'] = self.rename_pattern
+            if self.rename_replacement:
+                restore_body['rename_replacement'] = self.rename_replacement
+            if self.index_settings:
+                restore_body['index_settings'] = self.index_settings
+                
             self.client.snapshot.restore(
                 repository=self.repository,
                 snapshot=self.name,
-                ignore_index_settings=None,
-                ignore_unavailable=self.ignore_unavailable,
-                include_aliases=self.include_aliases,
-                include_global_state=self.include_global_state,
-                index_settings=self.index_settings,
-                indices=self.indices,
-                partial=self.partial,
-                rename_pattern=self.rename_pattern,
-                rename_replacement=self.rename_replacement,
-                wait_for_completion=False,
+                body=restore_body,
+                params={'wait_for_completion': 'false'},
             )
             if self.wfc:
                 wait_for_it(

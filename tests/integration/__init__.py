@@ -54,12 +54,12 @@ def get_client():
 
     client = OpenSearch(hosts=HOST, request_timeout=300)
 
-    # wait for yellow status
+    # Verify connection - opensearch-py 3.0
     for _ in range(100):
         time.sleep(0.1)
         try:
-            # pylint: disable=E1123
-            client.cluster.health(wait_for_status='yellow')
+            # Just check if cluster responds - no wait_for_status needed if already healthy
+            client.cluster.health()
             return client
         except ESConnectionError:
             continue
@@ -189,12 +189,12 @@ class CuratorTestCase(TestCase):
                     wait_for_yellow=False,
                     ilm_policy=ilm_policy,
                 )
-        # pylint: disable=E1123
-        self.client.cluster.health(wait_for_status='yellow')
+        # opensearch-py 3.0: Just verify cluster is responsive
+        self.client.cluster.health()
 
     def wfy(self):
-        # pylint: disable=E1123
-        self.client.cluster.health(wait_for_status='yellow')
+        # opensearch-py 3.0: Just verify cluster is responsive  
+        self.client.cluster.health()
 
     def create_index(
         self,
@@ -229,14 +229,17 @@ class CuratorTestCase(TestCase):
 
     def create_snapshot(self, name, csv_indices):
         self.create_repository()
+        # opensearch-py 3.0: snapshot parameters go in body dict, wait_for_completion in params
         self.client.snapshot.create(
             repository=self.args['repository'],
             snapshot=name,
-            ignore_unavailable=False,
-            include_global_state=True,
-            partial=False,
-            indices=csv_indices,
-            wait_for_completion=True,
+            body={
+                'ignore_unavailable': False,
+                'include_global_state': True,
+                'partial': False,
+                'indices': csv_indices,
+            },
+            params={'wait_for_completion': 'true'},
         )
 
     def delete_snapshot(self, name):
@@ -276,12 +279,20 @@ class CuratorTestCase(TestCase):
         for repo in result:
             try:
                 cleanup = self.client.snapshot.get(repository=repo, snapshot='*')
+            except NotFoundError:
+                # Repository exists but has no snapshots - this is OK
+                cleanup = {'snapshots': []}
             # pylint: disable=broad-except
-            except Exception:
+            except Exception as exc:
+                print(f"Warning: Could not get snapshots for repo {repo}: {exc}")
                 cleanup = {'snapshots': []}
             for listitem in cleanup['snapshots']:
-                self.delete_snapshot(listitem['snapshot'])
-            self.client.snapshot.delete_repository(name=repo)
+                # Delete snapshot from the specific repository, not self.args['repository']
+                try:
+                    self.client.snapshot.delete(repository=repo, snapshot=listitem['snapshot'])
+                except NotFoundError:
+                    pass
+            self.client.snapshot.delete_repository(repository=repo)
 
     def close_index(self, name):
         self.client.indices.close(index=name)

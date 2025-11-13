@@ -374,7 +374,8 @@ def verify_repository(client, repository=None):
     """
     logger = logging.getLogger(__name__)
     try:
-        nodes = client.snapshot.verify_repository(name=repository)['nodes']
+        # opensearch-py 3.0 uses 'repository' parameter not 'name'
+        nodes = client.snapshot.verify_repository(repository=repository)['nodes']
         logger.debug('All nodes can write to the repository')
         logger.debug('Nodes with verified repository access: %s', nodes)
     except Exception as err:

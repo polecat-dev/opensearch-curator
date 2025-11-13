@@ -159,7 +159,7 @@ def get_repository(client, repository=''):
     :rtype: dict
     """
     try:
-        return client.snapshot.get_repository(name=repository)
+        return client.snapshot.get_repository(repository=repository)
     except (opensearch_exceptions.TransportError, opensearch_exceptions.NotFoundError) as err:
         # For NotFoundError, use class name; for TransportError, include status code only
         if isinstance(err, opensearch_exceptions.NotFoundError):

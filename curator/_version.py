@@ -1,3 +1,3 @@
-"""Curator Version"""
+"""OpenSearch Curator Version"""
 
-__version__ = '8.0.21'
+__version__ = '1.0.0'

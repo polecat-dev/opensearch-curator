@@ -1,0 +1,72 @@
+version: '3.8'
+
+services:
+  # OpenSearch 3.2.0 with remote store configuration
+  opensearch:
+    image: opensearchproject/opensearch:3.2.0
+    container_name: opensearch-test
+    environment:
+      - cluster.name=opensearch-test-cluster
+      - node.name=opensearch-test-node
+      - discovery.type=single-node
+      - bootstrap.memory_lock=true
+      - "OPENSEARCH_JAVA_OPTS=-Xms512m -Xmx512m"
+      - DISABLE_SECURITY_PLUGIN=true
+      - DISABLE_INSTALL_DEMO_CONFIG=true
+      # Note: Remote store requires cluster-level configuration at creation time
+      # For testing, we'll configure repositories via API after startup
+      # Allow filesystem repositories in /tmp for testing
+      - path.repo=/tmp
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+      nofile:
+        soft: 65536
+        hard: 65536
+    volumes:
+      - opensearch-data:/usr/share/opensearch/data
+    ports:
+      - 19200:9200
+      - 19600:9600
+    networks:
+      - test-network
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:9200/_cluster/health || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+  # LocalStack for S3-compatible storage
+  localstack:
+    image: localstack/localstack:latest
+    container_name: localstack-test
+    environment:
+      - SERVICES=s3
+      - DEBUG=1
+      - DATA_DIR=/var/lib/localstack
+      - AWS_ACCESS_KEY_ID=test
+      - AWS_SECRET_ACCESS_KEY=test
+      - AWS_DEFAULT_REGION=us-east-1
+      - EDGE_PORT=4566
+    ports:
+      - "4566:4566"
+    volumes:
+      - localstack-data:/var/lib/localstack
+    networks:
+      - test-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:4566/_localstack/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+volumes:
+  opensearch-data:
+    driver: local
+  localstack-data:
+    driver: local
+
+networks:
+  test-network:
+    driver: bridge

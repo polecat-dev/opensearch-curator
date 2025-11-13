@@ -1,5 +1,20 @@
 # Important Notes - Read First! 📋
 
+## Quick Links
+
+### 🎯 Start Here
+- 📊 **[STATUS.md](./STATUS.md)** - Current status summary (100% migration complete!)
+- � **[NEXT_STEPS.md](./NEXT_STEPS.md)** - What to do next (CI/CD, release prep)
+
+### �📖 Developer Guides
+- 🧪 **[TESTING.md](./TESTING.md)** - Comprehensive guide to running and debugging tests
+- 🔧 **[OPENSEARCH_API_FIXES.md](./OPENSEARCH_API_FIXES.md)** - OpenSearch-py 3.0 compatibility fixes (8 fixes)
+- 📈 **[MIGRATION_PROGRESS.md](./MIGRATION_PROGRESS.md)** - Migration status (updated with 100% completion)
+
+### 🤖 Strategic & Planning
+- 🗺️ **[AGENTS.md](./AGENTS.md)** - Strategic analysis and migration complete status
+- 📚 **Main Documentation** - `README.rst` (reStructuredText format)
+
 ## Critical Development Conventions
 
 ### 1. ⚠️ Always Use `python -m` for Python Modules

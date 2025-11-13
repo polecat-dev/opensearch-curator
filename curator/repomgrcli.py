@@ -879,7 +879,7 @@ def _delete(ctx, name):
     client = get_client(ctx)
     try:
         logger.info('Deleting repository %s...', name)
-        client.snapshot.delete_repository(name=name)
+        client.snapshot.delete_repository(repository=name)
     except NotFoundError:
         logger.error('Unable to delete repository: %s  Not Found.', name)
         sys.exit(1)

@@ -523,8 +523,16 @@ class IndexList:
                         res = response['aggregations']
                         self.loggit.debug('res: %s', res)
                         data = self.index_info[index]['age']
-                        data['min_value'] = fix_epoch(res['min']['value'])
-                        data['max_value'] = fix_epoch(res['max']['value'])
+                        # Handle None values (when no documents or field has no values)
+                        min_val = res['min']['value']
+                        max_val = res['max']['value']
+                        if min_val is None or max_val is None:
+                            self.loggit.warning(
+                                'Index %s has no values for field %s. Skipping.', index, field
+                            )
+                            continue
+                        data['min_value'] = fix_epoch(min_val)
+                        data['max_value'] = fix_epoch(max_val)
                         self.loggit.debug('data: %s', data)
                     except KeyError as exc:
                         raise ActionError(

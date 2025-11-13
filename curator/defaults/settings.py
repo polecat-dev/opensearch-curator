@@ -129,9 +129,10 @@ def index_actions():
 
 def snapshot_actions():
     """
-    :returns: The list of supported snapshot actions: ['delete_snapshots', 'restore']
+    :returns: The list of supported snapshot actions:
+        ['convert_index_to_remote', 'delete_snapshots', 'restore']
     """
-    return ['delete_snapshots', 'restore']
+    return ['convert_index_to_remote', 'delete_snapshots', 'restore']
 
 
 def all_actions():
