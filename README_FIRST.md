@@ -3,16 +3,16 @@
 ## Quick Links
 
 ### 🎯 Start Here
-- 📊 **[STATUS.md](./STATUS.md)** - Current status summary (100% migration complete!)
-- � **[NEXT_STEPS.md](./NEXT_STEPS.md)** - What to do next (CI/CD, release prep)
+- 📊 **[docs/STATUS.md](docs/STATUS.md)** - Current status summary (100% migration complete!)
+- 🚀 **[docs/NEXT_STEPS.md](docs/NEXT_STEPS.md)** - What to do next (CI/CD, release prep)
 
-### �📖 Developer Guides
-- 🧪 **[TESTING.md](./TESTING.md)** - Comprehensive guide to running and debugging tests
-- 🔧 **[OPENSEARCH_API_FIXES.md](./OPENSEARCH_API_FIXES.md)** - OpenSearch-py 3.0 compatibility fixes (8 fixes)
-- 📈 **[MIGRATION_PROGRESS.md](./MIGRATION_PROGRESS.md)** - Migration status (updated with 100% completion)
+###  Developer Guides
+- 🧪 **[docs/dev/TESTING.md](docs/dev/TESTING.md)** - Comprehensive guide to running and debugging tests
+- 🔧 **[docs/dev/OPENSEARCH_API_FIXES.md](docs/dev/OPENSEARCH_API_FIXES.md)** - OpenSearch-py 3.0 compatibility fixes (8 fixes)
+- 📈 **[docs/dev/MIGRATION_PROGRESS.md](docs/dev/MIGRATION_PROGRESS.md)** - Migration status (updated with 100% completion)
 
 ### 🤖 Strategic & Planning
-- 🗺️ **[AGENTS.md](./AGENTS.md)** - Strategic analysis and migration complete status
+- 🗺️ **[docs/dev/AGENTS.md](docs/dev/AGENTS.md)** - Strategic analysis and migration complete status
 - 📚 **Main Documentation** - `README.rst` (reStructuredText format)
 
 ## Critical Development Conventions
