@@ -151,8 +151,16 @@ class CuratorTestCase(TestCase):
             warnings.filterwarnings("ignore", category=OpenSearchWarning)
             self.client.indices.delete(index=','.join(indices))
         for path_arg in ['location', 'configdir']:
-            if os.path.exists(self.args[path_arg]):
-                shutil.rmtree(self.args[path_arg])
+            if path_arg in self.args and os.path.exists(self.args[path_arg]):
+                # Don't try to delete /tmp or other system directories
+                # Only delete if it's a temporary directory we created
+                path = self.args[path_arg]
+                if path.startswith('/tmp/tmp') or path.startswith(tempfile.gettempdir()):
+                    try:
+                        shutil.rmtree(path)
+                    except (PermissionError, OSError) as e:
+                        # Ignore cleanup errors in CI environments
+                        warnings.warn(f"Could not clean up {path}: {e}")
 
     def parse_args(self):
         return Args(self.args)
