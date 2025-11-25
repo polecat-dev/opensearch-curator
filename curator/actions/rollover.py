@@ -33,7 +33,7 @@ class Rollover:
         :param wait_for_active_shards: The number of shards expected to be active
             before returning.
 
-        :type client: :py:class:`~.elasticsearch.Elasticsearch`
+        :type client: :py:class:`~.opensearchpy.OpenSearch`
         :type name: str
         :type new_index: str
         :type conditions: dict

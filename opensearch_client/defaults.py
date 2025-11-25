@@ -70,7 +70,7 @@ CLIENT_SETTINGS: t.List[str] = [
     "_transport",
 ]
 """
-Valid argument/option names for :py:class:`~.elasticsearch8.Elasticsearch`. Too large
+Valid argument/option names for :py:class:`~.opensearchpy.OpenSearch`. Too large
 to show
 """
 
@@ -85,13 +85,13 @@ OTHER_SETTINGS: t.List[str] = [
 
 CLICK_SETTINGS: t.Dict[str, t.Dict] = {
     "config": {"help": "Path to configuration file.", "type": Path(exists=True)},
-    "hosts": {"help": "Elasticsearch URL to connect to.", "multiple": True},
+    "hosts": {"help": "OpenSearch URL to connect to.", "multiple": True},
     "cloud_id": {"help": "Elastic Cloud instance id"},
     "api_token": {"help": "The base64 encoded API Key token", "type": str},
     "id": {"help": 'API Key "id" value', "type": str},
     "api_key": {"help": 'API Key "api_key" value', "type": str},
-    "username": {"help": "Elasticsearch username", "type": str},
-    "password": {"help": "Elasticsearch password", "type": str},
+    "username": {"help": "OpenSearch username", "type": str},
+    "password": {"help": "OpenSearch password", "type": str},
     "bearer_auth": {"help": "Bearer authentication token", "type": str, "hidden": True},
     "opaque_id": {"help": "X-Opaque-Id HTTP header value", "type": str, "hidden": True},
     "request_timeout": {"help": "Request timeout in seconds", "type": float},
@@ -129,7 +129,7 @@ CLICK_SETTINGS: t.Dict[str, t.Dict] = {
         "hidden": True,
     },
     "skip_version_test": {
-        "help": "Elasticsearch version compatibility check",
+        "help": "OpenSearch version compatibility check",
         "default": None,
         "hidden": True,
     },
@@ -291,7 +291,7 @@ def config_schema() -> Schema:
         names and values with defaults for unset parameters.
     :rtype: :py:class:`~.voluptuous.schema_builder.Schema`
 
-    The validation schema for an :py:class:`~.elasticsearch8.Elasticsearch` client
+    The validation schema for an :py:class:`~.opensearchpy.OpenSearch` client
     object with defaults
     """
     # pylint: disable=no-value-for-parameter
@@ -450,7 +450,7 @@ def config_settings() -> t.List[str]:
     command-line.
 
     This means ignoring some that are valid in
-    :py:class:`~.elasticsearch8.Elasticsearch` but are handled different locally.
+    :py:class:`~.opensearchpy.OpenSearch` but are handled different locally.
     Namely, ``api_key`` is handled by :py:class:`~.es_client.builder.OtherArgs`.
     """
     ignore = ["api_key"]

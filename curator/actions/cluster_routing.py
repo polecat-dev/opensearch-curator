@@ -38,7 +38,7 @@ class ClusterRouting:
         :param wait_interval: Seconds to wait between completion checks.
         :param max_wait: Maximum number of seconds to ``wait_for_completion``
 
-        :type client: :py:class:`~.elasticsearch.Elasticsearch`
+        :type client: :py:class:`~.opensearchpy.OpenSearch`
         :type routing_type: str
         :type setting: str
         :type value: str
@@ -47,7 +47,7 @@ class ClusterRouting:
         :type max_wait: int
         """
         verify_client_object(client)
-        #: An :py:class:`~.elasticsearch.Elasticsearch` client object
+        #: An :py:class:`~.opensearchpy.OpenSearch` client object
         self.client = client
         self.loggit = logging.getLogger('curator.actions.cluster_routing')
         #: Object attribute that gets the value of param ``wait_for_completion``

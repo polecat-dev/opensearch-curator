@@ -12,7 +12,7 @@ from curator.cli_singletons.utils import validate_filter_json
     '--search_pattern',
     type=str,
     default='*',
-    help='Elasticsearch Index Search Pattern',
+    help='OpenSearch index search pattern',
 )
 @click.option(
     '--ignore_empty_list',

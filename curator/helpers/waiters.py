@@ -29,7 +29,7 @@ def health_check(client, **kwargs):
 
     :param client: A client connection object
 
-    :type client: :py:class:`~.elasticsearch.Elasticsearch`
+    :type client: :py:class:`~.opensearchpy.OpenSearch`
 
     :rtype: bool
     """
@@ -72,7 +72,7 @@ def relocate_check(client, index):
     :param client: A client connection object
     :param index: The index name
 
-    :type client: :py:class:`~.elasticsearch.Elasticsearch`
+    :type client: :py:class:`~.opensearchpy.OpenSearch`
     :type index: str
 
     :rtype: bool
@@ -104,7 +104,7 @@ def restore_check(client, index_list):
     :param index_list: The list of indices to verify having been restored.
     :param kwargs: Any additional keyword arguments to pass to the function
 
-    :type client: :py:class:`~.elasticsearch.Elasticsearch`
+    :type client: :py:class:`~.opensearchpy.OpenSearch`
     :type index_list: list
 
     :rtype: bool
@@ -179,7 +179,7 @@ def snapshot_check(client, snapshot=None, repository=None):
     :param snapshot: The snapshot name
     :param repository: The repository name
 
-    :type client: :py:class:`~.elasticsearch.Elasticsearch`
+    :type client: :py:class:`~.opensearchpy.OpenSearch`
     :type snapshot: str
     :type repository: str
 
@@ -224,7 +224,7 @@ def task_check(client, task_id=None):
     :param client: A client connection object
     :param task_id: The task id
 
-    :type client: :py:class:`~.elasticsearch.Elasticsearch`
+    :type client: :py:class:`~.opensearchpy.OpenSearch`
     :type task_id: str
 
     :rtype: bool
@@ -291,12 +291,12 @@ def wait_for_it(
     :param action: The action name that will identify how to wait
     :param task_id: If the action provided a task_id, this is where it must be declared.
     :param snapshot: The name of the snapshot.
-    :param repository: The Elasticsearch snapshot repository to use
+    :param repository: The OpenSearch snapshot repository to use
     :param wait_interval: Seconds to wait between completion checks.
     :param max_wait: Maximum number of seconds to ``wait_for_completion``
     :param kwargs: Any additional keyword arguments to pass to the function
 
-    :type client: :py:class:`~.elasticsearch.Elasticsearch`
+    :type client: :py:class:`~.opensearchpy.OpenSearch`
     :type action: str
     :type task_id: str
     :type snapshot: str

@@ -68,7 +68,9 @@ class TestCLIRepositoryCreate(CuratorTestCase):
         assert 0 == result.exit_code
 
     def test_create_fs_repository_fail(self):
-        self.skipTest('OpenSearch accepts os.devnull as a valid location; Elasticsearch does not')
+        self.skipTest(
+            'OpenSearch accepts os.devnull as a valid location; the legacy upstream implementation did not'
+        )
         self.write_config(
             self.args['configfile'],
             testvars.client_conf_logfile.format(HOST, os.devnull),

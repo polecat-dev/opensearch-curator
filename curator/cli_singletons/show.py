@@ -16,7 +16,7 @@ from curator._version import __version__
     epilog=footer(__version__, tail='singleton-cli.html#_show_indicessnapshots')
 )
 @click.option(
-    '--search_pattern', type=str, default='*', help='Elasticsearch Index Search Pattern'
+    '--search_pattern', type=str, default='*', help='OpenSearch index search pattern'
 )
 @click.option('--verbose', help='Show verbose output.', is_flag=True, show_default=True)
 @click.option(

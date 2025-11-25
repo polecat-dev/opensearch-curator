@@ -72,7 +72,7 @@ class CLIAction:
         :param action: The action name.
         :param configdict: ``dict`` containing everything needed for
             :py:class:`~.es_client.builder.Builder` to build an
-            :py:class:`~.elasticsearch.Elasticsearch` client object.
+            :py:class:`~.opensearchpy.OpenSearch` client object.
         :param option_dict: Options for ``action``.
         :param filter_list: Filters to select indices for ``action``.
         :param ignore_empty_list: Exit ``0`` even if filters result in no indices
@@ -141,7 +141,7 @@ class CLIAction:
         # pylint: disable=broad-except
         except Exception as exc:
             raise ConfigurationError(
-                f'Unable to connect to Elasticsearch as configured: {exc}'
+                f'Unable to connect to OpenSearch as configured: {exc}'
             ) from exc
         # If we're here, we'll see the output from GET http(s)://hostname.tld:PORT
         self.logger.debug('Connection result: %s', builder.client.info())

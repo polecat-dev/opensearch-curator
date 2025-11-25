@@ -8,7 +8,7 @@ from curator.cli_singletons.utils import validate_filter_json
 # pylint: disable=line-too-long
 @click.command()
 @click.option(
-    '--search_pattern', type=str, default='*', help='Elasticsearch Index Search Pattern'
+    '--search_pattern', type=str, default='*', help='OpenSearch index search pattern'
 )
 @click.option('--repository', type=str, required=True, help='Snapshot repository')
 @click.option(

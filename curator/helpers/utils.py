@@ -51,7 +51,7 @@ def report_failure(exception):
     """
     raise FailedExecution(
         f'Exception encountered.  Rerun with loglevel DEBUG and/or check '
-        f'Elasticsearch logs for more information. Exception: {exception}'
+        f'OpenSearch logs for more information. Exception: {exception}'
     )
 
 
@@ -110,7 +110,7 @@ def multitarget_fix(pattern: str) -> str:
     If pattern only has '-' prefixed entries (excludes)
     prepend a wildcard to pattern
 
-    :param pattern: The Elasticsearch multi-target syntax pattern
+    :param pattern: The OpenSearch multi-target syntax pattern
     :type pattern: str
 
     :returns: The pattern, possibly with a wildcard prepended
@@ -163,11 +163,11 @@ def regex_loop(matchstr: str, indices: list) -> list:
 
 def multitarget_match(pattern: str, index_list: list) -> list:
     """
-    Convert Elasticsearch multi-target syntax ``pattern`` into Python regex
+    Convert OpenSearch multi-target syntax ``pattern`` into Python regex
     patterns. Match against ``index_list`` and return the list of matches while
     excluding any negative matches.
 
-    :param pattern: The Elasticsearch multi-target syntax pattern
+    :param pattern: The OpenSearch multi-target syntax pattern
     :param index_list: The list of indices to match against
     :type pattern: str
     :type index_list: list
@@ -188,7 +188,7 @@ def multitarget_match(pattern: str, index_list: list) -> list:
         # Any index prepended with a . is probably a hidden index, but
         # we need to escape the . for regex to treat it as a literal
         matchstr = element.replace('.', '\\.')
-        # Replace Elasticsearch wildcard * with .* for Python regex
+        # Replace OpenSearch wildcard * with .* for Python regex
         matchstr = matchstr.replace('*', '.*')
         # logger.debug('matchstr: %s', matchstr)
         # If it is not an exclude, add the output of regex_loop to `includes`

@@ -34,7 +34,7 @@ class Alias:
         #: :py:meth:`~.curator.actions.Alias.add` and
         #: :py:meth:`~.curator.actions.Alias.remove`
         self.actions = []
-        #: The :py:class:`~.elasticsearch.Elasticsearch` client object which will
+        #: The :py:class:`~.opensearchpy.OpenSearch` client object which will
         #: later be set by :py:meth:`~.curator.actions.Alias.add` or
         #: :py:meth:`~.curator.actions.Alias.remove`
         self.client = None

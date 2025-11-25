@@ -58,7 +58,7 @@ def show_repos(client):
     """Show all repositories
 
     :param client: A client connection object
-    :type client: :py:class:`~.elasticsearch.Elasticsearch`
+    :type client: :py:class:`~.opensearchpy.OpenSearch`
     :rtype: None
     """
     logger = logging.getLogger(__name__)
@@ -74,7 +74,7 @@ def get_client(ctx):
     :type ctx: :py:class:`~.click.Context`
 
     :returns: A client connection object
-    :rtype: :py:class:`~.elasticsearch.Elasticsearch`
+    :rtype: :py:class:`~.opensearchpy.OpenSearch`
     """
     builder = Builder(
         configdict=ctx.obj['configdict'],
@@ -745,7 +745,7 @@ def repo_mgr_cli(
     logformat,
 ):
     """
-    Repository manager for Elasticsearch Curator
+    Repository manager for OpenSearch Curator
 
     The default $HOME/.curator/curator.yml configuration file (--config)
     can be used but is not needed.
@@ -842,7 +842,7 @@ def show_all_options(
 @repo_mgr_cli.group('create')
 @click.pass_context
 def _create(ctx):
-    """Create an Elasticsearch repository"""
+    """Create an OpenSearch repository"""
 
 
 _create.add_command(azure)
@@ -873,7 +873,7 @@ def show(ctx):
 @click.pass_context
 def _delete(ctx, name):
     """
-    Delete an Elasticsearch repository
+    Delete an OpenSearch repository
     """
     logger = logging.getLogger('curator.repomgrcli._delete')
     client = get_client(ctx)

@@ -28,7 +28,7 @@ class Close:
         self.delete_aliases = delete_aliases
         #: The value passed as ``skip_flush``
         self.skip_flush = skip_flush
-        #: The :py:class:`~.elasticsearch.Elasticsearch` client object derived from
+        #: The :py:class:`~.opensearchpy.OpenSearch` client object derived from
         #: :py:attr:`index_list`
         self.client = ilo.client
         self.loggit = logging.getLogger('curator.actions.close')

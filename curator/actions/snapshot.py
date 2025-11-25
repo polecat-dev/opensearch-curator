@@ -85,7 +85,7 @@ class Snapshot(object):
         #: The :py:class:`~.curator.indexlist.IndexList` object passed from param
         #: ``ilo``
         self.index_list = ilo
-        #: The :py:class:`~.elasticsearch.Elasticsearch` client object derived from
+        #: The :py:class:`~.opensearchpy.OpenSearch` client object derived from
         #: :py:attr:`index_list`
         self.client = ilo.client
         #: The :py:func:`~.curator.helpers.date_ops.parse_date_pattern` rendered
@@ -225,7 +225,7 @@ class DeleteSnapshots:
         #: The :py:class:`~.curator.snapshotlist.SnapshotList` object passed from param
         #: ``slo``
         self.snapshot_list = slo
-        #: The :py:class:`~.elasticsearch.Elasticsearch` client object derived from
+        #: The :py:class:`~.opensearchpy.OpenSearch` client object derived from
         #: :py:attr:`snapshot_list`
         self.client = slo.client
         #: Object attribute that gets the value of param ``retry_interval``.
@@ -354,7 +354,7 @@ class Restore(object):
 
         #: Internal reference to `slo`
         self.snapshot_list = slo
-        #: The :py:class:`~.elasticsearch.Elasticsearch` client object derived from
+        #: The :py:class:`~.opensearchpy.OpenSearch` client object derived from
         #: :py:attr:`snapshot_list`
         self.client = slo.client
         #: Object attribute that gets the value of ``repository`` from

@@ -23,7 +23,7 @@ warnings.warn(
 # from pathlib import Path
 # import yaml  # type: ignore
 # import click
-# from elasticsearch8 import Elasticsearch
+# from opensearchpy import OpenSearch
 # from es_client.debug import debug, begin_end
 # from es_client.defaults import ES_DEFAULT, config_schema
 # from es_client.exceptions import ConfigurationError
@@ -46,7 +46,7 @@ warnings.warn(
 #     """
 #     if not isinstance(config, dict):
 #         logger.warning(
-#             "Elasticsearch client configuration must be provided as a dictionary."
+#             "OpenSearch client configuration must be provided as a dictionary."
 #         )
 #         logger.warning('You supplied: "%s" which is "%s".', config, type(config))
 #         logger.warning("Using default values.")
@@ -70,7 +70,7 @@ warnings.warn(
 #     retval = SchemaCheck(
 #         es_settings["elasticsearch"],
 #         config_schema(),
-#         "Elasticsearch Configuration",
+#         "OpenSearch configuration",
 #         "elasticsearch",
 #     ).result()
 #     debug.lv5(f'Return value = "{password_filter(retval)}"')
@@ -103,14 +103,14 @@ warnings.warn(
 
 
 # @begin_end()
-# def get_version(client: Elasticsearch) -> t.Tuple:
+# def get_version(client: OpenSearch) -> t.Tuple:
 #     """
-#     :param client: An Elasticsearch client object
-#     :type client: :py:class:`~.elasticsearch.Elasticsearch`
+#     :param client: An OpenSearch client object
+#     :type client: :py:class:`~.opensearchpy.OpenSearch`
 
-#     :returns: The Elasticsearch version as a 3-part tuple, (major, minor, patch)
+#     :returns: The OpenSearch version as a 3-part tuple, (major, minor, patch)
 
-#     Get the Elasticsearch version of the connected node
+#     Get the OpenSearch version of the connected node
 #     """
 #     version = client.info()["version"]["number"]
 #     # Split off any -dev, -beta, or -rc tags

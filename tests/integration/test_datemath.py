@@ -10,8 +10,8 @@ from . import CuratorTestCase
 
 class TestParseDateMath(CuratorTestCase):
     colonblow = (
-        'Date math expressions with colons are not supported in Elasticsearch '
-        'versions 8.0 - 8.6'
+        'Date math expressions with colons are not supported in OpenSearch '
+        'versions 3.0 - 3.2'
     )
 
     def test_assorted_datemaths(self):

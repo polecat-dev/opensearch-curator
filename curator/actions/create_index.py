@@ -23,7 +23,7 @@ class CreateIndex:
             ``True``, ignore the 400 error that results in a
             ``resource_already_exists_exception`` and return that it was successful.
 
-        :type client: :py:class:`~.elasticsearch.Elasticsearch`
+        :type client: :py:class:`~.opensearchpy.OpenSearch`
         :type name: str
         :type extra_settings: dict
         :type ignore_existing: bool
@@ -38,7 +38,7 @@ class CreateIndex:
         #: Extracted from the action definition, it should be a boolean informing
         #: whether to ignore the error if the index already exists.
         self.ignore_existing = ignore_existing
-        #: An :py:class:`~.elasticsearch.Elasticsearch` client object
+        #: An :py:class:`~.opensearchpy.OpenSearch` client object
         self.client = client
         #: Any extra settings for the index, like aliases, mappings, or settings.
         #: Gets the value from param ``extra_settings``.

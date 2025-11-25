@@ -52,8 +52,8 @@ source_suffix = '.rst'
 master_doc = 'index'
 
 # General information about the project.
-project = 'Elasticsearch Curator'
-copyright = f'{COPYRIGHT_YEARS}, Elasticsearch'
+project = 'OpenSearch Curator'
+copyright = f'{COPYRIGHT_YEARS}, OpenSearch Project'
 
 release = verstr
 version = '.'.join(release.split('.')[:2])

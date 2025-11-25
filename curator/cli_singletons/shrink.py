@@ -8,7 +8,7 @@ from curator.cli_singletons.utils import json_to_dict, validate_filter_json
 # pylint: disable=line-too-long
 @click.command()
 @click.option(
-    '--search_pattern', type=str, default='*', help='Elasticsearch Index Search Pattern'
+    '--search_pattern', type=str, default='*', help='OpenSearch index search pattern'
 )
 @click.option(
     '--shrink_node',

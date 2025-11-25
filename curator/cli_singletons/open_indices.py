@@ -7,7 +7,7 @@ from curator.cli_singletons.utils import validate_filter_json
 
 @click.command(name='open')
 @click.option(
-    '--search_pattern', type=str, default='*', help='Elasticsearch Index Search Pattern'
+    '--search_pattern', type=str, default='*', help='OpenSearch index search pattern'
 )
 @click.option(
     '--ignore_empty_list',

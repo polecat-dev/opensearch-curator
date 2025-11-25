@@ -5,12 +5,12 @@ This module defines command-line interface commands for es_client, using
 :mod:`click` to handle options and integrate with
 :class:`~es_client.builder.Builder`, :mod:`~es_client.logging`,
 :mod:`~es_client.config`, and :mod:`~es_client.exceptions`. Commands include
-displaying all configuration options, testing Elasticsearch connections, and
+displaying all configuration options, testing OpenSearch connections, and
 testing logging output.
 
 Functions:
     show_all_options: Display all client configuration options and env vars.
-    test_connection: Test connection to Elasticsearch.
+    test_connection: Test connection to OpenSearch.
     test_stderr: Test logging output to stderr.
 
 .. note::
@@ -120,7 +120,7 @@ def show_all_options(
     Args:
         ctx (:class:`click.Context`): Click context for command execution.
         config (str): Path to YAML configuration file.
-        hosts (tuple): Elasticsearch host URLs.
+        hosts (tuple): OpenSearch host URLs.
         cloud_id (str): Elastic Cloud ID.
         api_token (str): Base64-encoded API key token.
         id (str): API key ID.
@@ -139,7 +139,7 @@ def show_all_options(
         ssl_assert_fingerprint (str): SSL certificate fingerprint.
         ssl_version (str): SSL version to use.
         master_only (bool): Connect only to the master node.
-        skip_version_test (bool): Skip Elasticsearch version check.
+        skip_version_test (bool): Skip OpenSearch version check.
         loglevel (str): Logging level (e.g., DEBUG, INFO).
         logfile (str): Path to log file.
         logformat (str): Log format (e.g., default, json).
@@ -165,11 +165,11 @@ def show_all_options(
 @click.pass_context
 def test_connection(ctx: click.Context) -> None:
     """
-    Test connection to Elasticsearch.
+    Test connection to OpenSearch.
 
     Uses :func:`~es_client.config.get_client` to create a client from
     :attr:`ctx.obj['configdict'] <click.Context.obj>` and calls
-    :meth:`client.info() <elasticsearch8.Elasticsearch.info>` to verify connectivity.
+    :meth:`client.info() <opensearchpy.OpenSearch.info>` to verify connectivity.
 
     Args:
         ctx (:class:`click.Context`): Click context with configuration.
@@ -184,7 +184,7 @@ def test_connection(ctx: click.Context) -> None:
         >>> from click import Context, Command
         >>> from unittest.mock import Mock
         >>> ctx = Context(Command('test_connection'), obj={'configdict':
-        {'elasticsearch': {'client': {'hosts': ['http://localhost:9200']},
+        {'opensearch': {'client': {'hosts': ['http://localhost:9200']},
         'other_settings': {}}}})
         >>> client = Mock()
         >>> client.info.return_value = {'version': {'number': '8.0.0'}}

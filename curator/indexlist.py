@@ -35,7 +35,7 @@ class IndexList:
     def __init__(self, client, search_pattern='*', include_hidden=False):
         verify_client_object(client)
         self.loggit = logging.getLogger('curator.indexlist')
-        #: An :py:class:`~.elasticsearch.Elasticsearch` client object passed from
+        #: An :py:class:`~.opensearchpy.OpenSearch` client object passed from
         #: param ``client``
         self.client = client
         #: Information extracted from indices, such as segment count, age, etc.
