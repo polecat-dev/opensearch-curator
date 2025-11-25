@@ -1,0 +1,66 @@
+---
+# Convert Index to Remote Storage - Custom Alias Names
+# Converts specific indices with custom alias configuration
+actions:
+  1:
+    action: convert_index_to_remote
+    description: "Convert single index with custom alias name"
+    options:
+      repository: backup
+      snapshot_name: 'custom-conversion-%Y%m%d'
+      use_existing_snapshot: False
+      remote_index_suffix: '_remote'
+      
+      # Custom alias name (only works for single index)
+      # If converting multiple indices, leave blank for auto-naming
+      create_alias: True
+      alias_name: 'my-custom-alias'
+      
+      delete_after: False
+      verify_availability: True
+      ignore_unavailable: False
+      partial: False
+      wait_for_completion: True
+      skip_repo_fs_check: False
+      disable_action: True
+      continue_if_exception: False
+      
+    filters:
+    # Target a single specific index
+    - filtertype: pattern
+      kind: regex
+      value: '^test-2025\.11\.01$'
+      exclude: False
+
+  2:
+    action: convert_index_to_remote
+    description: "Convert multiple indices with auto-generated aliases"
+    options:
+      repository: backup
+      snapshot_name: 'multi-conversion-%Y%m%d'
+      use_existing_snapshot: False
+      remote_index_suffix: '_remote'
+      
+      # Auto-generate aliases (original name -> remote index)
+      create_alias: True
+      # alias_name left blank for auto-naming
+      
+      delete_after: False
+      verify_availability: True
+      ignore_unavailable: False
+      partial: False
+      wait_for_completion: True
+      skip_repo_fs_check: False
+      disable_action: True
+      continue_if_exception: False
+      
+    filters:
+    # Target multiple indices
+    - filtertype: pattern
+      kind: prefix
+      value: test-
+      exclude: False
+    - filtertype: count
+      count: 5
+      use_age: True
+      source: creation_date

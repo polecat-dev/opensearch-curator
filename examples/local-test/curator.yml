@@ -1,0 +1,19 @@
+---
+# OpenSearch Curator Configuration for Local Testing
+# This connects to the local OpenSearch instance on port 19200
+
+opensearch:
+  client:
+    hosts:
+      - https://localhost:19200
+    request_timeout: 30
+    verify_certs: False
+  other_settings:
+    master_only: False
+    skip_version_test: False
+
+logging:
+  loglevel: INFO
+  logfile:
+  logformat: default
+  blacklist: ['opensearch', 'urllib3']

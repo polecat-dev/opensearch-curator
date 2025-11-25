@@ -1,0 +1,54 @@
+---
+# Convert Index to Remote Storage - With Deletion
+# Creates remote-backed indices and deletes local originals after verification
+# CAUTION: This will delete original indices!
+actions:
+  1:
+    action: convert_index_to_remote
+    description: "Convert old test-* indices to remote storage and delete originals"
+    options:
+      # Repository for snapshot
+      repository: backup
+      
+      # Snapshot name
+      snapshot_name: 'remote-migration-%Y%m%d-%H%M%S'
+      
+      # Create new snapshot
+      use_existing_snapshot: False
+      
+      # Suffix for remote indices
+      remote_index_suffix: '_remote'
+      
+      # Create alias pointing to remote index
+      create_alias: True
+      
+      # Delete original after successful conversion
+      delete_after: True  # CAUTION: This deletes originals!
+      
+      # Verify before deletion (recommended!)
+      verify_availability: True
+      
+      # Snapshot/restore settings
+      ignore_unavailable: False
+      partial: False
+      wait_for_completion: True
+      wait_interval: 9
+      max_wait: -1
+      skip_repo_fs_check: False
+      
+      # Action control
+      disable_action: false  # Set to False to enable!
+      continue_if_exception: False
+      
+    filters:
+    - filtertype: pattern
+      kind: prefix
+      value: test-
+      exclude: False
+    - filtertype: age
+      source: name
+      timestring: '%Y.%m.%d'
+      direction: older
+      unit: days
+      unit_count: 7
+      exclude: False

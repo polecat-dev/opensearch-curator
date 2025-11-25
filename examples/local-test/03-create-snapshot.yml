@@ -1,0 +1,29 @@
+---
+# Create snapshot of important indices
+# Snapshots all indices with prefix 'logs-' to repository 'backup'
+actions:
+  1:
+    action: snapshot
+    description: "Snapshot logs indices to backup repository"
+    options:
+      repository: backup
+      name: logs-snapshot-%Y%m%d
+      ignore_unavailable: False
+      include_global_state: False
+      partial: False
+      wait_for_completion: True
+      skip_repo_fs_check: False
+      disable_action: True  # Set to False when ready
+      continue_if_exception: False
+    filters:
+    - filtertype: pattern
+      kind: prefix
+      value: test-
+      exclude: False
+    - filtertype: age
+      source: name
+      direction: older
+      timestring: '%Y.%m.%d'
+      unit: days
+      unit_count: 1
+      exclude: False

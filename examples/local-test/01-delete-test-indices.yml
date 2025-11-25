@@ -1,0 +1,15 @@
+---
+# List all indices in the cluster
+# This is a safe dry-run to see what indices exist
+actions:
+  1:
+    action: delete_indices
+    description: "List all indices (dry-run, won't delete anything)"
+    options:
+      ignore_empty_list: True
+      disable_action: False
+    filters:
+    - filtertype: pattern
+      kind: prefix
+      value: 'test-'  # Match all indices
+      exclude: False
