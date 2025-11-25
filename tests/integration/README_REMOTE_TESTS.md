@@ -113,7 +113,7 @@ docker-compose -f docker-compose.test.yml up -d
 
 # 2. Wait for services to be ready (30-60 seconds)
 # Check OpenSearch
-curl http://localhost:19200/_cluster/health
+curl https://localhost:19200/_cluster/health
 
 # Check LocalStack
 curl http://localhost:4566/_localstack/health
@@ -128,7 +128,7 @@ aws --endpoint-url=http://localhost:4566 s3 mb s3://test-remote-segments
 aws --endpoint-url=http://localhost:4566 s3 mb s3://test-remote-translogs
 
 # 4. Set environment variables
-export TEST_ES_SERVER=http://localhost:19200
+export TEST_ES_SERVER=https://localhost:19200
 export LOCALSTACK_ENDPOINT=http://localhost:4566
 
 # 5. Run tests
@@ -198,7 +198,7 @@ docker-compose -f docker-compose.test.yml up -d
 docker ps
 
 # Check service health
-curl http://localhost:19200/_cluster/health
+curl https://localhost:19200/_cluster/health
 curl http://localhost:4566/_localstack/health
 
 # Check if ports are available
@@ -230,13 +230,13 @@ aws --endpoint-url=http://localhost:4566 s3 ls s3://test-curator-snapshots/
 **Check:**
 ```bash
 # Verify OpenSearch remote store configuration
-curl http://localhost:19200/_cluster/settings?include_defaults=true | jq | grep remote_store
+curl https://localhost:19200/_cluster/settings?include_defaults=true | jq | grep remote_store
 
 # Check index settings
-curl http://localhost:19200/test-convert-1_remote/_settings | jq
+curl https://localhost:19200/test-convert-1_remote/_settings | jq
 
 # Verify repository is registered
-curl http://localhost:19200/_snapshot
+curl https://localhost:19200/_snapshot
 ```
 
 ### Test Failures
@@ -260,7 +260,7 @@ docker-compose -f docker-compose.test.yml logs -f opensearch
 
 | Variable | Default | Description |
 |----------|---------|-------------|
-| `TEST_ES_SERVER` | `http://localhost:19200` | OpenSearch endpoint |
+| `TEST_ES_SERVER` | `https://localhost:19200` | OpenSearch endpoint |
 | `LOCALSTACK_ENDPOINT` | `http://localhost:4566` | LocalStack endpoint |
 | `AWS_ACCESS_KEY_ID` | `test` | AWS access key (LocalStack) |
 | `AWS_SECRET_ACCESS_KEY` | `test` | AWS secret key (LocalStack) |

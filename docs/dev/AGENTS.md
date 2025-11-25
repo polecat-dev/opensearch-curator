@@ -864,7 +864,7 @@ docker-compose -f docker-compose.test.yml up -d
 ### Environment Setup
 
 **Required:**
-- `TEST_ES_SERVER=http://localhost:19200` (in `.env`)
+- `TEST_ES_SERVER=https://localhost:19200` (in `.env`)
 - OpenSearch with `path.repo=/tmp`
 - Docker containers running
 

@@ -18,7 +18,8 @@ if (Test-Path .env) {
 }
 
 # Display current TEST_ES_SERVER
-$testServer = if ($env:TEST_ES_SERVER) { $env:TEST_ES_SERVER } else { "http://127.0.0.1:9200" }
+$defaultServer = "https://localhost:19200"
+$testServer = if ($env:TEST_ES_SERVER) { $env:TEST_ES_SERVER } else { $defaultServer }
 Write-Host "`nTEST_ES_SERVER: $testServer" -ForegroundColor Cyan
 
 # Run pytest with all arguments passed to this script

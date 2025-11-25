@@ -34,6 +34,35 @@ DATEMAP = {
 }
 
 HOST = os.environ.get('TEST_ES_SERVER', 'http://127.0.0.1:9200')
+USERNAME = os.environ.get('TEST_ES_USERNAME', 'admin')
+PASSWORD = os.environ.get('TEST_ES_PASSWORD') or os.environ.get('OPENSEARCH_INITIAL_ADMIN_PASSWORD')
+CA_CERT_PATH = os.environ.get('TEST_ES_CA_CERT')
+VERIFY_ENV = os.environ.get('TEST_ES_VERIFY_CERTS')
+
+
+def _env_bool(value, default):
+    if value is None:
+        return default
+    lowered = value.strip().lower()
+    if lowered in ('1', 'true', 'yes', 'on'):
+        return True
+    if lowered in ('0', 'false', 'no', 'off'):
+        return False
+    return default
+
+
+def _should_verify(host):
+    default_verify = host.startswith('https://') and CA_CERT_PATH and os.path.exists(CA_CERT_PATH)
+    return _env_bool(VERIFY_ENV, bool(default_verify))
+
+
+VERIFY_CERTS = _should_verify(HOST)
+RESOLVED_CA_CERT = (
+    CA_CERT_PATH
+    if CA_CERT_PATH and os.path.exists(CA_CERT_PATH) and VERIFY_CERTS
+    else None
+)
+HTTP_AUTH = (USERNAME, PASSWORD) if USERNAME and PASSWORD else None
 
 
 def random_directory():
@@ -52,7 +81,14 @@ def get_client():
     if client is not None:
         return client
 
-    client = OpenSearch(hosts=HOST, request_timeout=300)
+    client = OpenSearch(
+        hosts=HOST,
+        http_auth=HTTP_AUTH,
+        verify_certs=VERIFY_CERTS,
+        ca_certs=RESOLVED_CA_CERT,
+        request_timeout=300,
+        ssl_show_warn=False,
+    )
 
     # Verify connection - opensearch-py 3.0
     for _ in range(100):

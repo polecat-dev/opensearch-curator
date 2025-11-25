@@ -269,7 +269,7 @@ make docker-down        # Stop OpenSearch
 ### ⚠️ IMPORTANT CONVENTIONS:
 - **Always use `python -m`** for modules: `python -m pytest`, `python -m pip`, etc.
 - **Makefile only works in WSL** on Windows - use direct commands in PowerShell
-- **Port:** OpenSearch runs on http://localhost:19200 (not 9200)
+- **Port:** OpenSearch runs on https://localhost:19200 (not 9200)
 - See [DEVELOPMENT_CONVENTIONS.md](DEVELOPMENT_CONVENTIONS.md) for complete guide
 
 ### Test opensearch_client:
@@ -290,7 +290,7 @@ python -m pytest opensearch_client/tests/unit --cov=opensearch_client
 docker-compose up -d
 
 # Verify it's running
-curl http://localhost:19200
+curl https://localhost:19200
 
 # Run integration tests
 python -m pytest tests/integration

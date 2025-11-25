@@ -49,7 +49,7 @@ black .                   # Wrong - don't use directly
 ```powershell
 # Also use python -m for curator modules
 python -m curator.cli --help
-python -m curator.singletons show_indices --hosts http://localhost:19200
+python -m curator.singletons show_indices --hosts https://localhost:19200
 ```
 
 ---
@@ -209,7 +209,7 @@ docker-compose up -d
 Start-Sleep -Seconds 30  # Wait for startup
 
 # 2. Verify OpenSearch is running
-curl http://localhost:19200/_cluster/health
+curl https://localhost:19200/_cluster/health
 
 # 3. Run opensearch_client tests
 python -m pytest opensearch_client/tests/unit -v

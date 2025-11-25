@@ -1,32 +1,62 @@
 ---
-# Remember, leave a key empty if there is no value.  None will be a string,
+# OpenSearch Curator Configuration
+# Remember, leave a key empty if there is no value. None will be a string,
 # not a Python "NoneType"
-elasticsearch:
+#
+# This is the configuration file for OpenSearch Curator.
+# It defines the connection settings to your OpenSearch cluster.
+
+# OpenSearch connection settings
+opensearch:
   client:
-    hosts: https://10.11.12.13:9200
+    # List of OpenSearch hosts (can be multiple for HA)
+    hosts:
+      - https://localhost:19200
+    # Cloud ID (for cloud deployments, leave empty for local)
     cloud_id:
+    # Bearer token authentication (leave empty if not using)
     bearer_auth:
+    # Opaque ID for request tracking
     opaque_id:
+    # Request timeout in seconds
     request_timeout: 60
+    # Enable HTTP compression
     http_compress:
-    verify_certs:
+    # Verify SSL certificates (set to False for self-signed certs in dev)
+    verify_certs: False
+    # Path to CA certificate bundle
     ca_certs:
+    # Path to client certificate
     client_cert:
+    # Path to client key
     client_key:
+    # SSL hostname to assert
     ssl_assert_hostname:
+    # SSL fingerprint to assert
     ssl_assert_fingerprint:
+    # SSL/TLS version
     ssl_version:
   other_settings:
-    master_only:
-    skip_version_test:
+    # Only run actions on cluster_manager nodes (formerly master_only)
+    cluster_manager_only: False
+    # Skip version compatibility check (use with caution)
+    skip_version_test: False
+    # Basic authentication username
     username:
+    # Basic authentication password
     password:
+    # API key authentication (alternative to username/password)
     api_key:
       id:
       api_key:
 
+# Logging configuration
 logging:
+  # Log level: DEBUG, INFO, WARN, ERROR, CRITICAL
   loglevel: INFO
-  logfile: /path/to/file.log
+  # Log file path (leave empty to log to console only)
+  logfile:
+  # Log format: default, json, logstash
   logformat: default
-  blacklist: ['elastic_transport', 'urllib3']
+  # Loggers to suppress (reduce noise)
+  blacklist: ['opensearch', 'urllib3', 'opensearchpy']

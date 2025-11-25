@@ -23,6 +23,8 @@ This directory contains utility scripts for development, deployment, and testing
 - **start-opensearch.sh** - Start OpenSearch (Linux/Mac)
 - **stop-opensearch.bat** - Stop OpenSearch (Windows)
 - **stop-opensearch.sh** - Stop OpenSearch (Linux/Mac)
+- **generate_test_certs.py** - Create TLS assets for docker-compose test stack
+- **load_test_data.py** - Populate OpenSearch with synthetic log data for manual testing
 
 ### Repository Maintenance
 - **cleanup_plan.ps1** - Repository cleanup and organization script
@@ -68,6 +70,26 @@ docker build -t opensearch-curator:latest .
 # Or use Docker Compose (preferred)
 docker-compose -f docker-compose.test.yml up -d
 ```
+
+### Generating TLS Assets (required for docker-compose.test.yml)
+```bash
+python scripts/generate_test_certs.py --password curatorssl
+# Outputs to certs/generated/ (gitignored) and prints next steps
+```
+
+The compose stack expects `certs/generated/` to exist and the password to be
+available through `OPENSEARCH_TEST_SSL_PASSWORD`. Update your `.env` using the
+`certs/generated/passwords.env` snippet that the script creates.
+
+### Loading Sample Data
+```powershell
+# Example: create 10 daily indices with 2k docs each on localhost:19200
+python -m scripts.load_test_data --days 10 --docs-per-day 2000 --prefix logstash --alias logs-write
+```
+
+Run `python -m scripts.load_test_data --help` to see all connection and data-shaping options. The script
+targets `https://localhost:19200` by default and generates `PREFIX-YYYY.MM.DD` indices filled with synthetic
+log documents.
 
 ### Repository Cleanup
 ```powershell
@@ -186,7 +208,7 @@ docker-compose -f docker-compose.test.yml up -d
 
 ### Tests Won't Run
 - Check Docker containers: `docker-compose -f docker-compose.test.yml ps`
-- Verify OpenSearch: `curl http://localhost:19200/_cluster/health`
+- Verify OpenSearch: `curl https://localhost:19200/_cluster/health`
 - Check environment: Review `.env` file
 
 ### Remote Tests Failing

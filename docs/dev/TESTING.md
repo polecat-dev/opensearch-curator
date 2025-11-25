@@ -22,6 +22,7 @@ This document provides comprehensive guidance for running and debugging tests in
 1. **Docker** - Required for OpenSearch and LocalStack containers
 2. **Python 3.8+** - With pytest installed
 3. **Environment file** - Copy `.env.example` to `.env`
+4. **TLS assets** - Run `python scripts/generate_test_certs.py` once to create the CA, full chains, and PKCS#12 bundle consumed by `docker-compose.test.yml`
 
 ### Run All Tests
 
@@ -35,6 +36,10 @@ docker-compose -f docker-compose.test.yml up -d
 # Run specific test file (much faster)
 .\run_tests.ps1 tests/integration/test_snapshot.py -q
 ```
+
+> **TLS tip:** export `TEST_ES_CA_CERT=certs/generated/ca/root-ca.pem` (already
+> provided in `.env.example`) and add `--cacert $env:TEST_ES_CA_CERT` to any
+> `curl` command that talks to `https://localhost:19200`.
 
 ### Run Individual Tests
 
@@ -167,7 +172,7 @@ python -m pytest tests/integration/ -v
 
 ```bash
 # OpenSearch endpoint
-TEST_ES_SERVER=http://localhost:19200
+TEST_ES_SERVER=https://localhost:19200
 
 # S3 repository testing (optional)
 TEST_S3_BUCKET=curator-test-bucket
@@ -213,10 +218,10 @@ docker-compose -f docker-compose.test.yml down -v
 
 ```powershell
 # Check OpenSearch is running
-curl http://localhost:19200
+curl https://localhost:19200
 
 # Check path.repo is configured
-curl http://localhost:19200/_nodes/settings?pretty | Select-String "path.repo"
+curl https://localhost:19200/_nodes/settings?pretty | Select-String "path.repo"
 
 # Check LocalStack S3
 curl http://localhost:4566/_localstack/health
@@ -248,7 +253,7 @@ SkipTest: path.repo is not configured on the cluster.
 **Solution:**
 1. Check `docker-compose.test.yml` has `- path.repo=/tmp`
 2. Restart containers: `docker-compose -f docker-compose.test.yml down && docker-compose -f docker-compose.test.yml up -d`
-3. Verify: `curl http://localhost:19200/_nodes/settings | Select-String "path.repo"`
+3. Verify: `curl https://localhost:19200/_nodes/settings | Select-String "path.repo"`
 
 ### Issue 3: Wrong Port Connection
 
@@ -261,7 +266,7 @@ Connection refused on port 9200
 
 **Solution:**
 1. Create `.env` file: `cp .env.example .env`
-2. Edit `.env` and set: `TEST_ES_SERVER=http://localhost:19200`
+2. Edit `.env` and set: `TEST_ES_SERVER=https://localhost:19200`
 3. Run tests with `.\run_tests.ps1` (auto-loads .env)
 
 ### Issue 4: Test Failures Due to None Values in Aggregations
@@ -360,16 +365,16 @@ logging.basicConfig(level=logging.DEBUG)
 During test execution:
 ```powershell
 # List all indices
-curl http://localhost:19200/_cat/indices?v
+curl https://localhost:19200/_cat/indices?v
 
 # List all repositories
-curl http://localhost:19200/_snapshot?pretty
+curl https://localhost:19200/_snapshot?pretty
 
 # List all snapshots in repository
-curl http://localhost:19200/_snapshot/test_repository/_all?pretty
+curl https://localhost:19200/_snapshot/test_repository/_all?pretty
 
 # Check cluster health
-curl http://localhost:19200/_cluster/health?pretty
+curl https://localhost:19200/_cluster/health?pretty
 ```
 
 ### Strategy 4: Run Test Multiple Times
@@ -434,7 +439,7 @@ jobs:
         run: |
           docker-compose -f docker-compose.test.yml up -d opensearch
           # Wait for OpenSearch to be ready
-          timeout 60 bash -c 'until curl -s http://localhost:19200; do sleep 1; done'
+          timeout 60 bash -c 'until curl -s https://localhost:19200; do sleep 1; done'
       
       - name: Install dependencies
         run: |
@@ -443,7 +448,7 @@ jobs:
       
       - name: Run tests
         env:
-          TEST_ES_SERVER: http://localhost:19200
+          TEST_ES_SERVER: https://localhost:19200
         run: |
           pytest tests/integration/ -v --tb=short
 ```
@@ -559,16 +564,16 @@ jobs:
 
 ```powershell
 # Is OpenSearch running?
-curl http://localhost:19200
+curl https://localhost:19200
 
 # Is path.repo configured?
-curl "http://localhost:19200/_nodes/settings?pretty" | Select-String "path.repo"
+curl "https://localhost:19200/_nodes/settings?pretty" | Select-String "path.repo"
 
 # Are there leftover repositories?
-curl http://localhost:19200/_snapshot?pretty
+curl https://localhost:19200/_snapshot?pretty
 
 # Are there leftover indices?
-curl "http://localhost:19200/_cat/indices?v"
+curl "https://localhost:19200/_cat/indices?v"
 ```
 
 ### Quick Fixes

@@ -3,7 +3,7 @@ version: '3.8'
 services:
   # OpenSearch 3.2.0 with remote store configuration
   opensearch:
-    image: opensearchproject/opensearch:3.2.0
+    image: opensearchproject/opensearch:3.3.0
     container_name: opensearch-test
     environment:
       - cluster.name=opensearch-test-cluster
@@ -11,10 +11,24 @@ services:
       - discovery.type=single-node
       - bootstrap.memory_lock=true
       - "OPENSEARCH_JAVA_OPTS=-Xms512m -Xmx512m"
-      - DISABLE_SECURITY_PLUGIN=true
+      - DISABLE_SECURITY_PLUGIN=false
       - DISABLE_INSTALL_DEMO_CONFIG=true
-      # Note: Remote store requires cluster-level configuration at creation time
-      # For testing, we'll configure repositories via API after startup
+      - OPENSEARCH_INITIAL_ADMIN_PASSWORD=${OPENSEARCH_INITIAL_ADMIN_PASSWORD:-MyStrongPassword123!}
+      - OPENSEARCH_SECURITY_ALLOW_INSECURE_DEFAULT_SETTINGS=true
+      - plugins.security.allow_unsafe_democertificates=false
+      - plugins.security.ssl.transport.pemcert_filepath=certs/transport/opensearch-transport.local.crt
+      - plugins.security.ssl.transport.pemkey_filepath=certs/transport/opensearch-transport.local.key
+      - plugins.security.ssl.transport.pemkey_password=${OPENSEARCH_TEST_SSL_PASSWORD:-curatorssl}
+      - plugins.security.ssl.transport.pemtrustedcas_filepath=certs/ca/root-ca.pem
+      - plugins.security.ssl.transport.resolve_hostname=false
+      - plugins.security.ssl.transport.enforce_hostname_verification=false
+      - plugins.security.ssl.http.enabled=true
+      - plugins.security.ssl.http.pemcert_filepath=certs/http/opensearch-http.local.crt
+      - plugins.security.ssl.http.pemkey_filepath=certs/http/opensearch-http.local.key
+      - plugins.security.ssl.http.pemkey_password=${OPENSEARCH_TEST_SSL_PASSWORD:-curatorssl}
+      - plugins.security.ssl.http.pemtrustedcas_filepath=certs/ca/root-ca.pem
+      - plugins.security.ssl.http.clientauth_mode=OPTIONAL
+      - plugins.security.nodes_dn=CN=opensearch-transport.local,OU=Dev,O=OpenSearch,L=Curator,ST=Test,C=US
       # Allow filesystem repositories in /tmp for testing
       - path.repo=/tmp
     ulimits:
@@ -26,13 +40,18 @@ services:
         hard: 65536
     volumes:
       - opensearch-data:/usr/share/opensearch/data
+      - ./certs/generated:/usr/share/opensearch/config/certs:ro
     ports:
       - 19200:9200
       - 19600:9600
     networks:
       - test-network
     healthcheck:
-      test: ["CMD-SHELL", "curl -f http://localhost:9200/_cluster/health || exit 1"]
+      test:
+        [
+          "CMD-SHELL",
+          "curl -sSf --cacert /usr/share/opensearch/config/certs/ca/root-ca.pem -u admin:${OPENSEARCH_INITIAL_ADMIN_PASSWORD:-MyStrongPassword123!} https://localhost:9200/_cluster/health > /dev/null || exit 1",
+        ]
       interval: 10s
       timeout: 5s
       retries: 10
@@ -61,6 +80,24 @@ services:
       timeout: 5s
       retries: 10
 
+  opensearch-dashboards:
+    image: opensearchproject/opensearch-dashboards:3.3.0
+    container_name: opensearch-dashboards-test
+    ports:
+      - "5601:5601"
+    environment:
+      - 'OPENSEARCH_HOSTS=["https://opensearch:9200"]'
+      - "DISABLE_SECURITY_DASHBOARDS_PLUGIN=true"
+      - OPENSEARCH_USERNAME=admin
+      - OPENSEARCH_PASSWORD=${OPENSEARCH_INITIAL_ADMIN_PASSWORD:-MyStrongPassword123!}
+      - OPENSEARCH_SSL_CERTIFICATEAUTHORITIES=/usr/share/opensearch-dashboards/certs/root-ca.pem
+    networks:
+      - test-network
+    volumes:
+      - ./certs/generated/ca/root-ca.pem:/usr/share/opensearch-dashboards/certs/root-ca.pem:ro
+    depends_on:
+      opensearch:
+        condition: service_healthy
 volumes:
   opensearch-data:
     driver: local
