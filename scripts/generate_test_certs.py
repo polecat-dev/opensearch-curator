@@ -111,6 +111,11 @@ def parse_args() -> argparse.Namespace:
         action="store_true",
         help="Overwrite any existing certificates instead of aborting.",
     )
+    parser.add_argument(
+        "--verify-only",
+        action="store_true",
+        help="Skip generation and only verify the artifacts described in manifest.json.",
+    )
     return parser.parse_args()
 
 
@@ -340,7 +345,110 @@ def create_pkcs12_bundle(
     )
 
 
-def write_manifest(paths: CertificatePaths, password: str, manifest: dict) -> None:
+def verify_private_key(openssl_bin: str, key_path: Path, password: str) -> None:
+    info(f"Verifying private key {key_path.name}...")
+    run_openssl(
+        openssl_bin,
+        [
+            "rsa",
+            "-in",
+            str(key_path),
+            "-check",
+            "-noout",
+            "-passin",
+            f"pass:{password}",
+        ],
+    )
+
+
+def verify_certificate(openssl_bin: str, cert_path: Path) -> None:
+    info(f"Verifying certificate {cert_path.name} structure...")
+    run_openssl(
+        openssl_bin,
+        [
+            "x509",
+            "-in",
+            str(cert_path),
+            "-noout",
+        ],
+    )
+
+
+def verify_chain(openssl_bin: str, cert_path: Path, ca_cert: Path) -> None:
+    info(f"Validating certificate chain for {cert_path.name}...")
+    run_openssl(
+        openssl_bin,
+        [
+            "verify",
+            "-CAfile",
+            str(ca_cert),
+            str(cert_path),
+        ],
+    )
+
+
+def verify_pkcs12(openssl_bin: str, pkcs12_path: Path, password: str) -> None:
+    info(f"Verifying PKCS#12 bundle {pkcs12_path.name}...")
+    run_openssl(
+        openssl_bin,
+        [
+            "pkcs12",
+            "-in",
+            str(pkcs12_path),
+            "-nokeys",
+            "-passin",
+            f"pass:{password}",
+        ],
+    )
+
+
+def verify_artifacts(openssl_bin: str, manifest_path: Path, password: str) -> None:
+    if not manifest_path.exists():
+        raise SystemExit(
+            f"Cannot verify certificates because {manifest_path} does not exist. "
+            "Run the generator first or point --output to the directory containing manifest.json."
+        )
+    manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+    artifacts = manifest.get("artifacts", {})
+    manifest_password = manifest.get("password") or password
+    if not manifest_password:
+        raise SystemExit(
+            "Password not provided and manifest.json does not include one. "
+            "Use --password when running in --verify-only mode."
+        )
+
+    def ensure_file(path_str):
+        path = Path(path_str)
+        if not path.exists():
+            raise SystemExit(f"Expected artifact {path} is missing.")
+        return path
+
+    ca_entry = artifacts.get("ca")
+    if not ca_entry:
+        raise SystemExit("Manifest is missing CA entry.")
+    ca_key = ensure_file(ca_entry["key"])
+    ca_cert = ensure_file(ca_entry["cert"])
+    verify_private_key(openssl_bin, ca_key, manifest_password)
+    verify_certificate(openssl_bin, ca_cert)
+
+    for label in ("http", "transport"):
+        entry = artifacts.get(label)
+        if not entry:
+            raise SystemExit(f"Manifest is missing '{label}' entry.")
+        key_path = ensure_file(entry["key"])
+        cert_path = ensure_file(entry["cert"])
+        ensure_file(entry["fullchain"])
+        verify_private_key(openssl_bin, key_path, manifest_password)
+        verify_certificate(openssl_bin, cert_path)
+        verify_chain(openssl_bin, cert_path, ca_cert)
+        pkcs12_path = entry.get("pkcs12")
+        if pkcs12_path:
+            verify_pkcs12(openssl_bin, ensure_file(pkcs12_path), manifest_password)
+
+    info("All certificate assets verified successfully.")
+
+
+def write_manifest(paths: CertificatePaths, password: str, manifest: dict) -> Path:
     manifest_path = paths.base / "manifest.json"
     manifest_data = {
         "password_env": "OPENSEARCH_TEST_SSL_PASSWORD",
@@ -360,6 +468,7 @@ def write_manifest(paths: CertificatePaths, password: str, manifest: dict) -> No
         ),
         encoding="utf-8",
     )
+    return manifest_path
 
 
 def main() -> None:
@@ -368,6 +477,13 @@ def main() -> None:
         openssl_bin = resolve_openssl(args.openssl_binary)
     except FileNotFoundError as exc:
         raise SystemExit(str(exc)) from exc
+
+    manifest_path = args.output / "manifest.json"
+
+    if args.verify_only:
+        verify_artifacts(openssl_bin, manifest_path, args.password)
+        info("Verification complete.")
+        return
 
     paths = prepare_directories(args.output, args.force)
     dns_entries = DEFAULT_SAN_DNS + args.extra_dns
@@ -409,6 +525,16 @@ def main() -> None:
         alias="opensearch-http",
         target=pkcs12_path,
     )
+    transport_pkcs12_path = paths.transport_dir / "opensearch-transport.p12"
+    create_pkcs12_bundle(
+        openssl_bin,
+        cert=transport["cert"],
+        key=transport["key"],
+        ca_cert=ca_cert,
+        password=args.password,
+        alias="opensearch-transport",
+        target=transport_pkcs12_path,
+    )
 
     manifest = {
         "ca": {
@@ -425,9 +551,11 @@ def main() -> None:
             "key": str(transport["key"]),
             "cert": str(transport["cert"]),
             "fullchain": str(transport["fullchain"]),
+            "pkcs12": str(transport_pkcs12_path),
         },
     }
-    write_manifest(paths, args.password, manifest)
+    manifest_path = write_manifest(paths, args.password, manifest)
+    verify_artifacts(openssl_bin, manifest_path, args.password)
 
     info("All certificates generated successfully.")
     info(f"Root CA: {ca_cert}")

@@ -26,7 +26,7 @@ Key facts:
 
 - Uses `openssl` under the hood – make sure it is on your `PATH`.
 - Creates a password-protected CA key, encrypted HTTP/transport keys, full chain
-  PEMs, and a PKCS#12 bundle for the HTTP endpoint.
+  PEMs, and PKCS#12 bundles for both HTTP and transport endpoints.
 - Defaults can be customised with `--password`, `--output`, `--http-cn`, and
   related CLI options (`-h` shows them all).
 - The script guarantees separate keys/certs for transport and HTTP so that HTTP
@@ -48,3 +48,20 @@ containers, so make sure this directory exists before bringing the stack up.
 
 > **Important:** All generated files stay on your machine and are ignored by
 > Git. Do **not** copy them into commits or production deployments.
+
+## Verifying Generated Files
+
+Every run automatically validates the private keys, certificates, chains, and
+PKCS#12 bundles using `openssl`. You can re-run the verification step at any
+time without regenerating assets:
+
+```bash
+python scripts/generate_test_certs.py --verify-only -p curatorssl
+```
+
+Use `-p` if you changed the default password; otherwise the value stored in
+`manifest.json` is used automatically. The verifier checks:
+
+- Each encrypted private key can be opened with the supplied password.
+- HTTP/transport certificates are well-formed and signed by the custom CA.
+- PKCS#12 bundles contain the expected material.

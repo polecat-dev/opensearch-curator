@@ -75,6 +75,9 @@ docker-compose -f docker-compose.test.yml up -d
 ```bash
 python scripts/generate_test_certs.py --password curatorssl
 # Outputs to certs/generated/ (gitignored) and prints next steps
+
+# Re-run verification only (no regeneration)
+python scripts/generate_test_certs.py --verify-only --password curatorssl
 ```
 
 The compose stack expects `certs/generated/` to exist and the password to be
