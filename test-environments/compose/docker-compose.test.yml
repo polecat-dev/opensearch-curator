@@ -59,7 +59,7 @@ services:
     volumes:
       - opensearch-data:/usr/share/opensearch/data
       - ../../certs/generated:/usr/share/opensearch/config/certs:ro
-      - ../../config/opensearch-security:/usr/share/opensearch/config/opensearch-security-custom:ro
+      - ./opensearch-security:/usr/share/opensearch/config/opensearch-security-custom:ro
     ports:
       - 19200:9200
       - 19600:9600
