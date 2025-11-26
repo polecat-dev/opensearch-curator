@@ -2,12 +2,20 @@
 
 # pylint: disable=C0115, C0116, invalid-name
 import os
+from urllib.parse import urlparse
 from curator.exceptions import ConfigurationError
 from curator.helpers.getters import get_indices
 from . import CuratorTestCase
 from . import testvars
 
 HOST = os.environ.get('TEST_ES_SERVER', 'http://127.0.0.1:9200')
+
+
+def _is_default_local_host(url):
+    parsed = urlparse(url)
+    host = parsed.hostname or ''
+    port = parsed.port or 9200
+    return host in ('127.0.0.1', 'localhost') and port == 9200
 
 
 class TestCLIMethods(CuratorTestCase):
@@ -50,9 +58,7 @@ class TestCLIMethods(CuratorTestCase):
         # TEST_ES_SERVER is set to something other than localhost:9200.  In this
         # case, the test here would fail.  The if statement at the end now
         # compensates. See https://github.com/elastic/curator/issues/843
-        localtest = False
-        if HOST == 'http://127.0.0.1:9200':
-            localtest = True
+        localtest = _is_default_local_host(HOST)
         self.create_indices(10)
         self.write_config(self.args['configfile'], '---\n')  # Empty YAML file.
         self.write_config(

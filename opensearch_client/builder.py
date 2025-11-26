@@ -9,6 +9,8 @@ Classes:
 """
 
 # pylint: disable=C0415,R0902,R0913,R0917
+import base64
+import binascii
 import typing as t
 import logging
 import warnings
@@ -46,6 +48,9 @@ INVALID_HOST_SCHEMA = "Invalid host schema: {host}"
 MUST_PROVIDE_BOTH_AUTH = "Must populate both username and password, or neither"
 MUST_PROVIDE_BOTH_API_KEY = "Must populate both id and api_key, or neither"
 HOSTS_AND_CLOUD_ID_CONFLICT = 'Cannot populate both "hosts" and "cloud_id"'
+INVALID_CLOUD_ID = (
+    'Invalid cloud_id "{value}". Expected "<deployment>:base64(host$es_port[$dashboards_port])".'
+)
 MULTIPLE_HOSTS_MASTER_ONLY = (
     '"master_only" cannot be True if multiple hosts are specified. Hosts = {hosts}'
 )
@@ -622,6 +627,24 @@ class Builder:
                 debug.lv3('Exiting method, raising exception')
                 logger.error(HOSTS_AND_CLOUD_ID_CONFLICT)
                 raise ConfigurationError(HOSTS_AND_CLOUD_ID_CONFLICT)
+            self._validate_cloud_id(self.client_args.cloud_id)
+
+    def _validate_cloud_id(self, cloud_id: str) -> None:
+        """
+        Ensure provided cloud_id matches the documented "<name>:base64(host$es_port[...])" format.
+        """
+        if not isinstance(cloud_id, str) or ":" not in cloud_id:
+            raise ConfigurationError(INVALID_CLOUD_ID.format(value=cloud_id))
+        _, encoded = cloud_id.split(":", 1)
+        if not encoded:
+            raise ConfigurationError(INVALID_CLOUD_ID.format(value=cloud_id))
+        try:
+            decoded = base64.b64decode(encoded).decode("utf-8")
+        except (binascii.Error, UnicodeDecodeError) as exc:
+            raise ConfigurationError(INVALID_CLOUD_ID.format(value=cloud_id)) from exc
+        parts = decoded.split("$")
+        if len(parts) < 2 or not parts[0] or not parts[1]:
+            raise ConfigurationError(INVALID_CLOUD_ID.format(value=cloud_id))
 
     @begin_end()
     def _check_ssl(self) -> None:

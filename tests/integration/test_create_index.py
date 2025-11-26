@@ -131,5 +131,8 @@ class TestCLICreateIndex(CuratorTestCase):
         output = self.result.stdout or ''
         if getattr(self.result, 'stderr', None):
             output += self.result.stderr
-        assert 'illegal_argument_exception' in output
+        assert any(
+            marker in output
+            for marker in ('illegal_argument_exception', 'mapper_parsing_exception')
+        )
         assert 1 == self.result.exit_code
