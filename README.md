@@ -1,6 +1,7 @@
 # OpenSearch Curator
 
-[![Integration Tests](https://github.com/polecat-dev/opensearch-curator/actions/workflows/test.yml/badge.svg)](https://github.com/polecat-dev/opensearch-curator/actions/workflows/test.yml)
+[![Tests](https://github.com/polecat-dev/opensearch-curator/actions/workflows/test.yml/badge.svg)](https://github.com/polecat-dev/opensearch-curator/actions/workflows/test.yml)
+[![Integration Matrix](https://github.com/polecat-dev/opensearch-curator/actions/workflows/integration.yml/badge.svg)](https://github.com/polecat-dev/opensearch-curator/actions/workflows/integration.yml)
 [![Code Quality](https://github.com/polecat-dev/opensearch-curator/actions/workflows/lint.yml/badge.svg)](https://github.com/polecat-dev/opensearch-curator/actions/workflows/lint.yml)
 
 OpenSearch Curator keeps OpenSearch clusters tidy. It ships a Click-based CLI, CLI singletons, and an API surface you can script against for recurring housekeeping tasks such as delete, snapshot, rollover, and remote store conversion.
@@ -37,13 +38,19 @@ OpenSearch Curator keeps OpenSearch clusters tidy. It ships a Click-based CLI, C
 
 ## Test & Coverage Strategy
 
-The CI matrix (`.github/workflows/test.yml`) executes:
+Two workflows keep the project healthy:
 
-1. Integration suites across Python 3.8-3.12 and OpenSearch 2.11.1 / 3.0.0 / 3.1.0 / 3.2.0
-2. A dedicated `opensearch_client` unit-test job
-3. Coverage on Python 3.12 + OpenSearch 3.2.0 (uploaded to Codecov)
+1. `.github/workflows/test.yml` (fast) runs the Curator and `opensearch_client` unit suites on Python 3.8, 3.11, and 3.12. Coverage is uploaded from the Python 3.12 run on every push/PR.
+2. `.github/workflows/integration.yml` (heavy) spins up real OpenSearch + LocalStack containers. It runs on release tags, a weekly schedule, or when triggered manually. The workflow always exercises OpenSearch 3.3.0 and can optionally include the legacy 2.11.1 job by dispatching with `run-legacy=true`.
 
-Run the same checks locally:
+Trigger the integration workflow manually:
+
+```bash
+gh workflow run integration.yml             # latest OpenSearch only
+gh workflow run integration.yml -f run-legacy=true  # include OpenSearch 2.11.1
+```
+
+Run the same integration checks locally:
 
 ```bash
 python -m pip install -e ".[test]"

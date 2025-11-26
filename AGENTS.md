@@ -53,7 +53,8 @@ Additional notes:
 
 | Workflow | Purpose | Notes |
 | -------- | ------- | ----- |
-| `.github/workflows/test.yml` | Matrixed integration (Python 3.8-3.12 x OpenSearch 2.11.1/3.0.0/3.1.0/3.2.0) + `opensearch_client` unit suite, Codecov upload | Spins OpenSearch + LocalStack services, enforces `path.repo=/tmp`, runs coverage on 3.12 + 3.2.0 |
+| `.github/workflows/test.yml` | Unit suites for Python 3.8/3.11/3.12 + `opensearch_client` tests with coverage on 3.12 | Runs fast (no Docker services) so every push/PR gets signal |
+| `.github/workflows/integration.yml` | Full integration run with OpenSearch 3.3.0 (always) and optional 2.11.1 | Triggered weekly, on release tags, or manually (use `run-legacy=true` to include 2.11.1) |
 | `.github/workflows/lint.yml` | Black, Ruff, MyPy, Pylint, Bandit | Lint and security jobs run in parallel |
 | `.github/workflows/build.yml` | Wheels, cx_Freeze binary, Docker images, PyPI publish, GitHub Release assets | Triggered on `v*.*.*` tags or manual dispatch |
 | `.github/workflows/release.yml` | Version bump + tagging + GitHub Release automation | Accepts a `version` input, commits, tags, and pushes before `build.yml` runs |
