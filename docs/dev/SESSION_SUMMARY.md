@@ -41,28 +41,34 @@ Files consolidated/archived to reduce root directory clutter:
 
 ### 2. CI/CD Infrastructure (COMPLETE)
 
-#### GitHub Actions Workflows Created (4 files)
+#### GitHub Actions Workflows Created (5 files)
 
-**1. `.github/workflows/test.yml` - Integration Tests**
-- **Test Matrix:** Python 3.8-3.12 Ã— OpenSearch 2.11, 3.0, 3.1, 3.2
-- **Services:** OpenSearch + LocalStack (S3)
-- **Coverage:** Codecov integration for Python 3.12 + OpenSearch 3.2.0
-- **Duration:** ~5-10 minutes per matrix job
-- **Total Jobs:** 20 (5 Python versions Ã— 4 OpenSearch versions)
+**1. .github/workflows/test.yml - Unit Tests**
+- **Matrix:** Python 3.8, 3.11, 3.12 (no Docker services)
+- **Scope:** 	ests/unit + opensearch_client/tests/unit
+- **Coverage:** Codecov upload from the Python 3.12 run
+- **Duration:** ~1-2 minutes per Python version
 
-**2. `.github/workflows/lint.yml` - Code Quality**
+**2. .github/workflows/integration.yml - Integration Matrix**
+- **Services:** OpenSearch + LocalStack
+- **Versions:** Always OpenSearch 3.3.0, optional 2.11.1 via 
+un-legacy=true
+- **Triggers:** Weekly schedule, release tags, or manual dispatch
+- **Coverage:** Codecov upload from the OpenSearch 3.3.0 job
+
+**3. .github/workflows/lint.yml - Code Quality**
 - **Checks:** Black, Ruff, MyPy, Pylint, Bandit
 - **Security:** Bandit security scanning with report artifact
 - **Duration:** ~2-3 minutes
 
-**3. `.github/workflows/build.yml` - Build & Release**
+**4. .github/workflows/build.yml - Build & Release**
 - **Builds:** Python wheel, standalone binary, Docker image (multi-arch)
 - **Publish:** PyPI (on release tags)
 - **Docker:** Multi-platform (amd64, arm64)
 - **Release:** Auto-create GitHub releases with artifacts
 - **Duration:** ~10-15 minutes
 
-**4. `.github/workflows/README.md` - CI/CD Documentation**
+**5. .github/workflows/README.md - CI/CD Documentation**
 - Complete guide for workflows
 - Setup instructions
 - Troubleshooting tips

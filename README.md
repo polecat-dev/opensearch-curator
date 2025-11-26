@@ -43,6 +43,8 @@ Two workflows keep the project healthy:
 1. `.github/workflows/test.yml` (fast) runs the Curator and `opensearch_client` unit suites on Python 3.8, 3.11, and 3.12. Coverage is uploaded from the Python 3.12 run on every push/PR.
 2. `.github/workflows/integration.yml` (heavy) spins up real OpenSearch + LocalStack containers. It runs on release tags, a weekly schedule, or when triggered manually. The workflow always exercises OpenSearch 3.3.0 and can optionally include the legacy 2.11.1 job by dispatching with `run-legacy=true`.
 
+   > ConvertIndexToRemote and other remote-store tests require OpenSearch 3.x. They are automatically skipped when the cluster reports a lower major version, which is why the legacy 2.11.1 run is optional.
+
 Trigger the integration workflow manually:
 
 ```bash

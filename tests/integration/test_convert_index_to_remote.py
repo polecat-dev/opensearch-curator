@@ -51,6 +51,15 @@ class TestConvertIndexToRemote(CuratorTestCase):
 
             cls.os_client = get_client()
 
+            info = cls.os_client.info()
+            cls.cluster_version = info['version']['number']
+            major_version = int(cls.cluster_version.split('.')[0])
+            if major_version < 3:
+                pytest.skip(
+                    f"ConvertIndexToRemote requires OpenSearch 3.x "
+                    f"(cluster is {cls.cluster_version})"
+                )
+
             cls.s3_client = boto3.client(
                 's3',
                 endpoint_url=LOCALSTACK_ENDPOINT,

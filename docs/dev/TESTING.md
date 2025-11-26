@@ -24,6 +24,8 @@ This document provides comprehensive guidance for running and debugging tests in
 3. **Environment file** - Copy `.env.example` to `.env`
 4. **TLS assets** - Run `python scripts/generate_test_certs.py` once to create the CA, full chains, and PKCS#12 bundle consumed by `test-environments/compose/docker-compose.test.yml`
 
+> **Version note:** Some integration suites (for example, `ConvertIndexToRemote`) rely on OpenSearch 3.x-only APIs. They are automatically skipped when the target cluster reports a major version lower than 3, so expect the legacy 2.11.1 CI run to finish faster with those cases marked as skipped.
+
 ### Run All Tests
 
 ```powershell

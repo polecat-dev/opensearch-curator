@@ -12,16 +12,21 @@
 **Goal:** Automated testing on every commit
 
 **Tasks:**
-1. Create `.github/workflows/test.yml`
-   - Test matrix: Python 3.8-3.12 Ã— OpenSearch 2.11, 3.0, 3.1, 3.2
-   - Run integration tests against Docker OpenSearch
-   - Upload coverage reports
+1. Maintain `.github/workflows/test.yml`
+   - Fast matrix: Python 3.8, 3.11, 3.12 (unit suites only)
+   - Run both `tests/unit` and `opensearch_client/tests/unit`
+   - Upload coverage from the Python 3.12 job
 
-2. Create `.github/workflows/lint.yml`
+2. Add `.github/workflows/integration.yml`
+   - Start OpenSearch + LocalStack services in CI
+   - Always test OpenSearch 3.3.0; include 2.11.1 when `run-legacy=true`
+   - Trigger on release tags, the weekly schedule, or workflow_dispatch (not every push)
+
+3. Create `.github/workflows/lint.yml`
    - Run black, ruff, pylint, mypy
    - Enforce code quality standards
 
-3. Create `.github/workflows/build.yml`
+4. Create `.github/workflows/build.yml`
    - Build binary with cx_Freeze
    - Test Docker image builds
    - Validate package installation
