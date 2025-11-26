@@ -5,23 +5,21 @@ mapped_pages:
 
 # Contributing [about-contributing]
 
-We welcome contributions and bug fixes to Curator’s API and CLI.
+We welcome contributions and bug fixes to the OpenSearch Curator API and CLI.
 
-We are grateful for the many [contributors](https://github.com/elastic/curator/blob/master/CONTRIBUTORS) who have helped Curator become what it is today.
+See the [GitHub contributors graph](https://github.com/polecat-dev/opensearch-curator/graphs/contributors) for everyone who has helped the project grow.
 
-Please read through our [contribution](https://github.com/elastic/curator/blob/master/CONTRIBUTING.md) guide, and the Curator [readme](https://github.com/elastic/curator/blob/master/README.rst) document.
+Please read the [contribution guide](https://github.com/polecat-dev/opensearch-curator/blob/main/CONTRIBUTING.md) and the main [README](https://github.com/polecat-dev/opensearch-curator/blob/main/README.md) before opening a pull request.
 
 A brief overview of the steps
 
 * fork the repo
 * make changes in your fork
 * add tests to cover your changes (if necessary)
-* run tests
-* sign the [CLA](http://elastic.co/contributor-agreement/)
-* send a pull request!
+* run tests locally (`python -m pytest`)
+* open a pull request against `main`
 
 ::::{tip}
-To submit documentation fixes for this site, see [Site Corrections](/reference/site-corrections.md)
+Need to update this site? See [Site Corrections](/reference/site-corrections.md).
 ::::
-
 

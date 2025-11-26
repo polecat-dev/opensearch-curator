@@ -6,7 +6,7 @@ This module defines custom exceptions for es_client, used in
 :mod:`~es_client.utils` to handle specific error conditions.
 
 Classes:
-    ESClientException: Base class for non-Elasticsearch exceptions.
+    ESClientException: Base class for non-OpenSearch exceptions.
     ConfigurationError: Exception for misconfiguration issues.
     MissingArgument: Exception for missing required arguments.
     NotMaster: Exception for non-master node connections.
@@ -57,7 +57,7 @@ def password_filter(data: t.Dict) -> t.Dict:
 
 class ESClientException(Exception):
     """
-    Base class for non-Elasticsearch exceptions in es_client.
+    Base class for non-OpenSearch exceptions in es_client.
 
     Example:
         >>> raise ESClientException('Generic error')

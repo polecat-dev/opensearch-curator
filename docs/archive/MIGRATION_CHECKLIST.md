@@ -1,4 +1,4 @@
-# OpenSearch 3.2.0 Migration Checklist
+﻿# OpenSearch 3.2.0 Migration Checklist
 
 Quick reference for migrating Elasticsearch Curator v8.0.21 to OpenSearch Curator.
 
@@ -47,57 +47,57 @@ from es_client.defaults import LOGGING_SETTINGS, OPTION_DEFAULTS
 ### Core Files (High Priority)
 
 ```
-✅ = Easy change
-⚠️ = Moderate complexity
-🔴 = High complexity/risk
+âœ… = Easy change
+âš ï¸ = Moderate complexity
+ðŸ”´ = High complexity/risk
 
-✅ pyproject.toml                           # Update dependencies
-⚠️ curator/__init__.py                      # Update docstring
-✅ curator/_version.py                      # Version number
-🔴 curator/cli.py                           # Client initialization
-🔴 curator/repomgrcli.py                    # Repository manager
-🔴 curator/singletons.py                    # Configuration helpers
-⚠️ curator/indexlist.py                     # Index operations
-⚠️ curator/snapshotlist.py                  # Snapshot operations
-✅ curator/exceptions.py                    # Error messages
-⚠️ curator/defaults/settings.py             # VERSION_MIN/MAX constants
+âœ… pyproject.toml                           # Update dependencies
+âš ï¸ curator/__init__.py                      # Update docstring
+âœ… curator/_version.py                      # Version number
+ðŸ”´ curator/cli.py                           # Client initialization
+ðŸ”´ curator/repomgrcli.py                    # Repository manager
+ðŸ”´ curator/singletons.py                    # Configuration helpers
+âš ï¸ curator/indexlist.py                     # Index operations
+âš ï¸ curator/snapshotlist.py                  # Snapshot operations
+âœ… curator/exceptions.py                    # Error messages
+âš ï¸ curator/defaults/settings.py             # VERSION_MIN/MAX constants
 ```
 
 ### Helper Files
 
 ```
-⚠️ curator/helpers/testers.py               # Client type checks
-⚠️ curator/helpers/getters.py               # API getters
-⚠️ curator/helpers/waiters.py               # Async waiters
-✅ curator/helpers/date_ops.py              # Date utilities (minimal changes)
-✅ curator/helpers/utils.py                 # Generic utilities
+âš ï¸ curator/helpers/testers.py               # Client type checks
+âš ï¸ curator/helpers/getters.py               # API getters
+âš ï¸ curator/helpers/waiters.py               # Async waiters
+âœ… curator/helpers/date_ops.py              # Date utilities (minimal changes)
+âœ… curator/helpers/utils.py                 # Generic utilities
 ```
 
 ### Action Files (Test Each)
 
 ```
-✅ curator/actions/close.py                 # Low risk
-✅ curator/actions/open.py                  # Low risk
-✅ curator/actions/delete_indices.py        # Low risk
-⚠️ curator/actions/snapshot.py              # Test thoroughly
-⚠️ curator/actions/allocation.py            # API syntax may differ
-⚠️ curator/actions/replicas.py              # Test replication
-⚠️ curator/actions/forcemerge.py            # Validate API
-⚠️ curator/actions/reindex.py               # Validate reindex API
-⚠️ curator/actions/shrink.py                # Test shrink operation
-⚠️ curator/actions/rollover.py              # ISM considerations
-🔴 curator/actions/cold2frozen.py           # Elasticsearch-specific (remove/stub)
-✅ curator/actions/create_index.py          # Low risk
-⚠️ curator/actions/index_settings.py        # Setting names may differ
-⚠️ curator/actions/cluster_routing.py       # master → cluster_manager
-⚠️ curator/actions/alias.py                 # Test alias operations
+âœ… curator/actions/close.py                 # Low risk
+âœ… curator/actions/open.py                  # Low risk
+âœ… curator/actions/delete_indices.py        # Low risk
+âš ï¸ curator/actions/snapshot.py              # Test thoroughly
+âš ï¸ curator/actions/allocation.py            # API syntax may differ
+âš ï¸ curator/actions/replicas.py              # Test replication
+âš ï¸ curator/actions/forcemerge.py            # Validate API
+âš ï¸ curator/actions/reindex.py               # Validate reindex API
+âš ï¸ curator/actions/shrink.py                # Test shrink operation
+âš ï¸ curator/actions/rollover.py              # ISM considerations
+ðŸ”´ curator/actions/cold2frozen.py           # Elasticsearch-specific (remove/stub)
+âœ… curator/actions/create_index.py          # Low risk
+âš ï¸ curator/actions/index_settings.py        # Setting names may differ
+âš ï¸ curator/actions/cluster_routing.py       # master â†’ cluster_manager
+âš ï¸ curator/actions/alias.py                 # Test alias operations
 ```
 
 ### Validator Files
 
 ```
-⚠️ curator/validators/actions.py            # Schema validation
-⚠️ curator/validators/filter_functions.py   # Filter schemas
+âš ï¸ curator/validators/actions.py            # Schema validation
+âš ï¸ curator/validators/filter_functions.py   # Filter schemas
 ```
 
 ## Configuration Changes
@@ -254,7 +254,7 @@ jobs:
 
 ### Files to Update
 
-- [ ] `README.rst` - Change all "Elasticsearch" → "OpenSearch"
+- [ ] `README.md` - Change all "Elasticsearch" â†’ "OpenSearch"
 - [ ] `CONTRIBUTING.md` - Update contribution guidelines
 - [ ] `docs/**/*.md` - Update all documentation
 - [ ] `examples/curator.yml` - Update config example
@@ -265,9 +265,9 @@ jobs:
 
 ```python
 # Search and replace across all files:
-"Elasticsearch" → "OpenSearch"
-"elasticsearch" → "opensearch"
-"Elastic" → "OpenSearch Project"  # In appropriate contexts
+"Elasticsearch" â†’ "OpenSearch"
+"elasticsearch" â†’ "opensearch"
+"Elastic" â†’ "OpenSearch Project"  # In appropriate contexts
 ```
 
 ## Build & Package Updates
@@ -289,7 +289,7 @@ dependencies = [
 
 [project.urls]
 Homepage = "https://github.com/YOUR_ORG/opensearch-curator"
-Documentation = "https://opensearch-curator.readthedocs.io"
+Documentation = "https://opensearch-github.com/opensearch-project/opensearch-curator/tree/main/docs"
 Repository = "https://github.com/YOUR_ORG/opensearch-curator"
 ```
 
@@ -300,7 +300,7 @@ Repository = "https://github.com/YOUR_ORG/opensearch-curator"
 curator = "curator.cli:cli"
 curator_cli = "curator.singletons:cli"
 es_repo_mgr = "curator.repomgrcli:repo_mgr_cli"
-# Note: Consider renaming es_repo_mgr → opensearch_repo_mgr
+# Note: Consider renaming es_repo_mgr â†’ opensearch_repo_mgr
 ```
 
 ## Known Issues & Gotchas
@@ -405,3 +405,4 @@ pip install -e .
 **Next Step:** Begin with dependency replacement (replace `elasticsearch8` imports)
 
 **Blocker Check:** Need to decide on `es_client` fork vs. custom wrapper approach before proceeding.
+

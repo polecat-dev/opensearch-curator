@@ -90,13 +90,11 @@ def check_config(config: dict, quiet: bool = False) -> dict:
         if key not in es_settings[config_key]:
             es_settings[config_key][key] = {}
         else:
-            es_settings[config_key][key] = prune_nones(
-                es_settings[config_key][key]
-            )
+            es_settings[config_key][key] = prune_nones(es_settings[config_key][key])
     _ = SchemaCheck(
         es_settings[config_key],
         config_schema(),
-        "Elasticsearch Configuration",
+        "OpenSearch configuration",
         "elasticsearch",
     ).result()
     retval = dict(_)
@@ -403,7 +401,7 @@ def verify_ssl_paths(args: t.Dict) -> None:
 @begin_end()
 def verify_url_schema(url: str) -> str:
     """
-    Validate and normalize a URL schema for Elasticsearch hosts.
+    Validate and normalize a URL schema for OpenSearch hosts.
 
     Args:
         url (str): URL to validate (e.g., 'http://localhost:9200',

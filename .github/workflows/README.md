@@ -1,334 +1,73 @@
 # GitHub Actions CI/CD
 
-This directory contains GitHub Actions workflows for automated testing, code quality checks, and releases.
-
-## Workflows
-
-### üß™ test.yml - Integration Tests
-
-**Triggers:**
-- Push to `main` or `develop` branches
-- Pull requests to `main` or `develop`
-
-**Test Matrix:**
-- **Python versions:** 3.8, 3.9, 3.10, 3.11, 3.12
-- **OpenSearch versions:** 2.11.1, 3.0.0, 3.1.0, 3.2.0
-
-**Services:**
-- OpenSearch (single-node, security disabled, path.repo=/tmp)
-- LocalStack (for S3 repository testing)
-
-**Steps:**
-1. Set up Python environment
-2. Install dependencies
-3. Wait for OpenSearch to be healthy
-4. Run integration tests (183 tests)
-5. Generate coverage report (Python 3.12 + OpenSearch 3.2.0 only)
-6. Upload to Codecov
-
-**Environment Variables:**
-- `TEST_ES_SERVER=http://localhost:9200`
-- `TEST_S3_BUCKET=curator-test-bucket`
-- `TEST_S3_ENDPOINT=http://localhost:4566`
-- `AWS_ACCESS_KEY_ID=test`
-- `AWS_SECRET_ACCESS_KEY=test`
-
-**Expected Duration:** ~5-10 minutes per matrix job
-
----
-
-### üîç lint.yml - Code Quality
-
-**Triggers:**
-- Push to `main` or `develop` branches
-- Pull requests to `main` or `develop`
-
-**Checks:**
-1. **Black** - Code formatting (strict)
-2. **Ruff** - Fast Python linter (continue on error)
-3. **MyPy** - Type checking (continue on error)
-4. **Pylint** - Code quality analysis (informational)
-5. **Bandit** - Security scanner (continue on error)
-
-**Artifacts:**
-- `bandit-security-report.json` - Security scan results
-
-**Expected Duration:** ~2-3 minutes
-
----
-
-### üöÄ build.yml - Build & Release
-
-**Triggers:**
-- Git tags matching `v*.*.*` (e.g., v1.0.0)
-- Manual workflow dispatch
-
-**Jobs:**
-
-#### 1. build-wheel
-- Build Python wheel and source distribution
-- Verify installation
-- Upload as artifact
-
-#### 2. build-binary
-- Build standalone binary using cx_Freeze (Docker)
-- Extract binary from Docker container
-- Upload as artifact
-
-#### 3. build-docker
-- Build multi-platform Docker image (amd64, arm64)
-- Tag with version, major.minor, latest
-- Push to Docker Hub (on release tags)
-
-#### 4. publish-pypi
-- Publish wheel to PyPI (on release tags only)
-- Uses `PYPI_API_TOKEN` secret
-
-#### 5. create-release
-- Create GitHub Release
-- Attach wheel, binary, and Docker image info
-- Auto-generate release notes
-
-**Required Secrets:**
-- `DOCKERHUB_USERNAME` - Docker Hub username
-- `DOCKERHUB_TOKEN` - Docker Hub access token
-- `PYPI_API_TOKEN` - PyPI API token for publishing
-
-**Expected Duration:** ~10-15 minutes total
-
----
-
-## Setup Instructions
-
-### 1. Enable GitHub Actions
-
-GitHub Actions is enabled by default for public repositories. For private repos:
-1. Go to repository Settings ‚Üí Actions ‚Üí General
-2. Enable "Allow all actions and reusable workflows"
-
-### 2. Configure Secrets
-
-Add the following secrets in repository Settings ‚Üí Secrets and variables ‚Üí Actions:
-
-| Secret Name | Description | Required For |
-|-------------|-------------|--------------|
-| `DOCKERHUB_USERNAME` | Docker Hub username | build.yml |
-| `DOCKERHUB_TOKEN` | Docker Hub access token | build.yml |
-| `PYPI_API_TOKEN` | PyPI API token | build.yml (publish) |
-| `CODECOV_TOKEN` | Codecov upload token | test.yml (optional) |
-
-### 3. First Run
-
-After pushing these workflows:
-
-```bash
-# Verify workflows are recognized
-gh workflow list
-
-# Trigger a test run manually
-gh workflow run test.yml
-
-# View run status
-gh run list
-```
-
----
-
-## Monitoring
-
-### View Workflow Status
-
-**In GitHub UI:**
-- Navigate to repository ‚Üí Actions tab
-- Click on workflow name to see runs
-- Click on run to see job details
-
-**Using GitHub CLI:**
-```bash
-# List recent runs
-gh run list
-
-# View specific run
-gh run view <run-id>
-
-# Watch run in real-time
-gh run watch
-```
-
-### Badge URLs
-
-Add these to README.rst:
-
-```rst
-.. image:: https://github.com/polecat-dev/opensearch-curator/workflows/Integration%20Tests/badge.svg
-   :target: https://github.com/polecat-dev/opensearch-curator/actions/workflows/test.yml
-
-.. image:: https://github.com/polecat-dev/opensearch-curator/workflows/Code%20Quality/badge.svg
-   :target: https://github.com/polecat-dev/opensearch-curator/actions/workflows/lint.yml
-
-.. image:: https://codecov.io/gh/polecat-dev/opensearch-curator/branch/main/graph/badge.svg
-   :target: https://codecov.io/gh/polecat-dev/opensearch-curator
-```
-
----
-
-## Troubleshooting
-
-### Tests Fail in CI but Pass Locally
-
-**Common causes:**
-1. **Different OpenSearch version** - CI tests multiple versions
-2. **Missing environment variables** - Check workflow env section
-3. **Service not ready** - Increase health check retries
-4. **Path differences** - Use relative paths, not absolute
-
-**Solution:**
-```bash
-# Test locally with same services
-docker-compose -f docker-compose.test.yml up -d
-.\run_tests.ps1 tests/integration/ -v
-```
-
-### Docker Build Fails
-
-**Check:**
-1. Dockerfile is valid: `docker build -t test .`
-2. alpine4docker.sh is executable: `chmod +x scripts/alpine4docker.sh`
-3. Required files exist in expected locations
-
-### PyPI Publish Fails
-
-**Verify:**
-1. `PYPI_API_TOKEN` secret is set correctly
-2. Package version doesn't already exist on PyPI
-3. Build artifacts were created successfully
-
-**Test with TestPyPI first:**
-```yaml
-- name: Publish to TestPyPI
-  uses: pypa/gh-action-pypi-publish@release/v1
-  with:
-    password: ${{ secrets.TEST_PYPI_API_TOKEN }}
-    repository-url: https://test.pypi.org/legacy/
-```
-
----
-
-## Local Testing
-
-### Test the test workflow locally
-
-Using [act](https://github.com/nektos/act):
-
-```bash
-# Install act
-choco install act-cli  # Windows
-brew install act       # macOS
-
-# Run test workflow
-act -j test
-
-# Run specific job
-act -j test -P ubuntu-latest=ghcr.io/catthehacker/ubuntu:act-latest
-```
-
-### Validate workflow syntax
-
-```bash
-# Install actionlint
-choco install actionlint  # Windows
-brew install actionlint   # macOS
-
-# Lint all workflows
-actionlint .github/workflows/*.yml
-```
-
----
-
-## Release Process
-
-### 1. Prepare Release
-
-```bash
-# Update version
-echo '__version__ = "1.0.0"' > curator/_version.py
-
-# Update CHANGELOG.md
-# - Move [Unreleased] items to [1.0.0]
-# - Add release date
-
-# Commit changes
-git add curator/_version.py CHANGELOG.md
-git commit -m "chore: Prepare v1.0.0 release"
-git push
-```
-
-### 2. Create Release Tag
-
-```bash
-# Create annotated tag
-git tag -a v1.0.0 -m "Release v1.0.0 - OpenSearch Curator"
-
-# Push tag (triggers build.yml)
-git push origin v1.0.0
-```
-
-### 3. Monitor Build
-
-```bash
-# Watch the release build
-gh run watch
-
-# Or view in browser
-# https://github.com/polecat-dev/opensearch-curator/actions
-```
-
-### 4. Verify Release
-
-After build.yml completes:
-
-1. **GitHub Release** - Check https://github.com/polecat-dev/opensearch-curator/releases
-2. **PyPI** - Check https://pypi.org/project/opensearch-curator/
-3. **Docker Hub** - Check https://hub.docker.com/r/polecat/opensearch-curator
-
-### 5. Announce
-
-- Post to OpenSearch community forum
-- Update project website/documentation
-- Tweet/social media announcement
-
----
-
-## Maintenance
-
-### Update Dependencies
-
-Dependabot is configured to auto-update GitHub Actions:
-
-```yaml
-# .github/dependabot.yml
-version: 2
-updates:
-  - package-ecosystem: "github-actions"
-    directory: "/"
-    schedule:
-      interval: "weekly"
-```
-
-### Workflow Optimization
-
-**Reduce CI time:**
-1. Use caching for dependencies
-2. Run fast tests first (fail-fast)
-3. Parallelize independent jobs
-4. Use matrix strategy for multi-version testing
-
-**Save costs:**
-1. Skip redundant runs (skip [ci skip] commits)
-2. Cancel in-progress runs when new commits pushed
-3. Use smaller runners when possible
-
----
-
-**Last Updated:** November 13, 2025  
-**Maintainer:** Development Team
+This directory contains the workflows that keep OpenSearch Curator tested, linted, packaged, and released.
+
+## Workflow Overview
+
+| Workflow | Purpose | Trigger |
+| -------- | ------- | ------- |
+| `test.yml` | Unit suites (`tests/unit` and `opensearch_client/tests/unit`) on Python 3.8/3.11/3.12 with coverage on 3.12 | Push/PR to `main` & `develop`, manual dispatch |
+| `integration.yml` | Full integration run with real OpenSearch + LocalStack (3.3.0 every time, optional 2.11.1) | Weekly schedule, release tags, manual dispatch |
+| `lint.yml` | Formatting, linting, typing, and Bandit security scan | Push/PR to `main` & `develop`, manual dispatch |
+| `build.yml` | Wheels, cx_Freeze binaries, Docker images, and PyPI publish | Tag pushes (`v*.*.*`) or manual |
+| `release.yml` | Version bump + tagging + GitHub Release helper | Manual dispatch with `version` input |
+
+## test.yml ñ Fast Unit Suite
+
+- Runs on every push/PR.
+- Matrix: Python 3.8, 3.11, and 3.12.
+- Executes `pytest tests/unit` and `pytest opensearch_client/tests/unit`.
+- Uploads coverage from the Python 3.12 job via Codecov.
+- No Docker services are started, so the workflow finishes quickly.
+
+## integration.yml ñ Full Environment Tests
+
+- Starts OpenSearch (`opensearchproject/opensearch`) and LocalStack using the same Docker Compose settings we ship in `test-environments/compose/`.
+- Always tests against OpenSearch **3.3.0** (`latest` job).
+- Optionally tests against **2.11.1** (`legacy` job). The legacy job runs automatically on release tags and the weekly schedule; when dispatching manually you can toggle it with `run-legacy=true`.
+- Runs `pytest tests/integration/` with the same env vars we use locally (`TEST_ES_SERVER`, `TEST_S3_BUCKET`, etc.).
+- Uploads coverage for the latest OpenSearch job so release builds still have integration coverage data.
+- Suggested usage before releases:
+  ```bash
+  gh workflow run integration.yml                 # latest OpenSearch only
+  gh workflow run integration.yml -f run-legacy=true  # include OpenSearch 2.11.1
+  ```
+
+## lint.yml ñ Code Quality
+
+Two jobs run independently:
+1. **lint** ñ installs Black, Ruff, MyPy, and Pylint and runs each tool (Pylint is non-blocking via `--exit-zero`).
+2. **security** ñ runs `bandit[toml]` across `curator/` and `opensearch_client/`, uploading `bandit-report.json` as an artifact.
+
+## build.yml ñ Packaging & Publishing
+
+Triggered by semantic tags (`vX.Y.Z`) or manual dispatch.
+- Builds wheels/sdists (`python -m build` + `hatch build`).
+- Creates cx_Freeze binaries inside Docker and uploads them as artifacts.
+- Builds/pushes multi-architecture Docker images (`polecat/opensearch-curator`).
+- Publishes wheels to PyPI when credentials are present.
+- Generates a GitHub Release attaching the artifacts.
+
+## release.yml ñ Version + Release Helper
+
+Manual workflow with required `version` input.
+1. Runs `.github/scripts/bump_version.py` to update `curator/_version.py` and `opensearch_client/__init__.py`.
+2. Installs the project, runs the `opensearch_client` unit suite, and builds wheels.
+3. Commits the bump, pushes to the repo, and creates/updates the `vX.Y.Z` tag.
+4. Creates a GitHub Release and uploads build artifacts. The pushed tag triggers `build.yml` automatically.
+
+## Secrets
+
+| Secret | Workflows | Purpose |
+| ------ | --------- | ------- |
+| `DOCKERHUB_USERNAME` / `DOCKERHUB_TOKEN` | build.yml | Push Docker images |
+| `PYPI_API_TOKEN` | build.yml | Publish wheels/sdists |
+| `CODECOV_TOKEN` (optional) | test.yml & integration.yml | Upload coverage when the repo is private |
+
+## Local Validation Tips
+
+- Use [`act`](https://github.com/nektos/act) for quick syntax checks: `act -j unit` or `act -j latest`.
+- Lint workflow files with [`actionlint`](https://github.com/rhysd/actionlint) before committing (`actionlint .github/workflows/*.yml`).
+- Cancel older runs in the Actions UI to keep queues short. For integration runs, prefer `gh workflow run integration.yml` so you can choose when the heavy jobs execute.
+
+_Last updated: November 27, 2025._

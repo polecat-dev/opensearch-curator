@@ -1,33 +1,79 @@
 """Test variables"""
 
 # pylint: disable=C0103, C0302
+import os
 
-client_config = (
-    '---\n'
-    'elasticsearch:\n'
-    '  client:\n'
-    '    hosts: {0}\n'
-    '    request_timeout: 30\n'
-    '  other_settings:\n'
-    '    master_only: False\n'
-    '\n'
-    'logging:\n'
-    '  loglevel: DEBUG\n'
-    '  logfile:\n'
-    '  logformat: default\n'
-    '  blacklist: []\n'
-)
 
-client_conf_logfile = (
-    '---\n'
-    'elasticsearch:\n'
-    '  client:\n'
-    '    hosts: {0}\n'
-    '\n'
-    'logging:\n'
-    '  loglevel: DEBUG\n'
-    '  logfile: {1}\n'
-)
+def _env_bool(value, default=False):
+    if value is None:
+        return default
+    lowered = value.strip().lower()
+    if lowered in ('1', 'true', 'yes', 'on'):
+        return True
+    if lowered in ('0', 'false', 'no', 'off'):
+        return False
+    return default
+
+
+def _resolve_verify(host):
+    verify_env = os.environ.get('TEST_ES_VERIFY_CERTS')
+    ca_path = os.environ.get('TEST_ES_CA_CERT')
+    default_verify = host.startswith('https://') and bool(ca_path)
+    return _env_bool(verify_env, default_verify)
+
+
+def _resolve_credentials():
+    username = os.environ.get('TEST_ES_USERNAME', 'admin')
+    password = os.environ.get('TEST_ES_PASSWORD') or os.environ.get(
+        'OPENSEARCH_INITIAL_ADMIN_PASSWORD', ''
+    )
+    return username or '', password or ''
+
+
+def _build_client_config(host, logfile=None):
+    verify_certs = _resolve_verify(host)
+    ca_certs = os.environ.get('TEST_ES_CA_CERT') if verify_certs else None
+    username, password = _resolve_credentials()
+    lines = [
+        '---',
+        'opensearch:',
+        '  client:',
+        f'    hosts: {host}',
+        '    request_timeout: 30',
+        f'    verify_certs: {str(verify_certs).lower()}',
+    ]
+    if ca_certs:
+        lines.append(f'    ca_certs: {ca_certs}')
+    lines.extend(
+        [
+            '  other_settings:',
+            '    master_only: False',
+            f'    username: {username}',
+            f'    password: {password}',
+            '',
+            'logging:',
+            '  loglevel: DEBUG',
+            f'  logfile: {logfile}' if logfile else '  logfile:',
+            '  logformat: default',
+            '  blacklist: []',
+            '',
+        ]
+    )
+    return '\n'.join(lines)
+
+
+class _ClientConfigTemplate:
+    def format(self, host):
+        return _build_client_config(host)
+
+
+class _ClientLogfileTemplate:
+    def format(self, host, logfile):
+        return _build_client_config(host, logfile=logfile)
+
+
+client_config = _ClientConfigTemplate()
+client_conf_logfile = _ClientLogfileTemplate()
 
 client_config_envvars = (
     '---\n'

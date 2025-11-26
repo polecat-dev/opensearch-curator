@@ -397,7 +397,7 @@ def get_datemath(client, datemath, random_element=None):
         useful for tests so that you can guarantee the output because you provided the
         random portion.
 
-    :type client: :py:class:`~.opensearchpy.Elasticsearch`
+    :type client: :py:class:`~.opensearchpy.OpenSearch`
     :type datemath: :py:class:`~.datemath.datemath`
     :type random_element: str
 
@@ -653,10 +653,10 @@ def parse_datemath(client, value):
     :param client: A client connection object
     :param value: A string to check for datemath
 
-    :type client: :py:class:`~.opensearchpy.Elasticsearch`
+    :type client: :py:class:`~.opensearchpy.OpenSearch`
     :type value: str
 
-    :returns: A datemath indexname, fully rendered by Elasticsearch
+    :returns: A datemath indexname, fully rendered by OpenSearch
     :rtype: str
     """
     logger = logging.getLogger(__name__)

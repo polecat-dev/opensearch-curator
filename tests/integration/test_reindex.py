@@ -78,9 +78,7 @@ class TestActionFileReindex(CuratorTestCase):
         self.add_docs(source1)
         self.create_index(source2)
         for i in ["4", "5", "6"]:
-            self.client.create(
-                index=source2, id=i, body={"doc" + i: 'TEST DOCUMENT'}
-            )
+            self.client.create(index=source2, id=i, body={"doc" + i: 'TEST DOCUMENT'})
             # Decorators make this pylint exception necessary
             # pylint: disable=E1123
             self.client.indices.flush(index=source2, force=True)
@@ -103,9 +101,7 @@ class TestActionFileReindex(CuratorTestCase):
         self.add_docs(source1)
         self.create_index(source2)
         for i in ["4", "5", "6"]:
-            self.client.create(
-                index=source2, id=i, body={"doc" + i: 'TEST DOCUMENT'}
-            )
+            self.client.create(index=source2, id=i, body={"doc" + i: 'TEST DOCUMENT'})
             # Decorators make this pylint exception necessary
             # pylint: disable=E1123
             self.client.indices.flush(index=source2, force=True)
@@ -126,9 +122,7 @@ class TestActionFileReindex(CuratorTestCase):
         self.add_docs(source1)
         self.create_index(source2)
         for i in ["4", "5", "6"]:
-            self.client.create(
-                index=source2, id=i, body={"doc" + i: 'TEST DOCUMENT'}
-            )
+            self.client.create(index=source2, id=i, body={"doc" + i: 'TEST DOCUMENT'})
             # Decorators make this pylint exception necessary
             # pylint: disable=E1123
             self.client.indices.flush(index=source2, force=True)

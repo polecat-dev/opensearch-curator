@@ -1,0 +1,23 @@
+---
+# Delete old test indices
+# Deletes indices starting with 'test-' that are older than 7 days
+actions:
+  1:
+    action: delete_indices
+    description: "Delete test indices older than 7 days"
+    options:
+      ignore_empty_list: True
+      disable_action: False  # This will actually delete!
+      continue_if_exception: False
+    filters:
+    - filtertype: pattern
+      kind: prefix
+      value: test-
+      exclude: False
+    - filtertype: age
+      source: name
+      direction: older
+      timestring: '%Y.%m.%d'
+      unit: days
+      unit_count: 7
+      exclude: False

@@ -49,7 +49,7 @@ black .                   # Wrong - don't use directly
 ```powershell
 # Also use python -m for curator modules
 python -m curator.cli --help
-python -m curator.singletons show_indices --hosts http://localhost:19200
+python -m curator.singletons show_indices --hosts https://localhost:19200
 ```
 
 ---
@@ -83,7 +83,7 @@ Instead of make commands, use direct commands:
 
 ```powershell
 # Instead of: make docker-up
-docker-compose up -d
+docker-compose -f test-environments/compose/docker-compose.test.yml up -d
 
 # Instead of: make test
 python -m pytest
@@ -115,8 +115,8 @@ python -m ruff check --fix .
 | `make test` | `python -m pytest` |
 | `make test-unit` | `python -m pytest tests/unit` |
 | `make test-opensearch-client` | `python -m pytest opensearch_client/tests/unit -v` |
-| `make docker-up` | `docker-compose up -d` |
-| `make docker-down` | `docker-compose down` |
+| `make docker-up` | `docker-compose -f test-environments/compose/docker-compose.test.yml up -d` |
+| `make docker-down` | `docker-compose -f test-environments/compose/docker-compose.test.yml down` |
 | `make lint` | `python -m ruff check . ; python -m black --check .` |
 | `make format` | `python -m black . ; python -m ruff check --fix .` |
 | `make build` | `python -m build` or `hatch build` |
@@ -179,19 +179,19 @@ hatch run test:pytest  # Uses UV automatically
 
 ```powershell
 # Start OpenSearch
-docker-compose up -d
+docker-compose -f test-environments/compose/docker-compose.test.yml up -d
 
 # With specific file
-docker-compose -f docker-compose.secure.yml up -d
+docker-compose -f test-environments/compose/docker-compose.secure.yml up -d
 
 # Stop
-docker-compose down
+docker-compose -f test-environments/compose/docker-compose.test.yml down
 
 # Clean all data
-docker-compose down -v
+docker-compose -f test-environments/compose/docker-compose.test.yml down -v
 
 # View logs
-docker-compose logs -f opensearch
+docker-compose -f test-environments/compose/docker-compose.test.yml logs -f opensearch
 
 # Check status
 docker-compose ps
@@ -205,11 +205,11 @@ docker-compose ps
 
 ```powershell
 # 1. Start OpenSearch
-docker-compose up -d
+docker-compose -f test-environments/compose/docker-compose.test.yml up -d
 Start-Sleep -Seconds 30  # Wait for startup
 
 # 2. Verify OpenSearch is running
-curl http://localhost:19200/_cluster/health
+curl https://localhost:19200/_cluster/health
 
 # 3. Run opensearch_client tests
 python -m pytest opensearch_client/tests/unit -v
@@ -221,7 +221,7 @@ python -m pytest tests/unit -v
 python -m pytest --cov=curator --cov-report=term-missing
 
 # 6. Stop OpenSearch
-docker-compose down
+docker-compose -f test-environments/compose/docker-compose.test.yml down
 ```
 
 ---
@@ -242,7 +242,7 @@ Example GitHub Actions:
   run: python -m pytest -v
 
 - name: Start OpenSearch
-  run: docker-compose up -d
+  run: docker-compose -f test-environments/compose/docker-compose.test.yml up -d
 ```
 
 ---

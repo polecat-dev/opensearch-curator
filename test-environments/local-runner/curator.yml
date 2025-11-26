@@ -1,0 +1,28 @@
+---
+# OpenSearch Curator Configuration for Local Testing
+# This connects to the local OpenSearch instance on port 19200 with SSL
+
+opensearch:
+  client:
+    hosts:
+      - https://localhost:19200
+    request_timeout: 30
+    verify_certs: True
+    ca_certs: ../../certs/generated/ca/root-ca.pem
+    # client_cert: ../../certs/generated/admin/admin.crt  # Optional: client certificate
+    # client_key: ../../certs/generated/admin/admin.key  # Optional: client key
+    # ssl_assert_hostname: False  # Set False if using IP addresses
+    # ssl_assert_fingerprint:  # Optional: certificate fingerprint validation
+  other_settings:
+    master_only: False
+    skip_version_test: False
+    # Authentication - can also use environment variables:
+    # OPENSEARCH_USER and OPENSEARCH_PASSWORD
+    username: admin
+    password: MyStrongPassword123!
+
+logging:
+  loglevel: INFO
+  logfile:
+  logformat: default
+  blacklist: ['opensearch', 'urllib3']

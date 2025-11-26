@@ -1,0 +1,34 @@
+---
+# Role mappings for users and anonymous access
+_meta:
+  type: "rolesmapping"
+  config_version: 2
+
+# Map admin backend role to all_access
+all_access:
+  reserved: false
+  backend_roles:
+    - "admin"
+  description: "Maps admin backend role to all_access"
+
+# Map anonymous backend role to minimal anonymous_role
+anonymous_users_role:
+  reserved: false
+  hidden: false
+  backend_roles:
+    - "opendistro_security_anonymous_backendrole"
+  hosts: []
+  users: []
+  and_backend_roles: []
+
+# Other standard role mappings
+own_index:
+  reserved: false
+  users:
+    - "*"
+  description: "Allow full access to an index named like the username"
+
+kibana_server:
+  reserved: true
+  users:
+    - "kibanaserver"

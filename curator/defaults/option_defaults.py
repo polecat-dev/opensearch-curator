@@ -731,3 +731,70 @@ def warn_if_no_indices():
             bool, All(Any(str), Boolean())
         )
     }
+
+
+def use_existing_snapshot():
+    """
+    :returns:
+        {Optional('use_existing_snapshot', default=False):
+            Any(bool, All(Any(str), Boolean()))}
+    """
+    return {
+        Optional('use_existing_snapshot', default=False): Any(
+            bool, All(Any(str), Boolean())
+        )
+    }
+
+
+def remote_store_repository():
+    """
+    :returns:
+        {Optional('remote_store_repository'): Any(str, None)}
+    """
+    return {Optional('remote_store_repository'): Any(str, None)}
+
+
+def remote_index_suffix():
+    """
+    :returns:
+        {Optional('remote_index_suffix', default='_remote'): Any(str)}
+    """
+    return {Optional('remote_index_suffix', default='_remote'): Any(str)}
+
+
+def create_alias():
+    """
+    :returns:
+        {Optional('create_alias', default=True):
+            Any(bool, All(Any(str), Boolean()))}
+    """
+    return {Optional('create_alias', default=True): Any(bool, All(Any(str), Boolean()))}
+
+
+def alias_name():
+    """
+    :returns:
+        {Optional('alias_name'): Any(str, None)}
+    """
+    return {Optional('alias_name'): Any(str, None)}
+
+
+def verify_availability():
+    """
+    :returns:
+        {Optional('verify_availability', default=True):
+            Any(bool, All(Any(str), Boolean()))}
+    """
+    return {
+        Optional('verify_availability', default=True): Any(
+            bool, All(Any(str), Boolean())
+        )
+    }
+
+
+def snapshot_name():
+    """
+    :returns:
+        {Optional('snapshot_name'): Any(str, None)}
+    """
+    return {Optional('snapshot_name'): Any(str, None)}

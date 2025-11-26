@@ -38,8 +38,8 @@ $toConsolidate = @{
     "OPENSEARCH_COMPATIBILITY.md" = "Merge into OPENSEARCH_API_FIXES.md"
     "OPENSEARCH_PY_3.0.md" = "Merge into OPENSEARCH_API_FIXES.md"
     "DOCKER_TESTING.md" = "Content already in TESTING.md"
-    "QUICKSTART.md" = "Merge into README.rst or README_FIRST.md"
-    "README_OPENSEARCH.md" = "Duplicate of README.rst, update README.rst instead"
+    "QUICKSTART.md" = "Merge into README.md or README_FIRST.md"
+    "README_OPENSEARCH.md" = "Duplicate of README.md, update README.md instead"
     "CONVERT_INDEX_TO_REMOTE_SUMMARY.md" = "Move to docs/ or examples/"
     "DEVELOPMENT_CONVENTIONS.md" = "Merge into CONTRIBUTING.md"
 }
@@ -148,3 +148,4 @@ Write-Host "  - Uncomment lines in Steps 4-5 to remove/move files" -ForegroundCo
 Write-Host "  - Only after manual consolidation is complete" -ForegroundColor Gray
 Write-Host ""
 Write-Host "Next: Review NEXT_STEPS.md for release preparation tasks" -ForegroundColor Cyan
+

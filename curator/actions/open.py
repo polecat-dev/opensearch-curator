@@ -18,7 +18,7 @@ class Open:
         #: The :py:class:`~.curator.indexlist.IndexList` object passed from
         #: param ``ilo``
         self.index_list = ilo
-        #: The :py:class:`~.elasticsearch.Elasticsearch` client object derived from
+        #: The :py:class:`~.opensearchpy.OpenSearch` client object derived from
         #: :py:attr:`index_list`
         self.client = ilo.client
         self.loggit = logging.getLogger('curator.actions.open')

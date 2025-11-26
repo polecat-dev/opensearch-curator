@@ -1,6 +1,7 @@
 # Scripts Directory
 
 This directory contains utility scripts for development, deployment, and testing.
+For Docker/local-runner specifics see `../test-environments/README.md`.
 
 ## 📋 Script Categories
 
@@ -23,6 +24,8 @@ This directory contains utility scripts for development, deployment, and testing
 - **start-opensearch.sh** - Start OpenSearch (Linux/Mac)
 - **stop-opensearch.bat** - Stop OpenSearch (Windows)
 - **stop-opensearch.sh** - Stop OpenSearch (Linux/Mac)
+- **generate_test_certs.py** - Create TLS assets for docker-compose test stack
+- **load_test_data.py** - Populate OpenSearch with synthetic log data for manual testing
 
 ### Repository Maintenance
 - **cleanup_plan.ps1** - Repository cleanup and organization script
@@ -66,8 +69,31 @@ docker build -t opensearch-curator:latest .
 .\scripts\start-opensearch.bat
 
 # Or use Docker Compose (preferred)
-docker-compose -f docker-compose.test.yml up -d
+docker-compose -f test-environments/compose/docker-compose.test.yml up -d
 ```
+
+### Generating TLS Assets (required for test-environments/compose/docker-compose.test.yml)
+```bash
+python scripts/generate_test_certs.py --password curatorssl
+# Outputs to certs/generated/ (gitignored) and prints next steps
+
+# Re-run verification only (no regeneration)
+python scripts/generate_test_certs.py --verify-only --password curatorssl
+```
+
+The compose stack expects `certs/generated/` to exist and the password to be
+available through `OPENSEARCH_TEST_SSL_PASSWORD`. Update your `.env` using the
+`certs/generated/passwords.env` snippet that the script creates.
+
+### Loading Sample Data
+```powershell
+# Example: create 10 daily indices with 2k docs each on localhost:19200
+python -m scripts.load_test_data --days 10 --docs-per-day 2000 --prefix logstash --alias logs-write
+```
+
+Run `python -m scripts.load_test_data --help` to see all connection and data-shaping options. The script
+targets `https://localhost:19200` by default and generates `PREFIX-YYYY.MM.DD` indices filled with synthetic
+log documents.
 
 ### Repository Cleanup
 ```powershell
@@ -141,7 +167,7 @@ docker-compose -f docker-compose.test.yml up -d
 
 - **Testing Guide:** [../docs/dev/TESTING.md](../docs/dev/TESTING.md)
 - **CI/CD Guide:** [../.github/workflows/README.md](../.github/workflows/README.md)
-- **Docker Testing:** [../docker-compose.test.yml](../docker-compose.test.yml)
+- **Docker Testing:** [../test-environments/compose/docker-compose.test.yml](../test-environments/compose/docker-compose.test.yml)
 - **Remote Tests:** [../tests/integration/README_REMOTE_TESTS.md](../tests/integration/README_REMOTE_TESTS.md)
 
 ## 🛠️ Development Workflow
@@ -149,7 +175,7 @@ docker-compose -f docker-compose.test.yml up -d
 ### Typical Development Cycle
 1. **Start Services:**
    ```bash
-   docker-compose -f docker-compose.test.yml up -d
+   docker-compose -f test-environments/compose/docker-compose.test.yml up -d
    ```
 
 2. **Make Code Changes**
@@ -161,7 +187,7 @@ docker-compose -f docker-compose.test.yml up -d
 
 4. **Cleanup:**
    ```bash
-   docker-compose -f docker-compose.test.yml down
+   docker-compose -f test-environments/compose/docker-compose.test.yml down
    ```
 
 ### Building Release Binary
@@ -185,8 +211,8 @@ docker-compose -f docker-compose.test.yml up -d
 ## 🐛 Troubleshooting
 
 ### Tests Won't Run
-- Check Docker containers: `docker-compose -f docker-compose.test.yml ps`
-- Verify OpenSearch: `curl http://localhost:19200/_cluster/health`
+- Check Docker containers: `docker-compose -f test-environments/compose/docker-compose.test.yml ps`
+- Verify OpenSearch: `curl https://localhost:19200/_cluster/health`
 - Check environment: Review `.env` file
 
 ### Remote Tests Failing

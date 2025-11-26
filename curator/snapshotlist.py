@@ -36,7 +36,7 @@ class SnapshotList:
                 f'Unable to verify existence of repository {repository}'
             )
         self.loggit = logging.getLogger('curator.snapshotlist')
-        #: An :py:class:`~.elasticsearch.Elasticsearch` client object passed from
+        #: An :py:class:`~.opensearchpy.OpenSearch` client object passed from
         #: param ``client``
         self.client = client
         #: The value passed as ``delete_aliases``

@@ -27,12 +27,13 @@ class TestActionFileAllocation(CuratorTestCase):
         self.invoke_runner()
         assert (
             VALUE
-            == self.client.indices.get_settings(index=idx1)[idx1]['settings']['index'].get('routing')['allocation'][alloc][KEY]
+            == self.client.indices.get_settings(index=idx1)[idx1]['settings'][
+                'index'
+            ].get('routing')['allocation'][alloc][KEY]
         )
-        assert (
-            TIEREDROUTING
-            == self.client.indices.get_settings(index=idx2)[idx2]['settings']['index'].get('routing')
-        )
+        assert TIEREDROUTING == self.client.indices.get_settings(index=idx2)[idx2][
+            'settings'
+        ]['index'].get('routing')
 
     def test_require(self):
         alloc = 'require'
@@ -47,12 +48,13 @@ class TestActionFileAllocation(CuratorTestCase):
         self.invoke_runner()
         assert (
             VALUE
-            == self.client.indices.get_settings(index=idx1)[idx1]['settings']['index'].get('routing')['allocation'][alloc][KEY]
+            == self.client.indices.get_settings(index=idx1)[idx1]['settings'][
+                'index'
+            ].get('routing')['allocation'][alloc][KEY]
         )
-        assert (
-            TIEREDROUTING
-            == self.client.indices.get_settings(index=idx2)[idx2]['settings']['index'].get('routing')
-        )
+        assert TIEREDROUTING == self.client.indices.get_settings(index=idx2)[idx2][
+            'settings'
+        ]['index'].get('routing')
 
     def test_exclude(self):
         alloc = 'exclude'
@@ -67,12 +69,13 @@ class TestActionFileAllocation(CuratorTestCase):
         self.invoke_runner()
         assert (
             VALUE
-            == self.client.indices.get_settings(index=idx1)[idx1]['settings']['index'].get('routing')['allocation'][alloc][KEY]
+            == self.client.indices.get_settings(index=idx1)[idx1]['settings'][
+                'index'
+            ].get('routing')['allocation'][alloc][KEY]
         )
-        assert (
-            TIEREDROUTING
-            == self.client.indices.get_settings(index=idx2)[idx2]['settings']['index'].get('routing')
-        )
+        assert TIEREDROUTING == self.client.indices.get_settings(index=idx2)[idx2][
+            'settings'
+        ]['index'].get('routing')
 
     def test_remove_exclude_with_none_value(self):
         empty = ''  # EMPTYVALUE
@@ -92,17 +95,17 @@ class TestActionFileAllocation(CuratorTestCase):
         # Ensure we _have_ it here first.
         assert (
             'bar'
-            == self.client.indices.get_settings(index=idx1)[idx1]['settings']['index'].get('routing')['allocation'][alloc][KEY]
+            == self.client.indices.get_settings(index=idx1)[idx1]['settings'][
+                'index'
+            ].get('routing')['allocation'][alloc][KEY]
         )
         self.invoke_runner()
-        assert (
-            TIEREDROUTING
-            == self.client.indices.get_settings(index=idx1)[idx1]['settings']['index'].get('routing')
-        )
-        assert (
-            TIEREDROUTING
-            == self.client.indices.get_settings(index=idx2)[idx2]['settings']['index'].get('routing')
-        )
+        assert TIEREDROUTING == self.client.indices.get_settings(index=idx1)[idx1][
+            'settings'
+        ]['index'].get('routing')
+        assert TIEREDROUTING == self.client.indices.get_settings(index=idx2)[idx2][
+            'settings'
+        ]['index'].get('routing')
 
     def test_invalid_allocation_type(self):
         alloc = 'invalid'
@@ -140,14 +143,12 @@ class TestActionFileAllocation(CuratorTestCase):
         self.client.indices.close(index=idx1, wait_for_active_shards=0)
         self.create_index(idx2)
         self.invoke_runner()
-        assert (
-            TIEREDROUTING
-            == self.client.indices.get_settings(index=idx1)[idx1]['settings']['index'].get('routing')
-        )
-        assert (
-            TIEREDROUTING
-            == self.client.indices.get_settings(index=idx2)[idx2]['settings']['index'].get('routing')
-        )
+        assert TIEREDROUTING == self.client.indices.get_settings(index=idx1)[idx1][
+            'settings'
+        ]['index'].get('routing')
+        assert TIEREDROUTING == self.client.indices.get_settings(index=idx2)[idx2][
+            'settings'
+        ]['index'].get('routing')
 
     def test_wait_for_completion(self):
         alloc = 'require'
@@ -162,12 +163,13 @@ class TestActionFileAllocation(CuratorTestCase):
         self.invoke_runner()
         assert (
             VALUE
-            == self.client.indices.get_settings(index=idx1)[idx1]['settings']['index'].get('routing')['allocation'][alloc][KEY]
+            == self.client.indices.get_settings(index=idx1)[idx1]['settings'][
+                'index'
+            ].get('routing')['allocation'][alloc][KEY]
         )
-        assert (
-            TIEREDROUTING
-            == self.client.indices.get_settings(index=idx2)[idx2]['settings']['index'].get('routing')
-        )
+        assert TIEREDROUTING == self.client.indices.get_settings(index=idx2)[idx2][
+            'settings'
+        ]['index'].get('routing')
 
 
 class TestCLIAllocation(CuratorTestCase):
@@ -194,9 +196,10 @@ class TestCLIAllocation(CuratorTestCase):
         assert 0 == self.run_subprocess(args, logname='TestCLIAllocation.test_include')
         assert (
             VALUE
-            == self.client.indices.get_settings(index=idx1)[idx1]['settings']['index'].get('routing')['allocation'][alloc][KEY]
+            == self.client.indices.get_settings(index=idx1)[idx1]['settings'][
+                'index'
+            ].get('routing')['allocation'][alloc][KEY]
         )
-        assert (
-            TIEREDROUTING
-            == self.client.indices.get_settings(index=idx2)[idx2]['settings']['index'].get('routing')
-        )
+        assert TIEREDROUTING == self.client.indices.get_settings(index=idx2)[idx2][
+            'settings'
+        ]['index'].get('routing')

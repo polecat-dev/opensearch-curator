@@ -3,7 +3,7 @@
 
 class CuratorException(Exception):
     """
-    Base class for all exceptions raised by Curator which are not Elasticsearch
+    Base class for all exceptions raised by Curator which are not OpenSearch
     exceptions.
     """
 
@@ -77,7 +77,7 @@ class FailedReindex(CuratorException):
 
 class ClientException(CuratorException):
     """
-    Exception raised when the Elasticsearch client and/or connection is the source
+    Exception raised when the OpenSearch client and/or connection is the source
     of the problem.
     """
 

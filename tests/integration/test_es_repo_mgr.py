@@ -68,7 +68,9 @@ class TestCLIRepositoryCreate(CuratorTestCase):
         assert 0 == result.exit_code
 
     def test_create_fs_repository_fail(self):
-        self.skipTest('OpenSearch accepts os.devnull as a valid location; Elasticsearch does not')
+        self.skipTest(
+            'OpenSearch accepts os.devnull as a valid location; the legacy upstream implementation did not'
+        )
         self.write_config(
             self.args['configfile'],
             testvars.client_conf_logfile.format(HOST, os.devnull),
@@ -91,7 +93,9 @@ class TestCLIRepositoryCreate(CuratorTestCase):
         assert 1 == result.exit_code
 
     def test_create_s3_repository_fail(self):
-        self.skipTest('Skipping S3 fail test - see test_create_s3_repository_success for working S3 test')
+        self.skipTest(
+            'Skipping S3 fail test - see test_create_s3_repository_success for working S3 test'
+        )
         self.write_config(
             self.args['configfile'],
             testvars.client_conf_logfile.format(HOST, os.devnull),
@@ -123,15 +127,16 @@ class TestCLIRepositoryCreate(CuratorTestCase):
                 self.args['configfile'],
                 testvars.client_conf_logfile.format(HOST, os.devnull),
             )
-            
+
             # Create bucket in LocalStack first
             import boto3
+
             s3_client = boto3.client(
                 's3',
                 endpoint_url=S3_ENDPOINT,
                 aws_access_key_id='test',
                 aws_secret_access_key='test',
-                region_name='us-east-1'
+                region_name='us-east-1',
             )
             try:
                 s3_client.create_bucket(Bucket=S3_BUCKET)
@@ -139,7 +144,7 @@ class TestCLIRepositoryCreate(CuratorTestCase):
                 pass  # Bucket already exists, that's fine
             except Exception as err:
                 self.skipTest(f'LocalStack S3 not available: {err}')
-            
+
             test = clicktest.CliRunner()
             result = test.invoke(
                 repo_mgr_cli,
@@ -157,7 +162,7 @@ class TestCLIRepositoryCreate(CuratorTestCase):
                     '--verify',
                 ],
             )
-            
+
             if result.exit_code == 0:
                 # Verify repository was created
                 repos = self.client.snapshot.get_repository(
@@ -171,7 +176,9 @@ class TestCLIRepositoryCreate(CuratorTestCase):
                 )
             else:
                 # If it fails, it's likely due to missing S3 plugin or config
-                self.skipTest(f'S3 repository plugin not properly configured: {result.output}')
+                self.skipTest(
+                    f'S3 repository plugin not properly configured: {result.output}'
+                )
         except ImportError:
             self.skipTest('boto3 not installed, cannot test S3 repository')
 
@@ -226,7 +233,7 @@ class TestCLIDeleteRepository(CuratorTestCase):
             self.create_repository()
         except SkipTest as exc:  # type: ignore[attr-defined]
             self.skipTest(str(exc))
-        
+
         self.write_config(
             self.args['configfile'],
             testvars.client_conf_logfile.format(HOST, os.devnull),
@@ -271,7 +278,7 @@ class TestCLIShowRepositories(CuratorTestCase):
             self.create_repository()
         except SkipTest as exc:  # type: ignore[attr-defined]
             self.skipTest(str(exc))
-        
+
         self.write_config(
             self.args['configfile'],
             testvars.client_conf_logfile.format(HOST, os.devnull),

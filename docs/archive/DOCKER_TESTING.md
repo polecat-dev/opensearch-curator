@@ -6,12 +6,12 @@ This directory contains Docker Compose configurations for running OpenSearch ins
 
 ### Start OpenSearch (without security)
 ```bash
-docker-compose up -d
+docker-compose -f test-environments/compose/docker-compose.test.yml up -d
 ```
 
 ### Start OpenSearch (with security enabled)
 ```bash
-docker-compose -f docker-compose.secure.yml up -d
+docker-compose -f test-environments/compose/docker-compose.secure.yml up -d
 ```
 
 ### Check OpenSearch is running
@@ -25,23 +25,23 @@ curl -k -u admin:MyStrongPassword123! https://localhost:9201
 
 ### View logs
 ```bash
-docker-compose logs -f opensearch
+docker-compose -f test-environments/compose/docker-compose.test.yml logs -f opensearch
 ```
 
 ### Stop OpenSearch
 ```bash
-docker-compose down
+docker-compose -f test-environments/compose/docker-compose.test.yml down
 
 # Or with security
-docker-compose -f docker-compose.secure.yml down
+docker-compose -f test-environments/compose/docker-compose.secure.yml down
 ```
 
 ### Remove all data (clean slate)
 ```bash
-docker-compose down -v
+docker-compose -f test-environments/compose/docker-compose.test.yml down -v
 
 # Or with security
-docker-compose -f docker-compose.secure.yml down -v
+docker-compose -f test-environments/compose/docker-compose.secure.yml down -v
 ```
 
 ## Configurations
@@ -59,7 +59,7 @@ opensearch:
     hosts: http://localhost:9200
 ```
 
-### docker-compose.secure.yml (With Security)
+### test-environments/compose/docker-compose.secure.yml (With Security)
 - **OpenSearch:** https://localhost:9201 (note different port)
 - **OpenSearch Dashboards:** http://localhost:5602
 - **Security:** Enabled with demo certificates
@@ -82,7 +82,7 @@ opensearch:
 
 ### 1. Start OpenSearch
 ```bash
-docker-compose up -d
+docker-compose -f test-environments/compose/docker-compose.test.yml up -d
 ```
 
 ### 2. Wait for healthy status
@@ -150,7 +150,7 @@ export OPENSEARCH_VERIFY_CERTS=false
 ### Container won't start
 ```bash
 # Check logs
-docker-compose logs opensearch
+docker-compose -f test-environments/compose/docker-compose.test.yml logs opensearch
 
 # Common issue: vm.max_map_count too low
 # Linux:
@@ -184,16 +184,16 @@ curl http://localhost:9200/_cluster/health
 curl http://localhost:9200/_nodes/stats?pretty
 
 # Restart with fresh data
-docker-compose down -v
-docker-compose up -d
+docker-compose -f test-environments/compose/docker-compose.test.yml down -v
+docker-compose -f test-environments/compose/docker-compose.test.yml up -d
 ```
 
 ### Permission denied errors
 ```bash
 # Linux: Ensure proper permissions on data volume
-docker-compose down
+docker-compose -f test-environments/compose/docker-compose.test.yml down
 sudo rm -rf opensearch-data
-docker-compose up -d
+docker-compose -f test-environments/compose/docker-compose.test.yml up -d
 ```
 
 ## Multiple OpenSearch Versions
@@ -216,7 +216,7 @@ Or create separate compose files:
 ### GitHub Actions example:
 ```yaml
 - name: Start OpenSearch
-  run: docker-compose up -d
+  run: docker-compose -f test-environments/compose/docker-compose.test.yml up -d
 
 - name: Wait for OpenSearch
   run: |

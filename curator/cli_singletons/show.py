@@ -16,7 +16,7 @@ from curator._version import __version__
     epilog=footer(__version__, tail='singleton-cli.html#_show_indicessnapshots')
 )
 @click.option(
-    '--search_pattern', type=str, default='*', help='Elasticsearch Index Search Pattern'
+    '--search_pattern', type=str, default='*', help='OpenSearch index search pattern'
 )
 @click.option('--verbose', help='Show verbose output.', is_flag=True, show_default=True)
 @click.option(
@@ -87,7 +87,9 @@ def show_indices(
         if idx not in action.list_object.index_info:
             continue
         # Use .get() with default for OpenSearch compatibility (some system indices may not have size_in_bytes)
-        allbytes.append(byte_size(action.list_object.index_info[idx].get('size_in_bytes', 0)))
+        allbytes.append(
+            byte_size(action.list_object.index_info[idx].get('size_in_bytes', 0))
+        )
         alldocs.append(str(action.list_object.index_info[idx].get('docs', 0)))
     if epoch:
         timeformat = '{6:>13}'

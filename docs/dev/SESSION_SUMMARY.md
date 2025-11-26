@@ -1,24 +1,24 @@
-# 🎉 Cleanup & CI/CD Setup - Complete!
+﻿# ðŸŽ‰ Cleanup & CI/CD Setup - Complete!
 
 **Date:** November 13, 2025  
 **Session:** Following up on NEXT_STEPS.md
 
 ---
 
-## ✅ What We Accomplished
+## âœ… What We Accomplished
 
 ### 1. Repository Cleanup (COMPLETE)
 
 #### Removed Files (3)
-- ❌ `test_builder.py` - Temporary test file
-- ❌ `test_connection.py` - Temporary test file  
-- ❌ `load_env.py` - Duplicate functionality (in run_tests.ps1)
+- âŒ `test_builder.py` - Temporary test file
+- âŒ `test_connection.py` - Temporary test file  
+- âŒ `load_env.py` - Duplicate functionality (in run_tests.ps1)
 
 #### Organized Scripts (2 moved)
-- 📁 `post4docker.py` → `scripts/post4docker.py`
-- 📁 `alpine4docker.sh` → `scripts/alpine4docker.sh`
+- ðŸ“ `post4docker.py` â†’ `scripts/post4docker.py`
+- ðŸ“ `alpine4docker.sh` â†’ `scripts/alpine4docker.sh`
 
-#### Archived Documentation (11 files → docs/archive/)
+#### Archived Documentation (11 files â†’ docs/archive/)
 Files consolidated/archived to reduce root directory clutter:
 1. `INTEGRATION_TEST_RESULTS.md` - Info now in TESTING.md
 2. `RECENT_UPDATES.md` - Info now in MIGRATION_PROGRESS.md
@@ -27,42 +27,48 @@ Files consolidated/archived to reduce root directory clutter:
 5. `OPENSEARCH_COMPATIBILITY.md` - Content in OPENSEARCH_API_FIXES.md
 6. `OPENSEARCH_PY_3.0.md` - Content in OPENSEARCH_API_FIXES.md
 7. `DOCKER_TESTING.md` - Content in TESTING.md
-8. `QUICKSTART.md` - Can merge into README.rst
-9. `README_OPENSEARCH.md` - Duplicate of README.rst
+8. `QUICKSTART.md` - Can merge into README.md
+9. `README_OPENSEARCH.md` - Duplicate of README.md
 10. `CONVERT_INDEX_TO_REMOTE_SUMMARY.md` - Can move to docs/ or examples/
 11. `DEVELOPMENT_CONVENTIONS.md` - Can merge into CONTRIBUTING.md
 
 #### Created Organization
-- ✅ `docs/archive/` - Archive directory for old docs
-- ✅ `scripts/README.md` - Documentation for script directory
-- ✅ `.github/workflows/` - CI/CD workflows directory
+- âœ… `docs/archive/` - Archive directory for old docs
+- âœ… `scripts/README.md` - Documentation for script directory
+- âœ… `.github/workflows/` - CI/CD workflows directory
 
 ---
 
 ### 2. CI/CD Infrastructure (COMPLETE)
 
-#### GitHub Actions Workflows Created (4 files)
+#### GitHub Actions Workflows Created (5 files)
 
-**1. `.github/workflows/test.yml` - Integration Tests**
-- **Test Matrix:** Python 3.8-3.12 × OpenSearch 2.11, 3.0, 3.1, 3.2
-- **Services:** OpenSearch + LocalStack (S3)
-- **Coverage:** Codecov integration for Python 3.12 + OpenSearch 3.2.0
-- **Duration:** ~5-10 minutes per matrix job
-- **Total Jobs:** 20 (5 Python versions × 4 OpenSearch versions)
+**1. .github/workflows/test.yml - Unit Tests**
+- **Matrix:** Python 3.8, 3.11, 3.12 (no Docker services)
+- **Scope:** 	ests/unit + opensearch_client/tests/unit
+- **Coverage:** Codecov upload from the Python 3.12 run
+- **Duration:** ~1-2 minutes per Python version
 
-**2. `.github/workflows/lint.yml` - Code Quality**
+**2. .github/workflows/integration.yml - Integration Matrix**
+- **Services:** OpenSearch + LocalStack
+- **Versions:** Always OpenSearch 3.3.0, optional 2.11.1 via 
+un-legacy=true
+- **Triggers:** Weekly schedule, release tags, or manual dispatch
+- **Coverage:** Codecov upload from the OpenSearch 3.3.0 job
+
+**3. .github/workflows/lint.yml - Code Quality**
 - **Checks:** Black, Ruff, MyPy, Pylint, Bandit
 - **Security:** Bandit security scanning with report artifact
 - **Duration:** ~2-3 minutes
 
-**3. `.github/workflows/build.yml` - Build & Release**
+**4. .github/workflows/build.yml - Build & Release**
 - **Builds:** Python wheel, standalone binary, Docker image (multi-arch)
 - **Publish:** PyPI (on release tags)
 - **Docker:** Multi-platform (amd64, arm64)
 - **Release:** Auto-create GitHub releases with artifacts
 - **Duration:** ~10-15 minutes
 
-**4. `.github/workflows/README.md` - CI/CD Documentation**
+**5. .github/workflows/README.md - CI/CD Documentation**
 - Complete guide for workflows
 - Setup instructions
 - Troubleshooting tips
@@ -73,36 +79,36 @@ Files consolidated/archived to reduce root directory clutter:
 ### 3. Version & Release Preparation (COMPLETE)
 
 #### Version Updated
-- ✅ `curator/_version.py`: `8.0.21` → `1.0.0`
+- âœ… `curator/_version.py`: `8.0.21` â†’ `1.0.0`
 
 #### Changelog Created
-- ✅ `CHANGELOG.md` - Comprehensive v1.0.0 release notes
+- âœ… `CHANGELOG.md` - Comprehensive v1.0.0 release notes
   - All features, changes, fixes documented
   - Migration notes from Elasticsearch Curator
   - Breaking changes clearly listed
   - Known limitations documented
 
 #### Documentation Added
-- ✅ `STATUS.md` - Quick status summary for new contributors
-- ✅ `NEXT_STEPS.md` - Release preparation roadmap
-- ✅ `cleanup_plan.ps1` - Automated cleanup script
-- ✅ Updated `README_FIRST.md` - Added links to all new docs
+- âœ… `STATUS.md` - Quick status summary for new contributors
+- âœ… `NEXT_STEPS.md` - Release preparation roadmap
+- âœ… `cleanup_plan.ps1` - Automated cleanup script
+- âœ… Updated `README_FIRST.md` - Added links to all new docs
 
 ---
 
-## 📊 Current Repository State
+## ðŸ“Š Current Repository State
 
 ### Root Directory (Clean!)
 **Primary Documentation (13 files):**
-- `README.rst` - Main project README
-- `README_FIRST.md` - Quick start with links ⭐
-- `STATUS.md` - Current status summary ⭐ NEW
-- `NEXT_STEPS.md` - Release roadmap ⭐ NEW
+- `README.md` - Main project README
+- `README_FIRST.md` - Quick start with links â­
+- `STATUS.md` - Current status summary â­ NEW
+- `NEXT_STEPS.md` - Release roadmap â­ NEW
 - `AGENTS.md` - Strategic analysis (100% complete)
 - `TESTING.md` - Testing guide (500+ lines)
 - `OPENSEARCH_API_FIXES.md` - API compatibility (8 fixes)
 - `MIGRATION_PROGRESS.md` - Migration status (100%)
-- `CHANGELOG.md` - Release notes ⭐ NEW
+- `CHANGELOG.md` - Release notes â­ NEW
 - `CONTRIBUTING.md` - Contribution guidelines
 - `CONTRIBUTORS` - List of contributors
 - `LICENSE` - Apache 2.0 license
@@ -116,17 +122,17 @@ Files consolidated/archived to reduce root directory clutter:
 **Scripts (5 files):**
 - `run_tests.ps1`, `run_curator.py`, `run_es_repo_mgr.py`, `run_singleton.py`
 - `setup_remote_tests.*` (2 files)
-- `cleanup_plan.ps1` ⭐ NEW
+- `cleanup_plan.ps1` â­ NEW
 
 **Directories:**
 - `curator/` - Main package
 - `opensearch_client/` - Forked es_client
 - `tests/` - Test suite (183 tests, 100% passing)
-- `scripts/` - Utility scripts (7 files, organized ✅)
+- `scripts/` - Utility scripts (7 files, organized âœ…)
 - `docs/` - Documentation
-  - `docs/archive/` - 11 archived files ✅
+  - `docs/archive/` - 11 archived files âœ…
 - `examples/` - YAML examples
-- `.github/workflows/` - CI/CD (4 files) ⭐ NEW
+- `.github/workflows/` - CI/CD (4 files) â­ NEW
 
 ### Statistics
 - **Total Root Files:** 26 (down from ~40+)
@@ -137,16 +143,16 @@ Files consolidated/archived to reduce root directory clutter:
 
 ---
 
-## 🚀 What's Ready
+## ðŸš€ What's Ready
 
-### ✅ Ready for Immediate Use
+### âœ… Ready for Immediate Use
 1. **All Tests Passing** - 183/183 (100%)
 2. **CI/CD Workflows** - Ready to run on next push
 3. **Version Updated** - v1.0.0 ready
 4. **Changelog Complete** - Ready for release
 5. **Documentation Comprehensive** - All guides in place
 
-### 🔄 Next Actions (In Priority Order)
+### ðŸ”„ Next Actions (In Priority Order)
 
 #### 1. Test CI/CD Workflows (IMMEDIATE)
 ```bash
@@ -160,12 +166,12 @@ gh run watch
 ```
 
 **Expected:**
-- ✅ test.yml runs (20 jobs - Python 3.8-3.12 × OpenSearch 2.11, 3.0, 3.1, 3.2)
-- ✅ lint.yml runs (code quality checks)
-- ⏭️ build.yml skipped (only runs on tags)
+- âœ… test.yml runs (20 jobs - Python 3.8-3.12 Ã— OpenSearch 2.11, 3.0, 3.1, 3.2)
+- âœ… lint.yml runs (code quality checks)
+- â­ï¸ build.yml skipped (only runs on tags)
 
 #### 2. Configure Repository Secrets (BEFORE RELEASE)
-In GitHub: Settings → Secrets and variables → Actions
+In GitHub: Settings â†’ Secrets and variables â†’ Actions
 
 Add these secrets:
 - `DOCKERHUB_USERNAME` - For Docker image publishing
@@ -203,31 +209,31 @@ git push origin v1.0.0
 
 ---
 
-## 📝 Required Manual Reviews
+## ðŸ“ Required Manual Reviews
 
 ### Before First Release
 1. **Review docs/archive/** - Decide if content should be merged or kept archived
-2. **Update README.rst** - Add CI badges, update main documentation
+2. **Update README.md** - Add CI badges, update main documentation
 3. **Test workflows locally** - Use `act` to validate workflows before push
 4. **Verify secrets** - Ensure all required secrets are configured
 
 ### Future Enhancements
 1. **Dependabot** - Add `.github/dependabot.yml` for dependency updates
 2. **Code Coverage** - Add codecov.io integration badge
-3. **Documentation Site** - Set up ReadTheDocs or GitHub Pages
+3. **Documentation Site** - Serve Sphinx docs via GitHub Pages
 4. **Security Scanning** - Add Snyk or GitHub Advanced Security
 
 ---
 
-## 🎯 Success Metrics
+## ðŸŽ¯ Success Metrics
 
 ### Achieved
-- ✅ 100% test pass rate (183/183)
-- ✅ Clean repository structure
-- ✅ Comprehensive CI/CD pipeline
-- ✅ Complete documentation
-- ✅ Version 1.0.0 ready
-- ✅ Release notes prepared
+- âœ… 100% test pass rate (183/183)
+- âœ… Clean repository structure
+- âœ… Comprehensive CI/CD pipeline
+- âœ… Complete documentation
+- âœ… Version 1.0.0 ready
+- âœ… Release notes prepared
 
 ### Next Milestones
 - [ ] CI/CD workflows passing on GitHub
@@ -238,24 +244,25 @@ git push origin v1.0.0
 
 ---
 
-## 📚 Quick Links
+## ðŸ“š Quick Links
 
 **Getting Started:**
-- 📖 [README_FIRST.md](../README_FIRST.md) - Start here!
-- 📊 [STATUS.md](../STATUS.md) - Current status summary
+- ðŸ“– [README_FIRST.md](../README_FIRST.md) - Start here!
+- ðŸ“Š [STATUS.md](../STATUS.md) - Current status summary
 
 **For Developers:**
-- 🧪 [TESTING.md](../TESTING.md) - Testing guide
-- 🔧 [OPENSEARCH_API_FIXES.md](../OPENSEARCH_API_FIXES.md) - API fixes
-- 🚀 [NEXT_STEPS.md](../NEXT_STEPS.md) - Release roadmap
+- ðŸ§ª [TESTING.md](../TESTING.md) - Testing guide
+- ðŸ”§ [OPENSEARCH_API_FIXES.md](../OPENSEARCH_API_FIXES.md) - API fixes
+- ðŸš€ [NEXT_STEPS.md](../NEXT_STEPS.md) - Release roadmap
 
 **For Release Managers:**
-- 📝 [CHANGELOG.md](../CHANGELOG.md) - Release notes
-- 🤖 [.github/workflows/README.md](.github/workflows/README.md) - CI/CD guide
-- 📈 [MIGRATION_PROGRESS.md](../MIGRATION_PROGRESS.md) - Migration status
+- ðŸ“ [CHANGELOG.md](../CHANGELOG.md) - Release notes
+- ðŸ¤– [.github/workflows/README.md](.github/workflows/README.md) - CI/CD guide
+- ðŸ“ˆ [MIGRATION_PROGRESS.md](../MIGRATION_PROGRESS.md) - Migration status
 
 ---
 
-**Session Status:** ✅ COMPLETE  
+**Session Status:** âœ… COMPLETE  
 **Next Action:** Push to GitHub and validate CI/CD workflows  
 **Production Ready:** YES - All prerequisites met for v1.0.0 release
+

@@ -87,7 +87,7 @@ uv sync --dev
 pytest tests/integration/test_convert_index_to_remote.py -v
 
 # 3. Stop environment
-docker-compose -f docker-compose.test.yml down -v
+docker-compose -f test-environments/compose/docker-compose.test.yml down -v
 ```
 
 ### Quick Start (Windows)
@@ -100,7 +100,7 @@ docker-compose -f docker-compose.test.yml down -v
 pytest tests/integration/test_convert_index_to_remote.py -v
 
 # 3. Stop environment
-docker-compose -f docker-compose.test.yml down -v
+docker-compose -f test-environments/compose/docker-compose.test.yml down -v
 ```
 
 ### Manual Setup
@@ -109,11 +109,11 @@ If you prefer manual setup:
 
 ```bash
 # 1. Start services
-docker-compose -f docker-compose.test.yml up -d
+docker-compose -f test-environments/compose/docker-compose.test.yml up -d
 
 # 2. Wait for services to be ready (30-60 seconds)
 # Check OpenSearch
-curl http://localhost:19200/_cluster/health
+curl https://localhost:19200/_cluster/health
 
 # Check LocalStack
 curl http://localhost:4566/_localstack/health
@@ -128,7 +128,7 @@ aws --endpoint-url=http://localhost:4566 s3 mb s3://test-remote-segments
 aws --endpoint-url=http://localhost:4566 s3 mb s3://test-remote-translogs
 
 # 4. Set environment variables
-export TEST_ES_SERVER=http://localhost:19200
+export TEST_ES_SERVER=https://localhost:19200
 export LOCALSTACK_ENDPOINT=http://localhost:4566
 
 # 5. Run tests
@@ -177,15 +177,15 @@ pytest tests/integration/test_convert_index_to_remote.py -x
 **Solutions:**
 ```bash
 # Check Docker logs
-docker-compose -f docker-compose.test.yml logs opensearch
-docker-compose -f docker-compose.test.yml logs localstack
+docker-compose -f test-environments/compose/docker-compose.test.yml logs opensearch
+docker-compose -f test-environments/compose/docker-compose.test.yml logs localstack
 
 # Restart services
-docker-compose -f docker-compose.test.yml restart
+docker-compose -f test-environments/compose/docker-compose.test.yml restart
 
 # Clean start
-docker-compose -f docker-compose.test.yml down -v
-docker-compose -f docker-compose.test.yml up -d
+docker-compose -f test-environments/compose/docker-compose.test.yml down -v
+docker-compose -f test-environments/compose/docker-compose.test.yml up -d
 ```
 
 ### Connection Refused Errors
@@ -198,7 +198,7 @@ docker-compose -f docker-compose.test.yml up -d
 docker ps
 
 # Check service health
-curl http://localhost:19200/_cluster/health
+curl https://localhost:19200/_cluster/health
 curl http://localhost:4566/_localstack/health
 
 # Check if ports are available
@@ -230,13 +230,13 @@ aws --endpoint-url=http://localhost:4566 s3 ls s3://test-curator-snapshots/
 **Check:**
 ```bash
 # Verify OpenSearch remote store configuration
-curl http://localhost:19200/_cluster/settings?include_defaults=true | jq | grep remote_store
+curl https://localhost:19200/_cluster/settings?include_defaults=true | jq | grep remote_store
 
 # Check index settings
-curl http://localhost:19200/test-convert-1_remote/_settings | jq
+curl https://localhost:19200/test-convert-1_remote/_settings | jq
 
 # Verify repository is registered
-curl http://localhost:19200/_snapshot
+curl https://localhost:19200/_snapshot
 ```
 
 ### Test Failures
@@ -249,18 +249,18 @@ curl http://localhost:19200/_snapshot
 pytest tests/integration/test_convert_index_to_remote.py -v -s
 
 # Enable OpenSearch logging
-# Add to docker-compose.test.yml:
+# Add to test-environments/compose/docker-compose.test.yml:
 # - logger.org.opensearch=DEBUG
 
 # Check OpenSearch logs
-docker-compose -f docker-compose.test.yml logs -f opensearch
+docker-compose -f test-environments/compose/docker-compose.test.yml logs -f opensearch
 ```
 
 ## Environment Variables
 
 | Variable | Default | Description |
 |----------|---------|-------------|
-| `TEST_ES_SERVER` | `http://localhost:19200` | OpenSearch endpoint |
+| `TEST_ES_SERVER` | `https://localhost:19200` | OpenSearch endpoint |
 | `LOCALSTACK_ENDPOINT` | `http://localhost:4566` | LocalStack endpoint |
 | `AWS_ACCESS_KEY_ID` | `test` | AWS access key (LocalStack) |
 | `AWS_SECRET_ACCESS_KEY` | `test` | AWS secret key (LocalStack) |
@@ -272,7 +272,7 @@ docker-compose -f docker-compose.test.yml logs -f opensearch
 
 ```bash
 # Stop services and remove volumes
-docker-compose -f docker-compose.test.yml down -v
+docker-compose -f test-environments/compose/docker-compose.test.yml down -v
 
 # Remove Docker images (optional)
 docker rmi opensearchproject/opensearch:3.2.0
@@ -283,10 +283,10 @@ docker rmi localstack/localstack:latest
 
 ```bash
 # Stop services but keep volumes
-docker-compose -f docker-compose.test.yml down
+docker-compose -f test-environments/compose/docker-compose.test.yml down
 
 # Restart with existing data
-docker-compose -f docker-compose.test.yml up -d
+docker-compose -f test-environments/compose/docker-compose.test.yml up -d
 ```
 
 ## CI/CD Integration

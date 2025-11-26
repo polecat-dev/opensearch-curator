@@ -276,14 +276,20 @@ class ConvertIndexToRemote:
             )['snapshots'][0]
 
             self.snapshot_state = snapshot_info['state']
-            self.loggit.debug('Snapshot %s state: %s', self.snapshot_name, self.snapshot_state)
+            self.loggit.debug(
+                'Snapshot %s state: %s', self.snapshot_name, self.snapshot_state
+            )
 
             if self.snapshot_state == 'SUCCESS':
-                self.loggit.info('Snapshot %s completed successfully', self.snapshot_name)
+                self.loggit.info(
+                    'Snapshot %s completed successfully', self.snapshot_name
+                )
             elif self.snapshot_state == 'FAILED':
                 raise ActionError(f'Snapshot {self.snapshot_name} failed')
             else:
-                self.loggit.warning('Snapshot %s in state: %s', self.snapshot_name, self.snapshot_state)
+                self.loggit.warning(
+                    'Snapshot %s in state: %s', self.snapshot_name, self.snapshot_state
+                )
 
             return snapshot_info
 
@@ -299,15 +305,15 @@ class ConvertIndexToRemote:
         to restore the index as a remote-backed index. The cluster must have
         remote repositories configured (segment and translog repositories).
         """
-        self.loggit.info('Restoring indices as remote-backed from snapshot %s', self.snapshot_name)
+        self.loggit.info(
+            'Restoring indices as remote-backed from snapshot %s', self.snapshot_name
+        )
 
         if not self.skip_repo_fs_check:
             verify_repository(self.client, self.repository)
 
         if snapshot_running(self.client):
-            raise SnapshotInProgress(
-                'Cannot restore while a snapshot is in progress.'
-            )
+            raise SnapshotInProgress('Cannot restore while a snapshot is in progress.')
 
         for original_index in self.index_list.indices:
             remote_index = f'{original_index}{self.remote_index_suffix}'
@@ -329,7 +335,7 @@ class ConvertIndexToRemote:
                     'rename_pattern': f'^{original_index}$',
                     'rename_replacement': remote_index,
                 }
-                
+
                 # Add storage_type parameter if remote_store_repository is specified
                 # This parameter REQUIRES a cluster with remote store enabled at creation time
                 if self.remote_store_repository:
@@ -337,7 +343,7 @@ class ConvertIndexToRemote:
                     self.loggit.debug(
                         'Using storage_type=remote_snapshot for remote-backed index'
                     )
-                
+
                 self.client.snapshot.restore(
                     repository=self.repository,
                     snapshot=self.snapshot_name,
@@ -345,7 +351,9 @@ class ConvertIndexToRemote:
                     params={'wait_for_completion': 'false'},
                 )
 
-                self.loggit.debug('Restore initiated for %s -> %s', original_index, remote_index)
+                self.loggit.debug(
+                    'Restore initiated for %s -> %s', original_index, remote_index
+                )
 
             except Exception as err:
                 self.loggit.error(
@@ -387,9 +395,7 @@ class ConvertIndexToRemote:
                     self._verify_document_count(original_index, remote_index)
 
         if missing:
-            raise FailedExecution(
-                f'Failed to create remote indices: {missing}'
-            )
+            raise FailedExecution(f'Failed to create remote indices: {missing}')
 
         self.loggit.info('All remote indices verified successfully')
 
@@ -406,8 +412,12 @@ class ConvertIndexToRemote:
                 return
 
             # Get document counts
-            original_stats = self.client.indices.stats(index=original_index, params={'metric': 'docs'})
-            remote_stats = self.client.indices.stats(index=remote_index, params={'metric': 'docs'})
+            original_stats = self.client.indices.stats(
+                index=original_index, params={'metric': 'docs'}
+            )
+            remote_stats = self.client.indices.stats(
+                index=remote_index, params={'metric': 'docs'}
+            )
 
             # Check if indices are in the response
             if original_index not in original_stats.get('indices', {}):
@@ -425,8 +435,12 @@ class ConvertIndexToRemote:
                 )
                 return
 
-            original_count = original_stats['indices'][original_index]['total']['docs']['count']
-            remote_count = remote_stats['indices'][remote_index]['total']['docs']['count']
+            original_count = original_stats['indices'][original_index]['total']['docs'][
+                'count'
+            ]
+            remote_count = remote_stats['indices'][remote_index]['total']['docs'][
+                'count'
+            ]
 
             if original_count != remote_count:
                 raise ActionError(
@@ -543,9 +557,7 @@ class ConvertIndexToRemote:
             still_exists = [idx for idx in to_delete if idx in all_indices]
 
             if still_exists:
-                raise FailedExecution(
-                    f'Failed to delete some indices: {still_exists}'
-                )
+                raise FailedExecution(f'Failed to delete some indices: {still_exists}')
 
             self.loggit.info('Successfully deleted original indices: %s', to_delete)
 

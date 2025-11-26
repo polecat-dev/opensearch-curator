@@ -52,7 +52,7 @@ MULTIPLE_HOSTS_MASTER_ONLY = (
 NOT_MASTER_NODE = (
     "master_only is True, but the client is connected to a non-master node."
 )
-UNSUPPORTED_VERSION = "Elasticsearch version {version} not supported"
+UNSUPPORTED_VERSION = "OpenSearch version {version} not supported"
 FILE_NOT_FOUND = '"{key}: {path}" File not found!'
 
 
@@ -357,7 +357,7 @@ class Builder:
     @property
     def version_min(self) -> t.Tuple:
         """
-        Get or set the minimum acceptable Elasticsearch version.
+        Get or set the minimum acceptable OpenSearch version.
 
         Returns:
             tuple: Minimum version as (major, minor, patch).
@@ -376,7 +376,7 @@ class Builder:
     @property
     def version_max(self) -> t.Tuple:
         """
-        Get or set the maximum acceptable Elasticsearch version.
+        Get or set the maximum acceptable OpenSearch version.
 
         Returns:
             tuple: Maximum version as (major, minor, patch).
@@ -518,7 +518,7 @@ class Builder:
     @begin_end()
     def connect(self) -> None:
         """
-        Establish connection to Elasticsearch.
+        Establish connection to OpenSearch.
 
         Performs post-connection checks for version and master status using
         :meth:`~Builder._check_version` and :meth:`~Builder._find_master`.
@@ -705,7 +705,7 @@ class Builder:
     @begin_end()
     def _check_version(self) -> None:
         """
-        Verify Elasticsearch version compatibility.
+        Verify OpenSearch version compatibility.
 
         Compares cluster version against version_min and version_max using
         :func:`~es_client.utils.get_version`.
@@ -716,7 +716,7 @@ class Builder:
         """
         v = get_version(self.client)
         if self.skip_version_test:
-            logger.warning("Skipping Elasticsearch version checks")
+            logger.warning("Skipping OpenSearch version checks")
         else:
             debug.lv2(f'Version detected: {".".join(map(str, v))}')
             if v >= self.version_max or v < self.version_min:
@@ -728,7 +728,7 @@ class Builder:
     @begin_end()
     def _get_client(self) -> None:
         """
-        Instantiate the :class:`~elasticsearch8.Elasticsearch` client.
+        Instantiate the :class:`~opensearchpy.OpenSearch` client.
 
         Creates client with pruned configuration arguments using
         :func:`~es_client.utils.prune_nones`, including sensitive fields from

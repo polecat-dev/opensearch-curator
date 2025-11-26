@@ -44,7 +44,7 @@ class Reindex:
         """
         :param ilo: An IndexList Object
         :param request_body: The body to send to
-            :py:meth:`~.elasticsearch.Elasticsearch.reindex`, which must be
+            :py:meth:`~.opensearchpy.OpenSearch.reindex`, which must be
             complete and usable, as Curator will do no vetting of the request_body.
             If it fails to function, Curator will return an exception.
         :param refresh: Whether to refresh the entire target index after the
@@ -98,7 +98,7 @@ class Reindex:
         #: The :py:class:`~.curator.indexlist.IndexList` object passed from
         #: param ``ilo``
         self.index_list = ilo
-        #: The :py:class:`~.elasticsearch.Elasticsearch` client object derived from
+        #: The :py:class:`~.opensearchpy.OpenSearch` client object derived from
         #: :py:attr:`index_list`
         self.client = ilo.client
         #: Object attribute that gets the value of param ``refresh``.
@@ -214,7 +214,7 @@ class Reindex:
                     rclient = builder.client
                 except Exception as err:
                     self.loggit.error(
-                        'Unable to establish connection to remote Elasticsearch'
+                        'Unable to establish connection to remote OpenSearch'
                         ' with provided credentials/certificates/settings.'
                     )
                     report_failure(err)
@@ -308,7 +308,7 @@ class Reindex:
                 # pylint: disable=logging-fstring-interpolation
                 self.loggit.error(
                     f'The index described as "{index_name}" was not found after the '
-                    f'reindex operation. Check Elasticsearch logs for more '
+                    f'reindex operation. Check OpenSearch logs for more '
                     f'information.'
                 )
                 if self.remote:
@@ -347,7 +347,7 @@ class Reindex:
             f'refresh={self.refresh} '
             f'requests_per_second={self.requests_per_second} '
             f'slices={self.slices} '
-                f'timeout={self.body_timeout} '
+            f'timeout={self.body_timeout} '
             f'wait_for_active_shards={self.wait_for_active_shards} '
             f'wait_for_completion={self.wfc}'
         )
@@ -360,7 +360,7 @@ class Reindex:
 
     def do_action(self):
         """
-        Execute :py:meth:`~.elasticsearch.Elasticsearch.reindex` operation with the
+        Execute :py:meth:`~.opensearchpy.OpenSearch.reindex` operation with the
         ``request_body`` from :py:meth:`_get_request_body` and arguments
         :py:attr:`refresh`, :py:attr:`requests_per_second`, :py:attr:`slices`,
         :py:attr:`timeout`, :py:attr:`wait_for_active_shards`, and :py:attr:`wfc`.

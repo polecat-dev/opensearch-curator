@@ -29,7 +29,7 @@ def health_check(client, **kwargs):
 
     :param client: A client connection object
 
-    :type client: :py:class:`~.elasticsearch.Elasticsearch`
+    :type client: :py:class:`~.opensearchpy.OpenSearch`
 
     :rtype: bool
     """
@@ -72,7 +72,7 @@ def relocate_check(client, index):
     :param client: A client connection object
     :param index: The index name
 
-    :type client: :py:class:`~.elasticsearch.Elasticsearch`
+    :type client: :py:class:`~.opensearchpy.OpenSearch`
     :type index: str
 
     :rtype: bool
@@ -104,7 +104,7 @@ def restore_check(client, index_list):
     :param index_list: The list of indices to verify having been restored.
     :param kwargs: Any additional keyword arguments to pass to the function
 
-    :type client: :py:class:`~.elasticsearch.Elasticsearch`
+    :type client: :py:class:`~.opensearchpy.OpenSearch`
     :type index_list: list
 
     :rtype: bool
@@ -130,7 +130,7 @@ def restore_check(client, index_list):
             empty_recovery_indices.extend(chunk)  # chunk is already a list
         else:
             response.update(chunk_response)
-    
+
     # If we got empty recovery for some indices, check if they exist
     if empty_recovery_indices:
         logger.info('Some indices had empty recovery info: %s', empty_recovery_indices)
@@ -138,19 +138,21 @@ def restore_check(client, index_list):
             try:
                 exists = client.indices.exists(index=index)
                 if not exists:
-                    logger.info('Index "%s" does not exist yet. Continuing wait.', index)
+                    logger.info(
+                        'Index "%s" does not exist yet. Continuing wait.', index
+                    )
                     return False
                 else:
                     logger.warning(
                         'Index "%s" exists but has no recovery info. '
                         'This may indicate the index was restored but has no shards allocated. '
                         'Treating as complete.',
-                        index
+                        index,
                     )
             except Exception as err:
                 logger.error('Error checking if index "%s" exists: %s', index, err)
                 return False
-    
+
     logger.info('Provided indices: %s', index_list)
     logger.info('Found indices with recovery: %s', list(response.keys()))
     # pylint: disable=consider-using-dict-items
@@ -179,7 +181,7 @@ def snapshot_check(client, snapshot=None, repository=None):
     :param snapshot: The snapshot name
     :param repository: The repository name
 
-    :type client: :py:class:`~.elasticsearch.Elasticsearch`
+    :type client: :py:class:`~.opensearchpy.OpenSearch`
     :type snapshot: str
     :type repository: str
 
@@ -224,7 +226,7 @@ def task_check(client, task_id=None):
     :param client: A client connection object
     :param task_id: The task id
 
-    :type client: :py:class:`~.elasticsearch.Elasticsearch`
+    :type client: :py:class:`~.opensearchpy.OpenSearch`
     :type task_id: str
 
     :rtype: bool
@@ -291,12 +293,12 @@ def wait_for_it(
     :param action: The action name that will identify how to wait
     :param task_id: If the action provided a task_id, this is where it must be declared.
     :param snapshot: The name of the snapshot.
-    :param repository: The Elasticsearch snapshot repository to use
+    :param repository: The OpenSearch snapshot repository to use
     :param wait_interval: Seconds to wait between completion checks.
     :param max_wait: Maximum number of seconds to ``wait_for_completion``
     :param kwargs: Any additional keyword arguments to pass to the function
 
-    :type client: :py:class:`~.elasticsearch.Elasticsearch`
+    :type client: :py:class:`~.opensearchpy.OpenSearch`
     :type action: str
     :type task_id: str
     :type snapshot: str

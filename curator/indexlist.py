@@ -35,7 +35,7 @@ class IndexList:
     def __init__(self, client, search_pattern='*', include_hidden=False):
         verify_client_object(client)
         self.loggit = logging.getLogger('curator.indexlist')
-        #: An :py:class:`~.elasticsearch.Elasticsearch` client object passed from
+        #: An :py:class:`~.opensearchpy.OpenSearch` client object passed from
         #: param ``client``
         self.client = client
         #: Information extracted from indices, such as segment count, age, etc.
@@ -512,8 +512,8 @@ class IndexList:
                 body = {
                     'size': 0,
                     'aggs': {
-                    'min': {'min': {'field': field}},
-                    'max': {'max': {'field': field}},
+                        'min': {'min': {'field': field}},
+                        'max': {'max': {'field': field}},
                     },
                 }
                 response = self.client.search(index=index, body=body)
@@ -528,7 +528,9 @@ class IndexList:
                         max_val = res['max']['value']
                         if min_val is None or max_val is None:
                             self.loggit.warning(
-                                'Index %s has no values for field %s. Skipping.', index, field
+                                'Index %s has no values for field %s. Skipping.',
+                                index,
+                                field,
                             )
                             continue
                         data['min_value'] = fix_epoch(min_val)

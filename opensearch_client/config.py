@@ -400,10 +400,10 @@ def get_client(
     Example:
         >>> config = {'elasticsearch': {'client': {'hosts': ['http://localhost:9200']}}}
         >>> client = get_client(configdict=config)
-        >>> isinstance(client, Elasticsearch)
+        >>> isinstance(client, OpenSearch)
         True
 
-    Get an Elasticsearch Client using :py:class:`~.es_client.builder.Builder`
+    Get an OpenSearch client using :py:class:`~.es_client.builder.Builder`
 
     Build a client connection object out of settings from `configfile` or `configdict`.
 
@@ -425,14 +425,14 @@ def get_client(
     )
 
     try:
-        debug.lv4('TRY: Connecting to Elasticsearch')
+        debug.lv4('TRY: Connecting to OpenSearch')
         builder.connect()
     except Exception as exc:
         debug.lv3('Exiting function, raising exception')
-        logger.critical("Unable to establish client connection to Elasticsearch!")
+        logger.critical("Unable to establish client connection to OpenSearch!")
         logger.critical(f"Exception encountered: {exc}")
         raise ESClientException from exc
-    debug.lv5('Return value = (Elasticsearch Client object)')
+    debug.lv5('Return value = (OpenSearch client object)')
     return builder.client
 
 

@@ -113,7 +113,7 @@ def process_action(client, action_def, dry_run=False):
     :param client: A client connection object
     :param action_def: The ``action`` object
 
-    :type client: :py:class:`~.elasticsearch.Elasticsearch`
+    :type client: :py:class:`~.opensearchpy.OpenSearch`
     :type action_def: :py:class:`~.curator.classdef.ActionDef`
     :rtype: None
     """
@@ -226,7 +226,7 @@ def run(ctx: click.Context) -> None:
         except (ClientException, ESClientException) as exc:
             # No matter where logging is set to go, make sure we dump these messages to
             # the CLI
-            click.echo('Unable to establish client connection to Elasticsearch!')
+            click.echo('Unable to establish client connection to OpenSearch!')
             click.echo(f'Exception: {exc}')
             sys.exit(1)
         except ConfigurationError as err:
@@ -295,7 +295,7 @@ def cli(
     action_file,
 ):
     """
-    Curator for Elasticsearch indices
+    Curator for OpenSearch indices
 
     The default $HOME/.curator/curator.yml configuration file (--config)
     can be used but is not needed.

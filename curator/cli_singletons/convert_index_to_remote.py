@@ -8,16 +8,13 @@ from curator.cli_singletons.utils import validate_filter_json
 # pylint: disable=line-too-long,too-many-arguments
 @click.command()
 @click.option(
-    '--search_pattern', 
-    type=str, 
-    default='*', 
-    help='OpenSearch Index Search Pattern'
+    '--search_pattern', type=str, default='*', help='OpenSearch Index Search Pattern'
 )
 @click.option(
-    '--repository', 
-    type=str, 
-    required=True, 
-    help='Snapshot repository for backup/restore operations'
+    '--repository',
+    type=str,
+    required=True,
+    help='Snapshot repository for backup/restore operations',
 )
 @click.option(
     '--snapshot_name',

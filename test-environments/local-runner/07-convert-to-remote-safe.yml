@@ -1,0 +1,54 @@
+---
+# Convert Index to Remote Storage - Basic Example
+# Creates remote-backed indices from local indices using snapshot/restore
+# This example keeps both local and remote indices (safe mode)
+actions:
+  1:
+    action: convert_index_to_remote
+    description: "Convert test-* indices to remote storage (safe mode - no deletion)"
+    options:
+      # Repository for snapshot (must be configured in OpenSearch)
+      repository: backup
+      
+      # Snapshot name (optional - auto-generated if blank)
+      snapshot_name: 'remote-conversion-%Y%m%d-%H%M%S'
+      
+      # Use existing snapshot (False = create new)
+      use_existing_snapshot: False
+      
+      # Suffix for remote index names (test-2024.11.01 -> test-2024.11.01_remote)
+      remote_index_suffix: '_remote'
+      
+      # Create alias with original name pointing to remote index
+      create_alias: True
+      
+      # Delete original local index after conversion (CAUTION!)
+      delete_after: False  # Safe mode - keep originals
+      
+      # Verify remote index before deletion
+      verify_availability: True
+      
+      # Snapshot/restore settings
+      ignore_unavailable: False
+      partial: False
+      wait_for_completion: True
+      wait_interval: 9
+      max_wait: -1
+      skip_repo_fs_check: False
+      
+      # Action control
+      disable_action: false  # Set to False when ready!
+      continue_if_exception: False
+      
+    filters:
+    - filtertype: pattern
+      kind: prefix
+      value: test-
+      exclude: False
+    - filtertype: age
+      source: name
+      timestring: '%Y.%m.%d'
+      direction: older
+      unit: days
+      unit_count: 3
+      exclude: False

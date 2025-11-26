@@ -2,7 +2,7 @@
 
 ## ⚠️ Important Notes
 
-- **Port:** OpenSearch runs on http://localhost:19200 (not 9200)
+- **Port:** OpenSearch runs on https://localhost:19200 (not 9200)
 - **Python modules:** Always use `python -m` (e.g., `python -m pytest`)
 - **Makefile:** Only works in WSL on Windows - use direct commands in PowerShell
 - See [DEVELOPMENT_CONVENTIONS.md](DEVELOPMENT_CONVENTIONS.md) for details
@@ -11,7 +11,7 @@
 
 Due to Windows port restrictions, the Docker Compose configuration uses:
 
-- **OpenSearch:** http://localhost:19200 (instead of 9200)
+- **OpenSearch:** https://localhost:19200 (instead of 9200)
 - **OpenSearch Dashboards:** http://localhost:5601
 
 ## Start OpenSearch
@@ -21,18 +21,18 @@ Due to Windows port restrictions, the Docker Compose configuration uses:
 docker rm -f opensearch-curator-test opensearch-dashboards-test
 
 # Start fresh
-docker-compose up -d
+docker-compose -f test-environments/compose/docker-compose.test.yml up -d
 
 # Wait a moment for startup, then check health
 Start-Sleep -Seconds 10
-curl http://localhost:19200/_cluster/health
+curl https://localhost:19200/_cluster/health
 ```
 
 ## Test Connection
 
 ```powershell
 # Check cluster health
-curl http://localhost:19200
+curl https://localhost:19200
 
 # Should return something like:
 # {
@@ -46,31 +46,31 @@ curl http://localhost:19200
 
 ```powershell
 # Create test indices
-curl -X PUT "http://localhost:19200/test-index-1"
-curl -X PUT "http://localhost:19200/test-index-2"
-curl -X PUT "http://localhost:19200/test-index-3"
+curl -X PUT "https://localhost:19200/test-index-1"
+curl -X PUT "https://localhost:19200/test-index-2"
+curl -X PUT "https://localhost:19200/test-index-3"
 
 # List indices
-curl "http://localhost:19200/_cat/indices?v"
+curl "https://localhost:19200/_cat/indices?v"
 ```
 
 ## Test Curator
 
 ```powershell
 # Show indices (use python -m)
-python -m curator.singletons show_indices --hosts http://localhost:19200
+python -m curator.singletons show_indices --hosts https://localhost:19200
 
 # Or test opensearch_client
-python -c "from opensearch_client.builder import Builder; from dotmap import DotMap; config = DotMap({'opensearch': {'client': {'hosts': ['http://localhost:19200']}}}); builder = Builder(configdict=config); client = builder.client(); print(client.info())"
+python -c "from opensearch_client.builder import Builder; from dotmap import DotMap; config = DotMap({'opensearch': {'client': {'hosts': ['https://localhost:19200']}}}); builder = Builder(configdict=config); client = builder.client(); print(client.info())"
 ```
 
 ## Stop OpenSearch
 
 ```powershell
-docker-compose down
+docker-compose -f test-environments/compose/docker-compose.test.yml down
 
 # Remove all data
-docker-compose down -v
+docker-compose -f test-environments/compose/docker-compose.test.yml down -v
 ```
 
 ## Troubleshooting
@@ -90,13 +90,13 @@ docker rm -f opensearch-curator-test opensearch-dashboards-test
 ### OpenSearch not starting
 Check logs:
 ```powershell
-docker-compose logs opensearch
+docker-compose -f test-environments/compose/docker-compose.test.yml logs opensearch
 ```
 
 ### Clean slate
 Remove everything and start fresh:
 ```powershell
-docker-compose down -v
+docker-compose -f test-environments/compose/docker-compose.test.yml down -v
 docker system prune -f
-docker-compose up -d
+docker-compose -f test-environments/compose/docker-compose.test.yml up -d
 ```
