@@ -1,4 +1,5 @@
 """Tending your OpenSearch indices and snapshots"""
+
 from curator._version import __version__
 from curator.helpers import *
 from curator.exceptions import *

@@ -7,13 +7,20 @@ from unittest import SkipTest, TestCase
 from unittest.mock import Mock
 from .testvars import *
 
+
 class CLITestCase(TestCase):
     def setUp(self):
         super(CLITestCase, self).setUp()
         self.args = {}
-        dirname = ''.join(random.choice(string.ascii_uppercase + string.digits) for _ in range(8))
-        ymlname = ''.join(random.choice(string.ascii_uppercase + string.digits) for _ in range(8))
-        badyaml = ''.join(random.choice(string.ascii_uppercase + string.digits) for _ in range(8))
+        dirname = ''.join(
+            random.choice(string.ascii_uppercase + string.digits) for _ in range(8)
+        )
+        ymlname = ''.join(
+            random.choice(string.ascii_uppercase + string.digits) for _ in range(8)
+        )
+        badyaml = ''.join(
+            random.choice(string.ascii_uppercase + string.digits) for _ in range(8)
+        )
         # This will create a psuedo-random temporary directory on the machine
         # which runs the unit tests, but NOT on the machine where elasticsearch
         # is running. This means tests may fail if run against remote instances

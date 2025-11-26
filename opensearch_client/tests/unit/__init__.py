@@ -78,7 +78,9 @@ class FileTestObj(object):
         if not os.path.exists(self.args["tmpdir"]):
             os.makedirs(self.args["tmpdir"])
         self.args["configdir"] = random_directory()
-        self.args["configfile"] = os.path.join(self.args["configdir"], "opensearch_client.yml")
+        self.args["configfile"] = os.path.join(
+            self.args["configdir"], "opensearch_client.yml"
+        )
         self.args["filename"] = os.path.join(self.args["tmpdir"], filename)
         self.args["no_file_here"] = os.path.join(self.args["tmpdir"], "not_created")
         with open(self.args["filename"], "w", encoding="utf-8") as f:

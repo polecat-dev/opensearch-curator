@@ -1,4 +1,5 @@
 """Use __init__ to make these not need to be nested under lowercase.Capital"""
+
 from curator.actions.alias import Alias
 from curator.actions.allocation import Allocation
 from curator.actions.close import Close
@@ -17,22 +18,22 @@ from curator.actions.shrink import Shrink
 from curator.actions.snapshot import Snapshot, DeleteSnapshots, Restore
 
 CLASS_MAP = {
-    'alias' : Alias,
-    'allocation' : Allocation,
-    'close' : Close,
-    'cluster_routing' : ClusterRouting,
+    'alias': Alias,
+    'allocation': Allocation,
+    'close': Close,
+    'cluster_routing': ClusterRouting,
     'cold2frozen': Cold2Frozen,
-    'convert_index_to_remote' : ConvertIndexToRemote,
-    'create_index' : CreateIndex,
-    'delete_indices' : DeleteIndices,
-    'delete_snapshots' : DeleteSnapshots,
-    'forcemerge' : ForceMerge,
-    'index_settings' : IndexSettings,
-    'open' : Open,
-    'reindex' : Reindex,
-    'replicas' : Replicas,
-    'restore' : Restore,
-    'rollover' : Rollover,
-    'snapshot' : Snapshot,
-    'shrink' : Shrink,
+    'convert_index_to_remote': ConvertIndexToRemote,
+    'create_index': CreateIndex,
+    'delete_indices': DeleteIndices,
+    'delete_snapshots': DeleteSnapshots,
+    'forcemerge': ForceMerge,
+    'index_settings': IndexSettings,
+    'open': Open,
+    'reindex': Reindex,
+    'replicas': Replicas,
+    'restore': Restore,
+    'rollover': Rollover,
+    'snapshot': Snapshot,
+    'shrink': Shrink,
 }

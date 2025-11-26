@@ -15,13 +15,7 @@ if summary_match:
 
 # Parse summary counts
 summary_parts = summary.split(", ")
-results = {
-    "passed": 0,
-    "failed": 0,
-    "errors": 0,
-    "skipped": 0,
-    "warnings": 0
-}
+results = {"passed": 0, "failed": 0, "errors": 0, "skipped": 0, "warnings": 0}
 
 for part in summary_parts:
     if "passed" in part:
@@ -41,7 +35,9 @@ for key, value in results.items():
 print()
 
 # Extract FAILED tests
-failed_pattern = r"FAILED (tests/.*?)::(.*?) - (.*?)(?=\nFAILED|\nERROR|\nPASSED|\n=+|$)"
+failed_pattern = (
+    r"FAILED (tests/.*?)::(.*?) - (.*?)(?=\nFAILED|\nERROR|\nPASSED|\n=+|$)"
+)
 failed_tests = re.findall(failed_pattern, content, re.DOTALL)
 
 if failed_tests:
@@ -54,7 +50,7 @@ if failed_tests:
         print(f"ERROR: {error[:200].strip()}...")
         print("-" * 80)
 
-# Extract ERROR tests  
+# Extract ERROR tests
 error_pattern = r"ERROR (tests/.*?)::(.*?) - (.*?)(?=\nFAILED|\nERROR|\nPASSED|\n=+|$)"
 error_tests = re.findall(error_pattern, content, re.DOTALL)
 
@@ -83,4 +79,6 @@ if skipped_tests:
         print("-" * 80)
 
 print(f"\n\nANALYSIS COMPLETE")
-print(f"Total tests analyzed: {results['passed'] + results['failed'] + results['errors'] + results['skipped']}")
+print(
+    f"Total tests analyzed: {results['passed'] + results['failed'] + results['errors'] + results['skipped']}"
+)

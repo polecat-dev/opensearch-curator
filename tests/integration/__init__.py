@@ -35,7 +35,9 @@ DATEMAP = {
 
 HOST = os.environ.get('TEST_ES_SERVER', 'http://127.0.0.1:9200')
 USERNAME = os.environ.get('TEST_ES_USERNAME', 'admin')
-PASSWORD = os.environ.get('TEST_ES_PASSWORD') or os.environ.get('OPENSEARCH_INITIAL_ADMIN_PASSWORD')
+PASSWORD = os.environ.get('TEST_ES_PASSWORD') or os.environ.get(
+    'OPENSEARCH_INITIAL_ADMIN_PASSWORD'
+)
 CA_CERT_PATH = os.environ.get('TEST_ES_CA_CERT')
 VERIFY_ENV = os.environ.get('TEST_ES_VERIFY_CERTS')
 
@@ -52,7 +54,9 @@ def _env_bool(value, default):
 
 
 def _should_verify(host):
-    default_verify = host.startswith('https://') and CA_CERT_PATH and os.path.exists(CA_CERT_PATH)
+    default_verify = (
+        host.startswith('https://') and CA_CERT_PATH and os.path.exists(CA_CERT_PATH)
+    )
     return _env_bool(VERIFY_ENV, bool(default_verify))
 
 
@@ -191,7 +195,9 @@ class CuratorTestCase(TestCase):
                 # Don't try to delete /tmp or other system directories
                 # Only delete if it's a temporary directory we created
                 path = self.args[path_arg]
-                if path.startswith('/tmp/tmp') or path.startswith(tempfile.gettempdir()):
+                if path.startswith('/tmp/tmp') or path.startswith(
+                    tempfile.gettempdir()
+                ):
                     try:
                         shutil.rmtree(path)
                     except (PermissionError, OSError) as e:
@@ -237,7 +243,7 @@ class CuratorTestCase(TestCase):
         self.client.cluster.health()
 
     def wfy(self):
-        # opensearch-py 3.0: Just verify cluster is responsive  
+        # opensearch-py 3.0: Just verify cluster is responsive
         self.client.cluster.health()
 
     def create_index(
@@ -333,7 +339,9 @@ class CuratorTestCase(TestCase):
             for listitem in cleanup['snapshots']:
                 # Delete snapshot from the specific repository, not self.args['repository']
                 try:
-                    self.client.snapshot.delete(repository=repo, snapshot=listitem['snapshot'])
+                    self.client.snapshot.delete(
+                        repository=repo, snapshot=listitem['snapshot']
+                    )
                 except NotFoundError:
                     pass
             self.client.snapshot.delete_repository(repository=repo)

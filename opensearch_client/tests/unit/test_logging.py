@@ -190,7 +190,7 @@ class TestLoggerSetup(unittest.TestCase):
         # Use delete=False on Windows to avoid permission issues
         with tempfile.NamedTemporaryFile(delete=False) as tmpfile:
             tmpfile_name = tmpfile.name
-        
+
         try:
             log_opts = {
                 'loglevel': 'INFO',
@@ -211,6 +211,7 @@ class TestLoggerSetup(unittest.TestCase):
         finally:
             # Clean up the temp file
             import os
+
             try:
                 os.unlink(tmpfile_name)
             except:

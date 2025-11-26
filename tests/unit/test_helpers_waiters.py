@@ -140,7 +140,9 @@ class TestRestoreCheck(TestCase):
         """
         client = Mock()
         client.indices.recovery.return_value = {}
-        client.indices.exists.return_value = False  # Mock indices.exists() for empty recovery check
+        client.indices.exists.return_value = (
+            False  # Mock indices.exists() for empty recovery check
+        )
         assert not restore_check(client, self.NAMED_INDICES)
 
 

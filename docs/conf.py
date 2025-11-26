@@ -70,7 +70,10 @@ html_theme_path = [sphinx_rtd_theme.get_html_theme_path()]
 intersphinx_mapping = {
     'python': ('https://docs.python.org/3.12', None),
     'es_client': ('https://github.com/opensearch-project/opensearch-client', None),
-    'elasticsearch8': ('https://www.elastic.co/guide/en/elasticsearch/client/python-api/current/index.html', None),
+    'elasticsearch8': (
+        'https://www.elastic.co/guide/en/elasticsearch/client/python-api/current/index.html',
+        None,
+    ),
     'voluptuous': ('http://alecthomas.github.io/voluptuous/docs/_build/html', None),
     'click': ('https://click.palletsprojects.com/en/8.1.x', None),
 }

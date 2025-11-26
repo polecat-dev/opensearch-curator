@@ -43,27 +43,28 @@ class TestConvertIndexToRemote(CuratorTestCase):
     def setUpClass(cls):
         """Set up LocalStack S3 buckets and OpenSearch repositories"""
         super().setUpClass()
-        
+
         # Check if LocalStack is available
         try:
             # Get OpenSearch client from the parent test framework
             from . import get_client
+
             cls.os_client = get_client()
-            
+
             cls.s3_client = boto3.client(
                 's3',
                 endpoint_url=LOCALSTACK_ENDPOINT,
                 aws_access_key_id=AWS_ACCESS_KEY,
                 aws_secret_access_key=AWS_SECRET_KEY,
                 region_name=AWS_REGION,
-                config=Config(signature_version='s3v4')
+                config=Config(signature_version='s3v4'),
             )
-            
+
             # Create test buckets
             cls._create_s3_buckets()
-            
+
             cls.localstack_available = True
-            
+
         except Exception as e:
             cls.localstack_available = False
             pytest.skip(f"LocalStack not available: {e}")
@@ -72,7 +73,7 @@ class TestConvertIndexToRemote(CuratorTestCase):
     def _create_s3_buckets(cls):
         """Create S3 buckets in LocalStack"""
         buckets = [SNAPSHOT_BUCKET, REMOTE_SEGMENT_BUCKET, REMOTE_TRANSLOG_BUCKET]
-        
+
         for bucket in buckets:
             try:
                 cls.s3_client.create_bucket(Bucket=bucket)
@@ -93,9 +94,9 @@ class TestConvertIndexToRemote(CuratorTestCase):
             'settings': {
                 'location': '/tmp/test-snapshots',  # Temporary location in container
                 'compress': True,
-            }
+            },
         }
-        
+
         try:
             # Check if repository already exists
             self.client.snapshot.get_repository(repository=self.snapshot_repo_name)
@@ -104,8 +105,7 @@ class TestConvertIndexToRemote(CuratorTestCase):
             # Create it if it doesn't exist
             try:
                 self.client.snapshot.create_repository(
-                    repository=self.snapshot_repo_name,
-                    body=repository_settings
+                    repository=self.snapshot_repo_name, body=repository_settings
                 )
                 print(f"Registered snapshot repository: {self.snapshot_repo_name}")
             except Exception as e:
@@ -117,11 +117,11 @@ class TestConvertIndexToRemote(CuratorTestCase):
         super().setUp()
         if not self.localstack_available:
             pytest.skip("LocalStack not available")
-        
+
         # Register repository for this test (use self.client from parent)
         self.snapshot_repo_name = 'test-remote-conversion-repo'
         self._ensure_repository_exists()
-        
+
         # Create test indices - delete first if they exist
         self.test_indices = ['test-convert-1', 'test-convert-2', 'test-convert-3']
         for index in self.test_indices:
@@ -130,16 +130,14 @@ class TestConvertIndexToRemote(CuratorTestCase):
                 self.client.indices.delete(index=index, ignore_unavailable=True)
             except:
                 pass
-            
+
             self.create_index(index)
             # Add some test documents
             for i in range(10):
                 self.client.index(
-                    index=index,
-                    id=str(i),
-                    body={'test': 'data', 'count': i}
+                    index=index, id=str(i), body={'test': 'data', 'count': i}
                 )
-        
+
         # Wait for documents to be indexed
         time.sleep(1)
         self.client.indices.refresh(index='_all')
@@ -149,47 +147,44 @@ class TestConvertIndexToRemote(CuratorTestCase):
         # Delete all test indices (original and remote) - use expand_wildcards to catch all
         try:
             self.client.indices.delete(
-                index='test-convert-*,*_remote',
-                expand_wildcards='all',
-                ignore=[404]
+                index='test-convert-*,*_remote', expand_wildcards='all', ignore=[404]
             )
         except Exception as e:
             print(f"Error deleting indices with pattern: {e}")
-        
+
         # Also explicitly try to delete any lingering remote indices
         try:
             # Get all indices matching our pattern
             all_indices = self.client.cat.indices(format='json')
             test_indices = [
-                idx['index'] for idx in all_indices 
+                idx['index']
+                for idx in all_indices
                 if 'test-convert' in idx['index'] or idx['index'].endswith('_remote')
             ]
             if test_indices:
-                self.client.indices.delete(
-                    index=','.join(test_indices),
-                    ignore=[404]
-                )
+                self.client.indices.delete(index=','.join(test_indices), ignore=[404])
         except Exception as e:
             print(f"Error deleting remaining indices: {e}")
-        
+
         # Delete test snapshots
         try:
             snapshots = self.client.snapshot.get(
-                repository=self.snapshot_repo_name,
-                snapshot='*'
+                repository=self.snapshot_repo_name, snapshot='*'
             )
             if 'snapshots' in snapshots:
                 for snap in snapshots['snapshots']:
                     try:
                         self.client.snapshot.delete(
                             repository=self.snapshot_repo_name,
-                            snapshot=snap['snapshot']
+                            snapshot=snap['snapshot'],
                         )
                     except Exception as e:
-                        print(f"Error deleting snapshot {snap.get('snapshot', 'unknown')}: {e}")
+                        print(
+                            f"Error deleting snapshot {snap.get('snapshot', 'unknown')}: {e}"
+                        )
         except Exception as e:
             print(f"Error getting snapshots: {e}")
-        
+
         # Note: Not calling super().tearDown() to avoid API incompatibility with repository deletion
         # The repositories will persist across tests which is fine for our purposes
 
@@ -199,19 +194,21 @@ class TestConvertIndexToRemote(CuratorTestCase):
         if hasattr(cls, 'localstack_available') and cls.localstack_available:
             # Delete snapshot repository
             try:
-                cls.client.snapshot.delete_repository(
-                    repository=cls.snapshot_repo_name
-                )
+                cls.client.snapshot.delete_repository(repository=cls.snapshot_repo_name)
             except:
                 pass
-            
+
             # Clean up S3 buckets
             try:
-                for bucket in [SNAPSHOT_BUCKET, REMOTE_SEGMENT_BUCKET, REMOTE_TRANSLOG_BUCKET]:
+                for bucket in [
+                    SNAPSHOT_BUCKET,
+                    REMOTE_SEGMENT_BUCKET,
+                    REMOTE_TRANSLOG_BUCKET,
+                ]:
                     cls._empty_and_delete_bucket(bucket)
             except:
                 pass
-        
+
         super().tearDownClass()
 
     @classmethod
@@ -223,7 +220,7 @@ class TestConvertIndexToRemote(CuratorTestCase):
             if 'Contents' in response:
                 for obj in response['Contents']:
                     cls.s3_client.delete_object(Bucket=bucket_name, Key=obj['Key'])
-            
+
             # Delete bucket
             cls.s3_client.delete_bucket(Bucket=bucket_name)
         except Exception as e:
@@ -233,23 +230,36 @@ class TestConvertIndexToRemote(CuratorTestCase):
         """Helper to filter IndexList for test indices only, excluding system indices"""
         # IMPORTANT: Filters in IndexList are applied in sequence
         # Each filter removes indices from the working set
-        
+
         # 1. Start with all indices
         # 2. Exclude system indices (anything starting with '.' or 'top_queries')
-        ilo.iterate_filters({'filtertype': 'pattern', 'kind': 'prefix', 'value': '.', 'exclude': True})
-        ilo.iterate_filters({'filtertype': 'pattern', 'kind': 'prefix', 'value': 'top_queries', 'exclude': True})
-        
+        ilo.iterate_filters(
+            {'filtertype': 'pattern', 'kind': 'prefix', 'value': '.', 'exclude': True}
+        )
+        ilo.iterate_filters(
+            {
+                'filtertype': 'pattern',
+                'kind': 'prefix',
+                'value': 'top_queries',
+                'exclude': True,
+            }
+        )
+
         # 3. Apply the requested pattern (e.g., get test-convert-* indices)
         ilo.iterate_filters(pattern)
-        
+
         # 4. Debug: print what we have
-        print(f"DEBUG: After filtering, IndexList contains {len(ilo.indices)} indices: {ilo.indices}")
+        print(
+            f"DEBUG: After filtering, IndexList contains {len(ilo.indices)} indices: {ilo.indices}"
+        )
 
     def test_convert_single_index_no_deletion(self):
         """Test converting a single index without deleting original"""
         ilo = IndexList(self.client)
-        self._filter_test_indices(ilo, {'filtertype': 'pattern', 'kind': 'regex', 'value': '^test-convert-1$'})
-        
+        self._filter_test_indices(
+            ilo, {'filtertype': 'pattern', 'kind': 'regex', 'value': '^test-convert-1$'}
+        )
+
         action = ConvertIndexToRemote(
             ilo,
             repository=self.snapshot_repo_name,
@@ -261,14 +271,14 @@ class TestConvertIndexToRemote(CuratorTestCase):
             verify_availability=True,
             wait_for_completion=True,
         )
-        
+
         action.do_action()
-        
+
         # Verify both indices exist
         all_indices = self.client.indices.get(index='*')
         self.assertIn('test-convert-1', all_indices)
         self.assertIn('test-convert-1_remote', all_indices)
-        
+
         # Verify document counts match (skip if remote has no shards)
         original_count = self.client.count(index='test-convert-1')['count']
         try:
@@ -278,12 +288,14 @@ class TestConvertIndexToRemote(CuratorTestCase):
         except Exception as e:
             print(f"Warning: Could not verify document count for remote index: {e}")
             self.assertTrue(self.client.indices.exists(index='test-convert-1_remote'))
-    
+
     def test_dry_run_mode(self):
         """Test dry run mode doesn't create any indices or snapshots"""
         ilo = IndexList(self.client)
-        self._filter_test_indices(ilo, {'filtertype': 'pattern', 'kind': 'regex', 'value': '^test-convert-1$'})
-        
+        self._filter_test_indices(
+            ilo, {'filtertype': 'pattern', 'kind': 'regex', 'value': '^test-convert-1$'}
+        )
+
         action = ConvertIndexToRemote(
             ilo,
             repository=self.snapshot_repo_name,
@@ -295,16 +307,18 @@ class TestConvertIndexToRemote(CuratorTestCase):
             verify_availability=True,
             wait_for_completion=True,
         )
-        
+
         action.do_dry_run()
-        
+
         # Verify no remote index created
         all_indices = self.client.indices.get(index='*')
         self.assertNotIn('test-convert-1_remote', all_indices)
-        
+
         # Verify no snapshot created
         try:
-            self.client.snapshot.get(repository=self.snapshot_repo_name, snapshot='test-snapshot-dryrun')
+            self.client.snapshot.get(
+                repository=self.snapshot_repo_name, snapshot='test-snapshot-dryrun'
+            )
             self.fail("Snapshot should not exist after dry run")
         except:
             pass  # Expected - snapshot shouldn't exist
@@ -312,8 +326,10 @@ class TestConvertIndexToRemote(CuratorTestCase):
     def test_convert_with_alias_creation(self):
         """Test converting with alias creation (requires deletion)"""
         ilo = IndexList(self.client)
-        self._filter_test_indices(ilo, {'filtertype': 'pattern', 'kind': 'regex', 'value': '^test-convert-2$'})
-        
+        self._filter_test_indices(
+            ilo, {'filtertype': 'pattern', 'kind': 'regex', 'value': '^test-convert-2$'}
+        )
+
         action = ConvertIndexToRemote(
             ilo,
             repository=self.snapshot_repo_name,
@@ -325,19 +341,19 @@ class TestConvertIndexToRemote(CuratorTestCase):
             verify_availability=True,
             wait_for_completion=True,
         )
-        
+
         action.do_action()
-        
+
         # Verify original is deleted, remote exists
         all_indices = self.client.indices.get(index='*')
         self.assertNotIn('test-convert-2', all_indices)
         self.assertIn('test-convert-2_remote', all_indices)
-        
+
         # Verify alias was created
         try:
             aliases = self.client.indices.get_alias(name='test-convert-2')
             self.assertIn('test-convert-2_remote', aliases)
-            
+
             # Verify can query via alias (may fail if no shards allocated)
             try:
                 result = self.client.count(index='test-convert-2')
@@ -345,16 +361,20 @@ class TestConvertIndexToRemote(CuratorTestCase):
             except Exception as e:
                 print(f"Warning: Could not query via alias: {e}")
         except Exception as e:
-            print(f"Warning: Alias not found (may not be created if original not deleted): {e}")
+            print(
+                f"Warning: Alias not found (may not be created if original not deleted): {e}"
+            )
 
     def test_convert_multiple_indices(self):
         """Test converting multiple indices at once"""
         ilo = IndexList(self.client)
-        self._filter_test_indices(ilo, {'filtertype': 'pattern', 'kind': 'prefix', 'value': 'test-convert-'})
-        
+        self._filter_test_indices(
+            ilo, {'filtertype': 'pattern', 'kind': 'prefix', 'value': 'test-convert-'}
+        )
+
         # Should match all 3 test indices
         self.assertEqual(len(ilo.indices), 3)
-        
+
         action = ConvertIndexToRemote(
             ilo,
             repository=self.snapshot_repo_name,
@@ -366,14 +386,14 @@ class TestConvertIndexToRemote(CuratorTestCase):
             verify_availability=True,
             wait_for_completion=True,
         )
-        
+
         action.do_action()
-        
+
         # Verify all remote indices created
         all_indices = self.client.indices.get(index='*')
         for idx in self.test_indices:
             self.assertIn(f'{idx}_remote', all_indices)
-            
+
             # Verify document counts (skip if remote index has no shards - expected without remote store)
             original_count = self.client.count(index=idx)['count']
             try:
@@ -395,22 +415,26 @@ class TestConvertIndexToRemote(CuratorTestCase):
             body={
                 'indices': ['test-convert-1'],
             },
-            params={'wait_for_completion': 'true'}
+            params={'wait_for_completion': 'true'},
         )
-        
+
         # Wait for snapshot to complete
         time.sleep(2)
-        
+
         # Now use existing snapshot for conversion
         # CRITICAL: IndexList must ONLY contain indices that are in the snapshot
         # The action verifies snapshot contains all indices in IndexList
         ilo = IndexList(self.client)
         # Manually set to ONLY test-convert-1 to match snapshot content
         ilo.indices = ['test-convert-1']
-        
+
         # Verify we have exactly 1 index
-        self.assertEqual(len(ilo.indices), 1, f"Expected 1 index, got {len(ilo.indices)}: {ilo.indices}")
-        
+        self.assertEqual(
+            len(ilo.indices),
+            1,
+            f"Expected 1 index, got {len(ilo.indices)}: {ilo.indices}",
+        )
+
         action = ConvertIndexToRemote(
             ilo,
             repository=self.snapshot_repo_name,
@@ -422,9 +446,9 @@ class TestConvertIndexToRemote(CuratorTestCase):
             verify_availability=True,
             wait_for_completion=True,
         )
-        
+
         action.do_action()
-        
+
         # Verify remote index created
         all_indices = self.client.indices.get(index='*')
         self.assertIn('test-convert-1_remote', all_indices)
@@ -432,8 +456,10 @@ class TestConvertIndexToRemote(CuratorTestCase):
     def test_convert_with_custom_suffix(self):
         """Test conversion with custom suffix"""
         ilo = IndexList(self.client)
-        self._filter_test_indices(ilo, {'filtertype': 'pattern', 'kind': 'regex', 'value': '^test-convert-1$'})
-        
+        self._filter_test_indices(
+            ilo, {'filtertype': 'pattern', 'kind': 'regex', 'value': '^test-convert-1$'}
+        )
+
         action = ConvertIndexToRemote(
             ilo,
             repository=self.snapshot_repo_name,
@@ -445,9 +471,9 @@ class TestConvertIndexToRemote(CuratorTestCase):
             verify_availability=True,
             wait_for_completion=True,
         )
-        
+
         action.do_action()
-        
+
         # Verify custom suffix used
         all_indices = self.client.indices.get(index='*')
         self.assertIn('test-convert-1_remote_v2', all_indices)
@@ -455,8 +481,10 @@ class TestConvertIndexToRemote(CuratorTestCase):
     def test_dry_run_mode(self):
         """Test dry-run mode doesn't create anything"""
         ilo = IndexList(self.client)
-        ilo.iterate_filters({'filtertype': 'pattern', 'kind': 'regex', 'value': '^test-convert-1$'})
-        
+        ilo.iterate_filters(
+            {'filtertype': 'pattern', 'kind': 'regex', 'value': '^test-convert-1$'}
+        )
+
         action = ConvertIndexToRemote(
             ilo,
             repository=self.snapshot_repo_name,
@@ -468,18 +496,17 @@ class TestConvertIndexToRemote(CuratorTestCase):
             verify_availability=True,
             wait_for_completion=True,
         )
-        
+
         action.do_dry_run()
-        
+
         # Verify no remote index created
         all_indices = self.client.indices.get(index='*')
         self.assertNotIn('test-convert-1_remote_dryrun', all_indices)
-        
+
         # Verify no snapshot created
         try:
             snapshots = self.client.snapshot.get(
-                repository=self.snapshot_repo_name,
-                snapshot='*'
+                repository=self.snapshot_repo_name, snapshot='*'
             )
             snapshot_names = [s['snapshot'] for s in snapshots.get('snapshots', [])]
             self.assertNotIn('test-snapshot-dryrun', snapshot_names)
@@ -495,7 +522,7 @@ class TestConvertIndexToRemote(CuratorTestCase):
         # Manually set the indices list to ONLY test-convert-1
         # Curator's filter system is complex - direct assignment is clearer for single-index tests
         ilo.indices = ['test-convert-1']
-        
+
         action = ConvertIndexToRemote(
             ilo,
             repository=self.snapshot_repo_name,
@@ -507,10 +534,10 @@ class TestConvertIndexToRemote(CuratorTestCase):
             verify_availability=True,
             wait_for_completion=True,
         )
-        
+
         # Should complete successfully with matching counts
         action.do_action()
-        
+
         # Verify the verification actually ran
         self.assertTrue(hasattr(action, 'remote_indices'))
         # Only test-convert-1 should be converted
@@ -519,8 +546,10 @@ class TestConvertIndexToRemote(CuratorTestCase):
     def test_missing_repository_error(self):
         """Test error handling for missing repository"""
         ilo = IndexList(self.client)
-        ilo.iterate_filters({'filtertype': 'pattern', 'kind': 'regex', 'value': '^test-convert-1$'})
-        
+        ilo.iterate_filters(
+            {'filtertype': 'pattern', 'kind': 'regex', 'value': '^test-convert-1$'}
+        )
+
         with self.assertRaises(Exception):
             ConvertIndexToRemote(
                 ilo,
@@ -532,7 +561,7 @@ class TestConvertIndexToRemote(CuratorTestCase):
         """Test that concurrent snapshot is handled gracefully"""
         # NOTE: In LocalStack S3 with fast local storage, snapshots complete in milliseconds
         # This test verifies error handling exists but may not always trigger
-        
+
         # Create a background snapshot
         self.client.snapshot.create(
             repository=self.snapshot_repo_name,
@@ -540,13 +569,13 @@ class TestConvertIndexToRemote(CuratorTestCase):
             body={
                 'indices': ['test-convert-*'],
             },
-            params={'wait_for_completion': 'false'}  # Don't wait
+            params={'wait_for_completion': 'false'},  # Don't wait
         )
-        
+
         # Immediately try to start conversion
         ilo = IndexList(self.client)
         ilo.indices = ['test-convert-1']
-        
+
         action = ConvertIndexToRemote(
             ilo,
             repository=self.snapshot_repo_name,
@@ -554,9 +583,10 @@ class TestConvertIndexToRemote(CuratorTestCase):
             use_existing_snapshot=False,
             wait_for_completion=True,
         )
-        
+
         # Try to run - may raise SnapshotInProgress or succeed
         from curator.exceptions import SnapshotInProgress, FailedExecution
+
         try:
             action.do_action()
             # If we got here, blocking snapshot finished before we started
@@ -569,26 +599,23 @@ class TestConvertIndexToRemote(CuratorTestCase):
                 print(f"Concurrent snapshot detected: {e}")
             else:
                 raise
-        
+
         # Clean up - wait for snapshots to finish and delete them
         max_wait = 30
         for i in range(max_wait):
             try:
-                status = self.client.snapshot.status(
-                    repository=self.snapshot_repo_name
-                )
+                status = self.client.snapshot.status(repository=self.snapshot_repo_name)
                 if not status.get('snapshots'):
                     break
             except Exception:
                 break
             time.sleep(1)
-        
+
         # Delete test snapshots
         for snap_name in ['blocking-snapshot', 'test-snapshot-blocked']:
             try:
                 self.client.snapshot.delete(
-                    repository=self.snapshot_repo_name,
-                    snapshot=snap_name
+                    repository=self.snapshot_repo_name, snapshot=snap_name
                 )
             except Exception:
                 pass
@@ -597,20 +624,22 @@ class TestConvertIndexToRemote(CuratorTestCase):
         """Test that storage_type='remote_snapshot' is used in restore"""
         # Clean up any existing indices from previous tests
         try:
-            self.client.indices.delete(index='test-convert-1_remote', ignore_unavailable=True)
+            self.client.indices.delete(
+                index='test-convert-1_remote', ignore_unavailable=True
+            )
         except Exception:
             pass
-        
+
         time.sleep(1)  # Give cleanup time to complete
-        
+
         # This is a code inspection test
         # We verify the parameter is in the restore call by checking the method
         import inspect
-        
+
         action_class = ConvertIndexToRemote
         restore_method = action_class._restore_as_remote
         source = inspect.getsource(restore_method)
-        
+
         # Verify storage_type parameter is in the code
         self.assertIn("storage_type='remote_snapshot'", source)
         self.assertIn('storage_type', source)

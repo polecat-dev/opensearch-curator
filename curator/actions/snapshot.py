@@ -521,7 +521,7 @@ class Restore(object):
                 restore_body['rename_replacement'] = self.rename_replacement
             if self.index_settings:
                 restore_body['index_settings'] = self.index_settings
-                
+
             self.client.snapshot.restore(
                 repository=self.repository,
                 snapshot=self.name,

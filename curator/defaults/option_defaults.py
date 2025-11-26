@@ -768,11 +768,7 @@ def create_alias():
         {Optional('create_alias', default=True):
             Any(bool, All(Any(str), Boolean()))}
     """
-    return {
-        Optional('create_alias', default=True): Any(
-            bool, All(Any(str), Boolean())
-        )
-    }
+    return {Optional('create_alias', default=True): Any(bool, All(Any(str), Boolean()))}
 
 
 def alias_name():

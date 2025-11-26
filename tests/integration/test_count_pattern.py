@@ -105,9 +105,9 @@ class TestCLICountPattern(CuratorTestCase):
         for idx in (idx1, idx2):
             assert (
                 value
-                == response[idx]['settings']['index'].get('routing')['allocation'][alloc][
-                    key
-                ]
+                == response[idx]['settings']['index'].get('routing')['allocation'][
+                    alloc
+                ][key]
             )
         for idx in idxlist:
             assert TIEREDROUTING == response[idx]['settings']['index'].get('routing')

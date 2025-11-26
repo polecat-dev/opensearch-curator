@@ -347,7 +347,7 @@ class Reindex:
             f'refresh={self.refresh} '
             f'requests_per_second={self.requests_per_second} '
             f'slices={self.slices} '
-                f'timeout={self.body_timeout} '
+            f'timeout={self.body_timeout} '
             f'wait_for_active_shards={self.wait_for_active_shards} '
             f'wait_for_completion={self.wfc}'
         )

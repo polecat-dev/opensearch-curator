@@ -130,7 +130,7 @@ def restore_check(client, index_list):
             empty_recovery_indices.extend(chunk)  # chunk is already a list
         else:
             response.update(chunk_response)
-    
+
     # If we got empty recovery for some indices, check if they exist
     if empty_recovery_indices:
         logger.info('Some indices had empty recovery info: %s', empty_recovery_indices)
@@ -138,19 +138,21 @@ def restore_check(client, index_list):
             try:
                 exists = client.indices.exists(index=index)
                 if not exists:
-                    logger.info('Index "%s" does not exist yet. Continuing wait.', index)
+                    logger.info(
+                        'Index "%s" does not exist yet. Continuing wait.', index
+                    )
                     return False
                 else:
                     logger.warning(
                         'Index "%s" exists but has no recovery info. '
                         'This may indicate the index was restored but has no shards allocated. '
                         'Treating as complete.',
-                        index
+                        index,
                     )
             except Exception as err:
                 logger.error('Error checking if index "%s" exists: %s', index, err)
                 return False
-    
+
     logger.info('Provided indices: %s', index_list)
     logger.info('Found indices with recovery: %s', list(response.keys()))
     # pylint: disable=consider-using-dict-items

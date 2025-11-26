@@ -1,15 +1,19 @@
 """test_action_delete_snapshots"""
+
 from unittest import TestCase
 from unittest.mock import Mock
 from curator.actions import DeleteSnapshots
 from curator.exceptions import FailedExecution
 from curator import SnapshotList
+
 # Get test variables and constants from a single source
 from . import testvars as testvars
+
 
 class TestActionDeleteSnapshots(TestCase):
     def test_init_raise(self):
         self.assertRaises(TypeError, DeleteSnapshots, 'invalid')
+
     def test_init(self):
         client = Mock()
         client.snapshot.get.return_value = testvars.snapshots
@@ -18,6 +22,7 @@ class TestActionDeleteSnapshots(TestCase):
         do = DeleteSnapshots(slo)
         self.assertEqual(slo, do.snapshot_list)
         self.assertEqual(client, do.client)
+
     def test_do_dry_run(self):
         client = Mock()
         client.snapshot.get.return_value = testvars.snapshots
@@ -27,6 +32,7 @@ class TestActionDeleteSnapshots(TestCase):
         slo = SnapshotList(client, repository=testvars.repo_name)
         do = DeleteSnapshots(slo)
         self.assertIsNone(do.do_dry_run())
+
     def test_do_action(self):
         client = Mock()
         client.snapshot.get.return_value = testvars.snapshots
@@ -36,6 +42,7 @@ class TestActionDeleteSnapshots(TestCase):
         slo = SnapshotList(client, repository=testvars.repo_name)
         do = DeleteSnapshots(slo)
         self.assertIsNone(do.do_action())
+
     def test_do_action_raises_exception(self):
         client = Mock()
         client.snapshot.get.return_value = testvars.snapshots
@@ -46,6 +53,7 @@ class TestActionDeleteSnapshots(TestCase):
         slo = SnapshotList(client, repository=testvars.repo_name)
         do = DeleteSnapshots(slo)
         self.assertRaises(FailedExecution, do.do_action)
+
     ### This check is not necessary after OpenSearch 2.0 because the platform supports
     ### up to 1000 concurrent snapshots.
     ###

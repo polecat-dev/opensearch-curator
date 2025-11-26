@@ -87,7 +87,9 @@ def show_indices(
         if idx not in action.list_object.index_info:
             continue
         # Use .get() with default for OpenSearch compatibility (some system indices may not have size_in_bytes)
-        allbytes.append(byte_size(action.list_object.index_info[idx].get('size_in_bytes', 0)))
+        allbytes.append(
+            byte_size(action.list_object.index_info[idx].get('size_in_bytes', 0))
+        )
         alldocs.append(str(action.list_object.index_info[idx].get('docs', 0)))
     if epoch:
         timeformat = '{6:>13}'

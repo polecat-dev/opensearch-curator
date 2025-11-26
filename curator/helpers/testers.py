@@ -387,14 +387,14 @@ def verify_repository(client, repository=None):
         # Otherwise try status_code attribute
         if status is None:
             status = getattr(err, 'status_code', None)
-        
+
         if status == 404:
             msg = f'--- Repository "{repository}" not found.'
         elif status:
             msg = f'--- Got a {status} response from OpenSearch.'
         else:
             msg = f'--- Error message: {err}'
-        
+
         report = f'Failed to verify all nodes have repository access: {msg}'
         raise RepositoryException(report) from err
 

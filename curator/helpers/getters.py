@@ -160,7 +160,10 @@ def get_repository(client, repository=''):
     """
     try:
         return client.snapshot.get_repository(repository=repository)
-    except (opensearch_exceptions.TransportError, opensearch_exceptions.NotFoundError) as err:
+    except (
+        opensearch_exceptions.TransportError,
+        opensearch_exceptions.NotFoundError,
+    ) as err:
         # For NotFoundError, use class name; for TransportError, include status code only
         if isinstance(err, opensearch_exceptions.NotFoundError):
             error_str = err.__class__.__name__
@@ -197,7 +200,10 @@ def get_snapshot(client, repository=None, snapshot=''):
     snapname = '*' if snapshot == '' else snapshot
     try:
         return client.snapshot.get(repository=repository, snapshot=snapshot)
-    except (opensearch_exceptions.TransportError, opensearch_exceptions.NotFoundError) as err:
+    except (
+        opensearch_exceptions.TransportError,
+        opensearch_exceptions.NotFoundError,
+    ) as err:
         # For NotFoundError, use class name; for TransportError, include status code only
         if isinstance(err, opensearch_exceptions.NotFoundError):
             error_str = err.__class__.__name__
@@ -229,7 +235,10 @@ def get_snapshot_data(client, repository=None):
         raise MissingArgument('No value for "repository" provided')
     try:
         return client.snapshot.get(repository=repository, snapshot="*")['snapshots']
-    except (opensearch_exceptions.TransportError, opensearch_exceptions.NotFoundError) as err:
+    except (
+        opensearch_exceptions.TransportError,
+        opensearch_exceptions.NotFoundError,
+    ) as err:
         # For NotFoundError, use class name; for TransportError, include status code only
         if isinstance(err, opensearch_exceptions.NotFoundError):
             error_str = err.__class__.__name__

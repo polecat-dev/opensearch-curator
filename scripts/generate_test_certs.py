@@ -156,10 +156,14 @@ def prepare_directories(base: Path, force: bool) -> CertificatePaths:
                     "Use --force to delete them or choose another output directory."
                 )
         path.mkdir(parents=True, exist_ok=True)
-    return CertificatePaths(base=base, ca_dir=ca_dir, http_dir=http_dir, transport_dir=transport_dir)
+    return CertificatePaths(
+        base=base, ca_dir=ca_dir, http_dir=http_dir, transport_dir=transport_dir
+    )
 
 
-def write_ext_file(target: Path, cn: str, dns_entries: Iterable[str], ip_entries: Iterable[str]) -> Path:
+def write_ext_file(
+    target: Path, cn: str, dns_entries: Iterable[str], ip_entries: Iterable[str]
+) -> Path:
     dns_names = []
     for candidate in (cn, *dns_entries):
         if candidate not in dns_names:
@@ -300,7 +304,9 @@ def generate_certificate(
             f"pass:{password}",
         ],
     )
-    with cert_path.open("r", encoding="utf-8") as leaf, ca_cert.open("r", encoding="utf-8") as ca_src:
+    with cert_path.open("r", encoding="utf-8") as leaf, ca_cert.open(
+        "r", encoding="utf-8"
+    ) as ca_src:
         fullchain_path.write_text(leaf.read() + ca_src.read(), encoding="utf-8")
     for tmp in (csr_path, ext_path):
         if tmp.exists():
@@ -489,7 +495,9 @@ def main() -> None:
     dns_entries = DEFAULT_SAN_DNS + args.extra_dns
     ip_entries = DEFAULT_SAN_IP + args.extra_ip
 
-    ca_key, ca_cert = generate_ca(openssl_bin, paths, args.password, args.ca_cn, args.days)
+    ca_key, ca_cert = generate_ca(
+        openssl_bin, paths, args.password, args.ca_cn, args.days
+    )
 
     transport = generate_certificate(
         openssl_bin,
@@ -561,8 +569,10 @@ def main() -> None:
     info(f"Root CA: {ca_cert}")
     info(f"HTTP cert: {http['cert']}")
     info(f"Transport cert: {transport['cert']}")
-    info("Remember to update your .env file with TEST_ES_SERVER, TEST_ES_CA_CERT, "
-         "and OPENSEARCH_TEST_SSL_PASSWORD before running docker-compose.")
+    info(
+        "Remember to update your .env file with TEST_ES_SERVER, TEST_ES_CA_CERT, "
+        "and OPENSEARCH_TEST_SSL_PASSWORD before running docker-compose."
+    )
 
 
 if __name__ == "__main__":

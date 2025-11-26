@@ -90,9 +90,7 @@ def check_config(config: dict, quiet: bool = False) -> dict:
         if key not in es_settings[config_key]:
             es_settings[config_key][key] = {}
         else:
-            es_settings[config_key][key] = prune_nones(
-                es_settings[config_key][key]
-            )
+            es_settings[config_key][key] = prune_nones(es_settings[config_key][key])
     _ = SchemaCheck(
         es_settings[config_key],
         config_schema(),

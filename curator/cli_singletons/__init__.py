@@ -1,4 +1,5 @@
 """Use __init__ to make these not need to be nested under lowercase.Capital"""
+
 from curator.cli_singletons.alias import alias
 from curator.cli_singletons.allocation import allocation
 from curator.cli_singletons.close import close

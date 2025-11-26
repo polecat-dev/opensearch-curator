@@ -512,8 +512,8 @@ class IndexList:
                 body = {
                     'size': 0,
                     'aggs': {
-                    'min': {'min': {'field': field}},
-                    'max': {'max': {'field': field}},
+                        'min': {'min': {'field': field}},
+                        'max': {'max': {'field': field}},
                     },
                 }
                 response = self.client.search(index=index, body=body)
@@ -528,7 +528,9 @@ class IndexList:
                         max_val = res['max']['value']
                         if min_val is None or max_val is None:
                             self.loggit.warning(
-                                'Index %s has no values for field %s. Skipping.', index, field
+                                'Index %s has no values for field %s. Skipping.',
+                                index,
+                                field,
                             )
                             continue
                         data['min_value'] = fix_epoch(min_val)
