@@ -194,7 +194,7 @@ opensearch-curator/
 ## 🔗 Quick Links
 
 - **Run Tests:** `.\run_tests.ps1 tests/integration/ -q`
-- **Start OpenSearch:** `docker-compose -f docker-compose.test.yml up -d`
+- **Start OpenSearch:** `docker-compose -f test-environments/compose/docker-compose.test.yml up -d`
 - **View Test Guide:** Open TESTING.md
 - **View API Fixes:** Open OPENSEARCH_API_FIXES.md
 - **Next Steps:** Open NEXT_STEPS.md

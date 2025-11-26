@@ -1,6 +1,8 @@
 # Makefile for OpenSearch Curator development
 
-.PHONY: help install test lint clean docker-up docker-down docker-logs
+COMPOSE_FILE := test-environments/compose/docker-compose.test.yml
+
+.PHONY: help install test lint clean docker-up docker-down docker-logs docker-clean
 
 help:
 	@echo "OpenSearch Curator - Development Commands"
@@ -49,19 +51,18 @@ install-dev:
 	fi
 
 docker-up:
-	docker-compose up -d
-	@echo "Waiting for OpenSearch..."
-	@sleep 5
-	@curl -s http://localhost:9200/_cluster/health?pretty || echo "OpenSearch not ready yet"
+	docker-compose -f $(COMPOSE_FILE) up -d
+	@echo "OpenSearch containers are starting via $(COMPOSE_FILE)"
+	@echo "Run: curl --cacert certs/generated/ca/root-ca.pem -u $$TEST_ES_USERNAME:$$TEST_ES_PASSWORD https://localhost:19200/_cluster/health"
 
 docker-down:
-	docker-compose down
+	docker-compose -f $(COMPOSE_FILE) down
 
 docker-logs:
-	docker-compose logs -f opensearch
+	docker-compose -f $(COMPOSE_FILE) logs -f opensearch
 
 docker-clean:
-	docker-compose down -v
+	docker-compose -f $(COMPOSE_FILE) down -v
 
 test:
 	pytest

@@ -77,7 +77,7 @@ try {
 
 Write-Host ""
 Write-Host "Starting services with docker-compose..." -ForegroundColor Yellow
-docker-compose -f docker-compose.test.yml up -d | Out-Null
+docker-compose -f test-environments/compose/docker-compose.test.yml up -d | Out-Null
 
 Write-Host ""
 Write-Host "Waiting for LocalStack..." -ForegroundColor Yellow
@@ -160,5 +160,5 @@ Write-Host "To run tests:"
 Write-Host "  pytest tests/integration/test_convert_index_to_remote.py -v"
 Write-Host ""
 Write-Host "To stop services:"
-Write-Host "  docker-compose -f docker-compose.test.yml down -v"
+Write-Host "  docker-compose -f test-environments/compose/docker-compose.test.yml down -v"
 Write-Host ""

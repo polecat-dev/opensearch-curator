@@ -27,7 +27,7 @@ This directory contains GitHub Actions workflows for automated testing, code qua
 6. Upload to Codecov
 
 **Environment Variables:**
-- `TEST_ES_SERVER=http://localhost:9200`
+- `TEST_ES_SERVER=https://localhost:19200`
 - `TEST_S3_BUCKET=curator-test-bucket`
 - `TEST_S3_ENDPOINT=http://localhost:4566`
 - `AWS_ACCESS_KEY_ID=test`
@@ -185,7 +185,7 @@ Add these to README.rst:
 **Solution:**
 ```bash
 # Test locally with same services
-docker-compose -f docker-compose.test.yml up -d
+docker-compose -f test-environments/compose/docker-compose.test.yml up -d
 .\run_tests.ps1 tests/integration/ -v
 ```
 

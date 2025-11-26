@@ -3,14 +3,14 @@
 # Makes it easier to run curator commands from WSL
 
 SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
-REPO_ROOT="$(dirname "$SCRIPT_DIR")"
+REPO_ROOT="$( cd "${SCRIPT_DIR}/../.." && pwd )"
 CURATOR="${REPO_ROOT}/.venv-wsl/bin/curator"
 CONFIG="${SCRIPT_DIR}/curator.yml"
 
 # Check if curator is installed
 if [ ! -f "$CURATOR" ]; then
     echo "Error: Curator not found at $CURATOR"
-    echo "Please install it first: cd $REPO_ROOT && .venv-wsl/bin/pip install -e ."
+    echo "Please install it first: cd \"$REPO_ROOT\" && .venv-wsl/bin/pip install -e ."
     exit 1
 fi
 

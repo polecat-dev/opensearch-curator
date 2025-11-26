@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Generate TLS assets for the docker-compose.test.yml stack.
+"""Generate TLS assets for the test-environments/compose/docker-compose.test.yml stack.
 
 The script creates a password-protected root CA plus separate HTTP and transport
 certificates (each with its own encrypted private key, full-chain bundle, and a
@@ -460,7 +460,7 @@ def write_manifest(paths: CertificatePaths, password: str, manifest: dict) -> Pa
     password_env.write_text(
         dedent(
             f"""\
-            # Values consumed by docker-compose.test.yml
+            # Values consumed by test-environments/compose/docker-compose.test.yml
             OPENSEARCH_TEST_SSL_PASSWORD={password}
             TEST_ES_CA_CERT={paths.ca_dir / "root-ca.pem"}
             TEST_ES_SERVER=https://localhost:19200

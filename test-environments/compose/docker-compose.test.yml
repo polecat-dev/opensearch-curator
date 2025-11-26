@@ -1,26 +1,44 @@
 version: '3.8'
 
+# ⚠️  EXPECTED WARNINGS in OpenSearch logs:
+# You will see "No 'Authorization' header, send 401" warnings (~every 3 seconds).
+# These come from internal OpenSearch plugins (anomaly-detection, ml, job-scheduler, etc.)
+# making local health checks to https://localhost:9200 without authentication.
+# This is NORMAL and HARMLESS - the plugins continue to function correctly.
+# These warnings cannot be easily suppressed without disabling security entirely.
+
 services:
-  # OpenSearch 3.2.0 with remote store configuration
+  # OpenSearch 3.3.0 with remote store configuration
   opensearch:
     image: opensearchproject/opensearch:3.3.0
     container_name: opensearch-test
+    command: >
+      bash -c "
+      /usr/share/opensearch/bin/opensearch-plugin remove opensearch-performance-analyzer --purge || true &&
+      /usr/share/opensearch/opensearch-docker-entrypoint.sh &
+      OS_PID=\$! &&
+      echo 'Waiting for OpenSearch to start...' &&
+      until curl -sSfk https://localhost:9200 > /dev/null 2>&1; do sleep 3; done &&
+      echo 'Running securityadmin with custom config...' &&
+      cd /usr/share/opensearch/plugins/opensearch-security/tools &&
+      ./securityadmin.sh -cd /usr/share/opensearch/config/opensearch-security-custom/ -cacert /usr/share/opensearch/config/certs/ca/root-ca.pem -cert /usr/share/opensearch/config/certs/admin/admin.crt -key /usr/share/opensearch/config/certs/admin/admin.key -keypass curatorssl -icl -nhnv &&
+      echo 'Security initialized successfully!' &&
+      wait \$OS_PID
+      "
     environment:
       - cluster.name=opensearch-test-cluster
       - node.name=opensearch-test-node
       - discovery.type=single-node
       - bootstrap.memory_lock=true
       - "OPENSEARCH_JAVA_OPTS=-Xms512m -Xmx512m"
-      - DISABLE_SECURITY_PLUGIN=false
-      - DISABLE_INSTALL_DEMO_CONFIG=true
       - OPENSEARCH_INITIAL_ADMIN_PASSWORD=${OPENSEARCH_INITIAL_ADMIN_PASSWORD:-MyStrongPassword123!}
-      - OPENSEARCH_SECURITY_ALLOW_INSECURE_DEFAULT_SETTINGS=true
-      - plugins.security.allow_unsafe_democertificates=false
+      - DISABLE_INSTALL_DEMO_CONFIG=true
+      - plugins.security.allow_default_init_securityindex=true
+      - plugins.security.audit.type=noop
       - plugins.security.ssl.transport.pemcert_filepath=certs/transport/opensearch-transport.local.crt
       - plugins.security.ssl.transport.pemkey_filepath=certs/transport/opensearch-transport.local.key
       - plugins.security.ssl.transport.pemkey_password=${OPENSEARCH_TEST_SSL_PASSWORD:-curatorssl}
       - plugins.security.ssl.transport.pemtrustedcas_filepath=certs/ca/root-ca.pem
-      - plugins.security.ssl.transport.resolve_hostname=false
       - plugins.security.ssl.transport.enforce_hostname_verification=false
       - plugins.security.ssl.http.enabled=true
       - plugins.security.ssl.http.pemcert_filepath=certs/http/opensearch-http.local.crt
@@ -28,8 +46,8 @@ services:
       - plugins.security.ssl.http.pemkey_password=${OPENSEARCH_TEST_SSL_PASSWORD:-curatorssl}
       - plugins.security.ssl.http.pemtrustedcas_filepath=certs/ca/root-ca.pem
       - plugins.security.ssl.http.clientauth_mode=OPTIONAL
-      - plugins.security.nodes_dn=CN=opensearch-transport.local,OU=Dev,O=OpenSearch,L=Curator,ST=Test,C=US
-      # Allow filesystem repositories in /tmp for testing
+      - plugins.security.nodes_dn=["CN=opensearch-transport.local,OU=Dev,O=OpenSearch,L=Curator,ST=Test,C=US"]
+      - plugins.security.authcz.admin_dn=["CN=admin,OU=Dev,O=OpenSearch,L=Curator,ST=Test,C=US"]
       - path.repo=/tmp
     ulimits:
       memlock:
@@ -40,7 +58,8 @@ services:
         hard: 65536
     volumes:
       - opensearch-data:/usr/share/opensearch/data
-      - ./certs/generated:/usr/share/opensearch/config/certs:ro
+      - ../../certs/generated:/usr/share/opensearch/config/certs:ro
+      - ../../config/opensearch-security:/usr/share/opensearch/config/opensearch-security-custom:ro
     ports:
       - 19200:9200
       - 19600:9600
@@ -50,11 +69,12 @@ services:
       test:
         [
           "CMD-SHELL",
-          "curl -sSf --cacert /usr/share/opensearch/config/certs/ca/root-ca.pem -u admin:${OPENSEARCH_INITIAL_ADMIN_PASSWORD:-MyStrongPassword123!} https://localhost:9200/_cluster/health > /dev/null || exit 1",
+          "curl -sSfk -u admin:${OPENSEARCH_INITIAL_ADMIN_PASSWORD:-MyStrongPassword123!} https://localhost:9200/_cluster/health || exit 1",
         ]
       interval: 10s
       timeout: 5s
-      retries: 10
+      retries: 30
+      start_period: 60s
 
   # LocalStack for S3-compatible storage
   localstack:
@@ -87,17 +107,19 @@ services:
       - "5601:5601"
     environment:
       - 'OPENSEARCH_HOSTS=["https://opensearch:9200"]'
-      - "DISABLE_SECURITY_DASHBOARDS_PLUGIN=true"
       - OPENSEARCH_USERNAME=admin
       - OPENSEARCH_PASSWORD=${OPENSEARCH_INITIAL_ADMIN_PASSWORD:-MyStrongPassword123!}
-      - OPENSEARCH_SSL_CERTIFICATEAUTHORITIES=/usr/share/opensearch-dashboards/certs/root-ca.pem
+      - OPENSEARCH_SSL_VERIFICATIONMODE=none
+      - SERVER_SSL_ENABLED=true
+      - SERVER_SSL_CERTIFICATE=/usr/share/opensearch-dashboards/config/certs/opensearch-http.local.crt
+      - SERVER_SSL_KEY=/usr/share/opensearch-dashboards/config/certs/opensearch-http.local.key
+      - SERVER_SSL_KEYPASSPHRASE=${OPENSEARCH_TEST_SSL_PASSWORD:-curatorssl}
+    volumes:
+      - ../../certs/generated/http:/usr/share/opensearch-dashboards/config/certs:ro
     networks:
       - test-network
-    volumes:
-      - ./certs/generated/ca/root-ca.pem:/usr/share/opensearch-dashboards/certs/root-ca.pem:ro
     depends_on:
-      opensearch:
-        condition: service_healthy
+      - opensearch
 volumes:
   opensearch-data:
     driver: local

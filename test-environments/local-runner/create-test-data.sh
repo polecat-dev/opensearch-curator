@@ -4,6 +4,8 @@
 
 # Configuration
 OPENSEARCH_URL="https://localhost:19200"
+OPENSEARCH_USER="${OPENSEARCH_USER:-admin}"
+OPENSEARCH_PASSWORD="${OPENSEARCH_PASSWORD:-MyStrongPassword123!}"
 INDEX_PREFIX="test-"
 
 # Date range: Create indices for last 30 days
@@ -46,7 +48,7 @@ EOF
 )
     
     # Create the index
-    response=$(curl -s -X PUT "$OPENSEARCH_URL/$index_name" \
+    response=$(curl -k -s -u "$OPENSEARCH_USER:$OPENSEARCH_PASSWORD" -X PUT "$OPENSEARCH_URL/$index_name" \
         -H "Content-Type: application/json" \
         -d "$body" 2>&1)
     
@@ -63,7 +65,7 @@ EOF
 EOF
 )
         
-        curl -s -X POST "$OPENSEARCH_URL/$index_name/_doc/1" \
+        curl -k -s -u "$OPENSEARCH_USER:$OPENSEARCH_PASSWORD" -X POST "$OPENSEARCH_URL/$index_name/_doc/1" \
             -H "Content-Type: application/json" \
             -d "$doc" > /dev/null 2>&1
     else

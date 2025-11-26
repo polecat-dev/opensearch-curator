@@ -70,6 +70,9 @@ opensearch-curator/
 └── README.rst                  # Project README
 ```
 
+- `test-environments/compose/` – Docker Compose definitions plus security helper scripts
+- `test-environments/local-runner/` – Curator action examples and helper scripts (formerly `examples/local-test`)
+
 ### 1.2 Entry Points
 
 Three command-line tools are defined in `pyproject.toml`:
@@ -832,7 +835,7 @@ LABEL org.opencontainers.image.source="https://github.com/YOUR_ORG/opensearch-cu
 
 ### Test Infrastructure
 
-**Location:** See comprehensive guide in `TESTING.md`
+**Location:** `docs/dev/TESTING.md` and `test-environments/README.md`
 
 **Key Points:**
 1. **Use `.\run_tests.ps1`** - Auto-loads `.env` environment
@@ -844,7 +847,7 @@ LABEL org.opencontainers.image.source="https://github.com/YOUR_ORG/opensearch-cu
 
 ```powershell
 # Quick start
-docker-compose -f docker-compose.test.yml up -d
+docker-compose -f test-environments/compose/docker-compose.test.yml up -d
 .\run_tests.ps1 tests/integration/ -q
 
 # Single test (fastest)
@@ -909,7 +912,7 @@ docker-compose -f docker-compose.test.yml up -d
 - **examples/** - YAML configuration examples
 
 **For CI/CD:**
-- **docker-compose.test.yml** - Test environment definition
+- **test-environments/compose/docker-compose.test.yml** - Test environment definition
 - **.env.example** - Default environment template
 - **run_tests.ps1** - PowerShell test runner
 

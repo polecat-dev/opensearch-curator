@@ -1,10 +1,9 @@
 @echo off
 REM Stop OpenSearch test environment (Windows)
 
+set COMPOSE_FILE=test-environments/compose/docker-compose.test.yml
+
 echo Stopping OpenSearch test environment...
-
-docker-compose down
-
+docker-compose -f %COMPOSE_FILE% down
 echo OpenSearch stopped
-echo.
-echo To remove all data: docker-compose down -v
+echo To remove all data: docker-compose -f %COMPOSE_FILE% down -v

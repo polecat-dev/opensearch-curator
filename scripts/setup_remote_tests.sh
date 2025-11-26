@@ -68,7 +68,7 @@ wait_for_service() {
 }
 
 echo -e "${YELLOW}Step 1: Starting services with docker-compose...${NC}"
-docker-compose -f docker-compose.test.yml up -d
+docker-compose -f test-environments/compose/docker-compose.test.yml up -d
 
 echo ""
 echo -e "${YELLOW}Step 2: Waiting for LocalStack...${NC}"
@@ -130,5 +130,5 @@ echo "To run tests:"
 echo "  pytest tests/integration/test_convert_index_to_remote.py -v"
 echo ""
 echo "To stop services:"
-echo "  docker-compose -f docker-compose.test.yml down -v"
+echo "  docker-compose -f test-environments/compose/docker-compose.test.yml down -v"
 echo ""

@@ -1,6 +1,7 @@
 # Scripts Directory
 
 This directory contains utility scripts for development, deployment, and testing.
+For Docker/local-runner specifics see `../test-environments/README.md`.
 
 ## 📋 Script Categories
 
@@ -68,10 +69,10 @@ docker build -t opensearch-curator:latest .
 .\scripts\start-opensearch.bat
 
 # Or use Docker Compose (preferred)
-docker-compose -f docker-compose.test.yml up -d
+docker-compose -f test-environments/compose/docker-compose.test.yml up -d
 ```
 
-### Generating TLS Assets (required for docker-compose.test.yml)
+### Generating TLS Assets (required for test-environments/compose/docker-compose.test.yml)
 ```bash
 python scripts/generate_test_certs.py --password curatorssl
 # Outputs to certs/generated/ (gitignored) and prints next steps
@@ -166,7 +167,7 @@ log documents.
 
 - **Testing Guide:** [../docs/dev/TESTING.md](../docs/dev/TESTING.md)
 - **CI/CD Guide:** [../.github/workflows/README.md](../.github/workflows/README.md)
-- **Docker Testing:** [../docker-compose.test.yml](../docker-compose.test.yml)
+- **Docker Testing:** [../test-environments/compose/docker-compose.test.yml](../test-environments/compose/docker-compose.test.yml)
 - **Remote Tests:** [../tests/integration/README_REMOTE_TESTS.md](../tests/integration/README_REMOTE_TESTS.md)
 
 ## 🛠️ Development Workflow
@@ -174,7 +175,7 @@ log documents.
 ### Typical Development Cycle
 1. **Start Services:**
    ```bash
-   docker-compose -f docker-compose.test.yml up -d
+   docker-compose -f test-environments/compose/docker-compose.test.yml up -d
    ```
 
 2. **Make Code Changes**
@@ -186,7 +187,7 @@ log documents.
 
 4. **Cleanup:**
    ```bash
-   docker-compose -f docker-compose.test.yml down
+   docker-compose -f test-environments/compose/docker-compose.test.yml down
    ```
 
 ### Building Release Binary
@@ -210,7 +211,7 @@ log documents.
 ## 🐛 Troubleshooting
 
 ### Tests Won't Run
-- Check Docker containers: `docker-compose -f docker-compose.test.yml ps`
+- Check Docker containers: `docker-compose -f test-environments/compose/docker-compose.test.yml ps`
 - Verify OpenSearch: `curl https://localhost:19200/_cluster/health`
 - Check environment: Review `.env` file
 

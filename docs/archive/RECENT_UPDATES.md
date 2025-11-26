@@ -96,7 +96,7 @@ hatch run test:pytest
 - Health checks included
 - Persistent volume for data
 
-#### 2. docker-compose.secure.yml (With Security)
+#### 2. test-environments/compose/docker-compose.secure.yml (With Security)
 **Purpose:** Testing with authentication and SSL  
 **Ports:**
 - OpenSearch: https://localhost:9201
@@ -133,7 +133,7 @@ hatch run test:pytest
 ### Usage:
 ```bash
 # Start OpenSearch
-docker-compose up -d
+docker-compose -f test-environments/compose/docker-compose.test.yml up -d
 
 # Wait for healthy status
 curl http://localhost:9200/_cluster/health
@@ -142,10 +142,10 @@ curl http://localhost:9200/_cluster/health
 pytest tests/
 
 # Stop OpenSearch
-docker-compose down
+docker-compose -f test-environments/compose/docker-compose.test.yml down
 
 # Clean all data
-docker-compose down -v
+docker-compose -f test-environments/compose/docker-compose.test.yml down -v
 ```
 
 ---
@@ -190,7 +190,7 @@ make docker-down        # Stop OpenSearch
 9. `opensearch_client/tests/README.md`
 10. `opensearch_client/tests/pytest.ini`
 11. `docker-compose.yml`
-12. `docker-compose.secure.yml`
+12. `test-environments/compose/docker-compose.secure.yml`
 13. `DOCKER_TESTING.md`
 14. `uv.toml`
 15. `Makefile`
@@ -236,7 +236,7 @@ make docker-down        # Stop OpenSearch
 ### Immediate (This Session):
 1. **Start OpenSearch:**
    ```bash
-   docker-compose up -d
+   docker-compose -f test-environments/compose/docker-compose.test.yml up -d
    ```
 
 2. **Run opensearch_client tests:**
@@ -287,7 +287,7 @@ python -m pytest opensearch_client/tests/unit --cov=opensearch_client
 ### Test with Docker:
 ```bash
 # Start OpenSearch
-docker-compose up -d
+docker-compose -f test-environments/compose/docker-compose.test.yml up -d
 
 # Verify it's running
 curl https://localhost:19200
@@ -296,7 +296,7 @@ curl https://localhost:19200
 python -m pytest tests/integration
 
 # Stop OpenSearch
-docker-compose down
+docker-compose -f test-environments/compose/docker-compose.test.yml down
 ```
 
 ### Using Hatch (works on all platforms):

@@ -87,7 +87,7 @@ uv sync --dev
 pytest tests/integration/test_convert_index_to_remote.py -v
 
 # 3. Stop environment
-docker-compose -f docker-compose.test.yml down -v
+docker-compose -f test-environments/compose/docker-compose.test.yml down -v
 ```
 
 ### Quick Start (Windows)
@@ -100,7 +100,7 @@ docker-compose -f docker-compose.test.yml down -v
 pytest tests/integration/test_convert_index_to_remote.py -v
 
 # 3. Stop environment
-docker-compose -f docker-compose.test.yml down -v
+docker-compose -f test-environments/compose/docker-compose.test.yml down -v
 ```
 
 ### Manual Setup
@@ -109,7 +109,7 @@ If you prefer manual setup:
 
 ```bash
 # 1. Start services
-docker-compose -f docker-compose.test.yml up -d
+docker-compose -f test-environments/compose/docker-compose.test.yml up -d
 
 # 2. Wait for services to be ready (30-60 seconds)
 # Check OpenSearch
@@ -177,15 +177,15 @@ pytest tests/integration/test_convert_index_to_remote.py -x
 **Solutions:**
 ```bash
 # Check Docker logs
-docker-compose -f docker-compose.test.yml logs opensearch
-docker-compose -f docker-compose.test.yml logs localstack
+docker-compose -f test-environments/compose/docker-compose.test.yml logs opensearch
+docker-compose -f test-environments/compose/docker-compose.test.yml logs localstack
 
 # Restart services
-docker-compose -f docker-compose.test.yml restart
+docker-compose -f test-environments/compose/docker-compose.test.yml restart
 
 # Clean start
-docker-compose -f docker-compose.test.yml down -v
-docker-compose -f docker-compose.test.yml up -d
+docker-compose -f test-environments/compose/docker-compose.test.yml down -v
+docker-compose -f test-environments/compose/docker-compose.test.yml up -d
 ```
 
 ### Connection Refused Errors
@@ -249,11 +249,11 @@ curl https://localhost:19200/_snapshot
 pytest tests/integration/test_convert_index_to_remote.py -v -s
 
 # Enable OpenSearch logging
-# Add to docker-compose.test.yml:
+# Add to test-environments/compose/docker-compose.test.yml:
 # - logger.org.opensearch=DEBUG
 
 # Check OpenSearch logs
-docker-compose -f docker-compose.test.yml logs -f opensearch
+docker-compose -f test-environments/compose/docker-compose.test.yml logs -f opensearch
 ```
 
 ## Environment Variables
@@ -272,7 +272,7 @@ docker-compose -f docker-compose.test.yml logs -f opensearch
 
 ```bash
 # Stop services and remove volumes
-docker-compose -f docker-compose.test.yml down -v
+docker-compose -f test-environments/compose/docker-compose.test.yml down -v
 
 # Remove Docker images (optional)
 docker rmi opensearchproject/opensearch:3.2.0
@@ -283,10 +283,10 @@ docker rmi localstack/localstack:latest
 
 ```bash
 # Stop services but keep volumes
-docker-compose -f docker-compose.test.yml down
+docker-compose -f test-environments/compose/docker-compose.test.yml down
 
 # Restart with existing data
-docker-compose -f docker-compose.test.yml up -d
+docker-compose -f test-environments/compose/docker-compose.test.yml up -d
 ```
 
 ## CI/CD Integration

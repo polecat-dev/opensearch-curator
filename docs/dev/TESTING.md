@@ -22,13 +22,13 @@ This document provides comprehensive guidance for running and debugging tests in
 1. **Docker** - Required for OpenSearch and LocalStack containers
 2. **Python 3.8+** - With pytest installed
 3. **Environment file** - Copy `.env.example` to `.env`
-4. **TLS assets** - Run `python scripts/generate_test_certs.py` once to create the CA, full chains, and PKCS#12 bundle consumed by `docker-compose.test.yml`
+4. **TLS assets** - Run `python scripts/generate_test_certs.py` once to create the CA, full chains, and PKCS#12 bundle consumed by `test-environments/compose/docker-compose.test.yml`
 
 ### Run All Tests
 
 ```powershell
 # Start test environment
-docker-compose -f docker-compose.test.yml up -d
+docker-compose -f test-environments/compose/docker-compose.test.yml up -d
 
 # Run all integration tests (takes ~37 minutes)
 .\run_tests.ps1 tests/integration/
@@ -62,12 +62,17 @@ opensearch-curator/
 │   │   ├── testvars.py      # Test configuration templates
 │   │   ├── test_*.py        # Individual test modules
 │   └── unit/                 # Unit tests (mocked, fast)
-├── docker-compose.test.yml   # Test environment definition
+├── test-environments/compose/docker-compose.test.yml   # Test environment definition
 ├── .env                      # Local environment config (git-ignored)
 ├── .env.example             # Default environment template (committed)
 ├── run_tests.ps1            # PowerShell test runner script
 └── load_env.py              # Python environment loader
 ```
+
+Additional helpers:
+
+- `test-environments/compose/` – Docker Compose definitions (secure + dev) and helper scripts
+- `test-environments/local-runner/` – Curator action recipes (`run-curator.sh`, `create-test-data.sh`, etc.)
 
 ### Base Test Class: CuratorTestCase
 
@@ -149,7 +154,7 @@ python -m pytest tests/integration/ -v
 
 ### Docker Compose Services
 
-**File:** `docker-compose.test.yml`
+**File:** `test-environments/compose/docker-compose.test.yml`
 
 #### OpenSearch Service
 - **Image:** opensearchproject/opensearch:3.2.0
@@ -199,19 +204,19 @@ TEST_S3_ENDPOINT=http://localhost:4566
 
 ```powershell
 # Start containers
-docker-compose -f docker-compose.test.yml up -d
+docker-compose -f test-environments/compose/docker-compose.test.yml up -d
 
 # Check containers are running
-docker-compose -f docker-compose.test.yml ps
+docker-compose -f test-environments/compose/docker-compose.test.yml ps
 
 # View logs
-docker-compose -f docker-compose.test.yml logs -f opensearch
+docker-compose -f test-environments/compose/docker-compose.test.yml logs -f opensearch
 
 # Stop containers
-docker-compose -f docker-compose.test.yml down
+docker-compose -f test-environments/compose/docker-compose.test.yml down
 
 # Stop and remove volumes (clean slate)
-docker-compose -f docker-compose.test.yml down -v
+docker-compose -f test-environments/compose/docker-compose.test.yml down -v
 ```
 
 ### Verifying Environment
@@ -251,8 +256,8 @@ SkipTest: path.repo is not configured on the cluster.
 **Cause:** OpenSearch container not configured with `path.repo`
 
 **Solution:**
-1. Check `docker-compose.test.yml` has `- path.repo=/tmp`
-2. Restart containers: `docker-compose -f docker-compose.test.yml down && docker-compose -f docker-compose.test.yml up -d`
+1. Check `test-environments/compose/docker-compose.test.yml` has `- path.repo=/tmp`
+2. Restart containers: `docker-compose -f test-environments/compose/docker-compose.test.yml down && docker-compose -f test-environments/compose/docker-compose.test.yml up -d`
 3. Verify: `curl https://localhost:19200/_nodes/settings | Select-String "path.repo"`
 
 ### Issue 3: Wrong Port Connection
@@ -299,7 +304,7 @@ ValueError: Unable to convert None to int
 **Cause:** LocalStack container not running or boto3 not installed
 
 **Solution:**
-1. Start LocalStack: `docker-compose -f docker-compose.test.yml up -d localstack`
+1. Start LocalStack: `docker-compose -f test-environments/compose/docker-compose.test.yml up -d localstack`
 2. Install boto3: `pip install boto3` (optional, tests skip gracefully if missing)
 3. S3 tests will automatically skip if LocalStack unavailable
 
@@ -437,7 +442,7 @@ jobs:
       
       - name: Start OpenSearch
         run: |
-          docker-compose -f docker-compose.test.yml up -d opensearch
+          docker-compose -f test-environments/compose/docker-compose.test.yml up -d opensearch
           # Wait for OpenSearch to be ready
           timeout 60 bash -c 'until curl -s https://localhost:19200; do sleep 1; done'
       
@@ -457,7 +462,7 @@ jobs:
 
 1. **Port Mapping:** CI environments may need different ports (use env vars)
 2. **Timeouts:** Set reasonable timeouts (tests should complete in <40 minutes)
-3. **Cleanup:** Always run `docker-compose down` in cleanup step
+3. **Cleanup:** Always run `docker-compose -f test-environments/compose/docker-compose.test.yml down` in cleanup step
 4. **Parallel Tests:** Don't run integration tests in parallel (they share OpenSearch)
 5. **Artifacts:** Save test logs and OpenSearch logs on failure
 
@@ -580,12 +585,12 @@ curl "https://localhost:19200/_cat/indices?v"
 
 ```powershell
 # Restart test environment
-docker-compose -f docker-compose.test.yml down
-docker-compose -f docker-compose.test.yml up -d
+docker-compose -f test-environments/compose/docker-compose.test.yml down
+docker-compose -f test-environments/compose/docker-compose.test.yml up -d
 
 # Clean everything and start fresh
-docker-compose -f docker-compose.test.yml down -v
-docker-compose -f docker-compose.test.yml up -d
+docker-compose -f test-environments/compose/docker-compose.test.yml down -v
+docker-compose -f test-environments/compose/docker-compose.test.yml up -d
 
 # Recreate .env file
 cp .env.example .env
@@ -630,15 +635,15 @@ cp .env.example .env
 ### Logs to Check
 
 1. **Test output** - Run with `-v` or `-s` flags
-2. **OpenSearch logs** - `docker-compose -f docker-compose.test.yml logs opensearch`
+2. **OpenSearch logs** - `docker-compose -f test-environments/compose/docker-compose.test.yml logs opensearch`
 3. **Python logs** - Tests log to console with DEBUG level
-4. **LocalStack logs** - `docker-compose -f docker-compose.test.yml logs localstack`
+4. **LocalStack logs** - `docker-compose -f test-environments/compose/docker-compose.test.yml logs localstack`
 
 ### Files to Review
 
 1. `OPENSEARCH_API_FIXES.md` - Known API compatibility issues
 2. `tests/integration/__init__.py` - Base test infrastructure
-3. `docker-compose.test.yml` - Test environment configuration
+3. `test-environments/compose/docker-compose.test.yml` - Test environment configuration
 4. `.env` / `.env.example` - Environment variables
 
 ### Common Questions

@@ -1,0 +1,18 @@
+---
+# Custom roles with minimal permissions for anonymous users
+_meta:
+  type: "roles"
+  config_version: 2
+
+# Anonymous role - allows internal plugin monitoring requests
+anonymous_users_role:
+  reserved: false
+  hidden: false
+  cluster_permissions:
+    - "cluster:monitor/health"
+    - "cluster:monitor/state"
+    - "cluster:monitor/main"
+    - "cluster:monitor/nodes/info"
+    - "cluster:monitor/nodes/stats"
+  index_permissions: []
+  tenant_permissions: []

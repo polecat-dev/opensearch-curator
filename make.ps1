@@ -6,6 +6,8 @@ param(
     [string]$Command = "help"
 )
 
+$ComposeFile = "test-environments/compose/docker-compose.test.yml"
+
 function Show-Help {
     Write-Host "OpenSearch Curator - Development Commands (PowerShell)" -ForegroundColor Cyan
     Write-Host ""
@@ -60,7 +62,7 @@ function Install-Dev {
 
 function Docker-Up {
     Write-Host "Starting OpenSearch..." -ForegroundColor Cyan
-    docker-compose up -d
+    docker-compose -f $ComposeFile up -d
     Write-Host "Waiting for OpenSearch to be ready..." -ForegroundColor Yellow
     Start-Sleep -Seconds 10
     try {
@@ -82,23 +84,23 @@ function Docker-Up {
         Write-Host "Cluster: $($health.cluster_name)" -ForegroundColor Cyan
         Write-Host "Status: $($health.status)" -ForegroundColor Cyan
     } catch {
-        Write-Host "OpenSearch may still be starting up. Check with: docker-compose logs opensearch" -ForegroundColor Yellow
+        Write-Host "OpenSearch may still be starting up. Check with: docker-compose -f $ComposeFile logs opensearch" -ForegroundColor Yellow
     }
 }
 
 function Docker-Down {
     Write-Host "Stopping OpenSearch..." -ForegroundColor Cyan
-    docker-compose down
+    docker-compose -f $ComposeFile down
     Write-Host "OpenSearch stopped" -ForegroundColor Green
 }
 
 function Docker-Logs {
-    docker-compose logs -f opensearch
+    docker-compose -f $ComposeFile logs -f opensearch
 }
 
 function Docker-Clean {
     Write-Host "Removing OpenSearch containers and volumes..." -ForegroundColor Cyan
-    docker-compose down -v
+    docker-compose -f $ComposeFile down -v
     Write-Host "Cleaned!" -ForegroundColor Green
 }
 

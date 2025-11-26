@@ -1,18 +1,15 @@
 # Test Certificates
 
 This directory stores **development-only** certificates that are required by the
-`docker-compose.test.yml` stack when OpenSearch security is enabled. All
+`test-environments/compose/docker-compose.test.yml` stack when OpenSearch security is enabled. All
 artifacts are generated on-demand so that no private keys are committed to the
 repository.
 
-```
-certs/
-├── README.md               # This file
-└── generated/              # Auto-generated TLS assets (gitignored)
-    ├── ca/                 # Custom root CA
-    ├── http/               # HTTP layer certificate chain
-    └── transport/          # Node-to-node transport certificate chain
-```
+- `README.md` – this file
+- `generated/` (gitignored)
+  - `ca/` – custom root CA
+  - `http/` – HTTP layer certificate chain
+  - `transport/` – node-to-node transport certificate chain
 
 ## Generating Certificates
 
@@ -43,7 +40,7 @@ OPENSEARCH_TEST_SSL_PASSWORD=curatorssl
 OPENSEARCH_INITIAL_ADMIN_PASSWORD=MyStrongPassword123!
 ```
 
-`docker-compose.test.yml` automatically mounts `certs/generated/` inside the
+`test-environments/compose/docker-compose.test.yml` automatically mounts `certs/generated/` inside the
 containers, so make sure this directory exists before bringing the stack up.
 
 > **Important:** All generated files stay on your machine and are ignored by

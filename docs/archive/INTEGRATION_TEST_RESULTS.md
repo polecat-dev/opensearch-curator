@@ -152,7 +152,7 @@ Cannot test the complete conversion workflow (snapshot → restore with storage_
 4. `docs/CONVERT_INDEX_TO_REMOTE.md` - Documentation
 5. `tests/integration/test_convert_index_to_remote.py` - Integration tests
 6. `tests/integration/test_convert_smoke.py` - Smoke tests (all passing)
-7. `docker-compose.test.yml` - Test environment
+7. `test-environments/compose/docker-compose.test.yml` - Test environment
 8. `setup_remote_tests.sh` - Linux/Mac setup script
 9. `setup_remote_tests.ps1` - Windows setup script
 10. `tests/integration/README_REMOTE_TESTS.md` - Testing guide

@@ -21,7 +21,7 @@ Due to Windows port restrictions, the Docker Compose configuration uses:
 docker rm -f opensearch-curator-test opensearch-dashboards-test
 
 # Start fresh
-docker-compose up -d
+docker-compose -f test-environments/compose/docker-compose.test.yml up -d
 
 # Wait a moment for startup, then check health
 Start-Sleep -Seconds 10
@@ -67,10 +67,10 @@ python -c "from opensearch_client.builder import Builder; from dotmap import Dot
 ## Stop OpenSearch
 
 ```powershell
-docker-compose down
+docker-compose -f test-environments/compose/docker-compose.test.yml down
 
 # Remove all data
-docker-compose down -v
+docker-compose -f test-environments/compose/docker-compose.test.yml down -v
 ```
 
 ## Troubleshooting
@@ -90,13 +90,13 @@ docker rm -f opensearch-curator-test opensearch-dashboards-test
 ### OpenSearch not starting
 Check logs:
 ```powershell
-docker-compose logs opensearch
+docker-compose -f test-environments/compose/docker-compose.test.yml logs opensearch
 ```
 
 ### Clean slate
 Remove everything and start fresh:
 ```powershell
-docker-compose down -v
+docker-compose -f test-environments/compose/docker-compose.test.yml down -v
 docker system prune -f
-docker-compose up -d
+docker-compose -f test-environments/compose/docker-compose.test.yml up -d
 ```
