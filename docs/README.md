@@ -1,32 +1,32 @@
-# OpenSearch Curator Documentation
+﻿# OpenSearch Curator Documentation
 
 Welcome to the OpenSearch Curator documentation!
 
-## 📚 Documentation Structure
+## ðŸ“š Documentation Structure
 
 ```
 docs/
-├── README.md                    # This file - documentation index
-├── STATUS.md                    # Current project status
-├── NEXT_STEPS.md               # Roadmap and next priorities
-├── CHANGELOG.md                # Release notes (symlink to ../CHANGELOG.md)
-├── CONVERT_INDEX_TO_REMOTE.md  # ConvertIndexToRemote action guide
-├── dev/                        # Development documentation
-│   ├── AGENTS.md               # Strategic analysis & migration overview
-│   ├── MIGRATION_PROGRESS.md   # Migration status (100% complete)
-│   ├── OPENSEARCH_API_FIXES.md # API compatibility fixes (8 fixes)
-│   ├── SESSION_SUMMARY.md      # Implementation session details
-│   └── TESTING.md              # Comprehensive testing guide
-└── archive/                    # Archived/legacy documentation
-    └── [11 archived files]
+â”œâ”€â”€ README.md                    # This file - documentation index
+â”œâ”€â”€ STATUS.md                    # Current project status
+â”œâ”€â”€ NEXT_STEPS.md               # Roadmap and next priorities
+â”œâ”€â”€ CHANGELOG.md                # Release notes (symlink to ../CHANGELOG.md)
+â”œâ”€â”€ CONVERT_INDEX_TO_REMOTE.md  # ConvertIndexToRemote action guide
+â”œâ”€â”€ dev/                        # Development documentation
+â”‚   â”œâ”€â”€ AGENTS.md               # Strategic analysis & migration overview
+â”‚   â”œâ”€â”€ MIGRATION_PROGRESS.md   # Migration status (100% complete)
+â”‚   â”œâ”€â”€ OPENSEARCH_API_FIXES.md # API compatibility fixes (8 fixes)
+â”‚   â”œâ”€â”€ SESSION_SUMMARY.md      # Implementation session details
+â”‚   â””â”€â”€ TESTING.md              # Comprehensive testing guide
+â””â”€â”€ archive/                    # Archived/legacy documentation
+    â””â”€â”€ [11 archived files]
 ```
 
 ---
 
-## 🎯 Quick Navigation
+## ðŸŽ¯ Quick Navigation
 
 ### For New Users
-- **Getting Started:** See main [README.rst](../README.rst)
+- **Getting Started:** See main [README.md](../README.md)
 - **Configuration Examples:** See [examples/](../examples/) directory
 - **Quick Start:** See [README_FIRST.md](../README_FIRST.md) for conventions
 
@@ -47,7 +47,7 @@ docs/
 
 ---
 
-## 📖 Documentation by Topic
+## ðŸ“– Documentation by Topic
 
 ### Core Functionality
 
@@ -100,10 +100,10 @@ docs/
 
 ---
 
-## 🚀 Quick Start Paths
+## ðŸš€ Quick Start Paths
 
 ### Path 1: I want to use OpenSearch Curator
-1. Read [../README.rst](../README.rst) for overview
+1. Read [../README.md](../README.md) for overview
 2. Check [../examples/](../examples/) for configuration examples
 3. Review [STATUS.md](STATUS.md) for compatibility info
 
@@ -131,11 +131,11 @@ docs/
 
 ---
 
-## 📊 Current Project Status
+## ðŸ“Š Current Project Status
 
 **Version:** 1.0.0  
-**Migration:** ✅ 100% Complete  
-**Tests:** ✅ 183/183 Passing (100%)  
+**Migration:** âœ… 100% Complete  
+**Tests:** âœ… 183/183 Passing (100%)  
 **OpenSearch Compatibility:** 2.0+ (tested against 3.2.0)  
 **Python Version:** 3.8+
 
@@ -143,7 +143,7 @@ See [STATUS.md](STATUS.md) for detailed status.
 
 ---
 
-## 🔗 External Resources
+## ðŸ”— External Resources
 
 - **GitHub Repository:** https://github.com/polecat-dev/opensearch-curator
 - **Issue Tracker:** https://github.com/polecat-dev/opensearch-curator/issues
@@ -152,7 +152,7 @@ See [STATUS.md](STATUS.md) for detailed status.
 
 ---
 
-## 📝 Archive
+## ðŸ“ Archive
 
 Legacy and consolidated documentation has been moved to [archive/](archive/):
 - OPENSEARCH_COMPATIBILITY.md
@@ -170,3 +170,4 @@ These files contain historical information that has been consolidated into curre
 
 **Last Updated:** November 13, 2025  
 **Maintainer:** Development Team
+

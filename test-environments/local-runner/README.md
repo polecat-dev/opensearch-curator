@@ -306,6 +306,6 @@ Error: Request timeout
 ## Reference
 
 - **Curator Docs:** https://opensearch.org/docs/latest/tools/curator/
-- **Filter Types:** https://curator.readthedocs.io/en/latest/filters.html
-- **Action Types:** https://curator.readthedocs.io/en/latest/actions.html
-- **YAML Config:** https://curator.readthedocs.io/en/latest/configuration.html
+- **Filter Types:** https://github.com/opensearch-project/opensearch-curator/tree/main/docs/reference/filters.md
+- **Action Types:** https://github.com/opensearch-project/opensearch-curator/tree/main/docs/reference/actions.md
+- **YAML Config:** https://github.com/opensearch-project/opensearch-curator/tree/main/docs/reference/configfile.md

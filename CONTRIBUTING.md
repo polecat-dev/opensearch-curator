@@ -12,30 +12,28 @@ That said, some basic guidelines, which you are free to ignore :)
 
 Want to write your own code to do something Curator doesn't do out of the box?
 
-* [Curator API Documentation](http://curator.readthedocs.io/) Since version 2.0,
+* [Curator API Documentation](https://github.com/polecat-dev/opensearch-curator/tree/main/docs) Since version 2.0,
 Curator ships with both an API and wrapper scripts (which are actually defined
 as entry points).  This allows you to write your own scripts to accomplish
 similar goals, or even new and different things with the
-[Curator API](http://curator.readthedocs.io/), [es_client](https://es-client.readthedocs.io), and the
-[Elasticsearch Python Client Library](http://elasticsearch-py.readthedocs.io/).
+[Curator API](https://github.com/polecat-dev/opensearch-curator/tree/main/docs), [opensearch_client](https://github.com/polecat-dev/opensearch-curator/tree/main/opensearch_client), and the
+[OpenSearch Python Client Library](https://opensearch.org/docs/latest/clients/python/).
 
 Want to know how to use the command-line interface (CLI)?
 
-* [Curator CLI Documentation](http://www.elastic.co/guide/en/elasticsearch/client/curator/current/index.html)
-  The Curator CLI Documentation is now a part of the document repository at
-  http://elastic.co/guide at
-  http://www.elastic.co/guide/en/elasticsearch/client/curator/current/index.html
+* [Curator CLI Documentation](https://github.com/polecat-dev/opensearch-curator/tree/main/docs/reference)
+  The CLI documentation is part of this repository and can be built locally with `sphinx-build -b html docs docs/_build/html`.
 
 
 ## Have a Question? Or an Idea or Feature Request?
 
-* File a ticket on [github](https://github.com/elastic/curator/issues)
+* File a ticket on [GitHub](https://github.com/polecat-dev/opensearch-curator/issues)
 
 ## Something Not Working? Found a Bug?
 
 If you think you found a bug, it probably is a bug.
 
-* File it on [github](https://github.com/elastic/curator/issues)
+* File it on [GitHub](https://github.com/polecat-dev/opensearch-curator/issues)
 
 # Contributing Documentation and Code Changes
 
@@ -43,33 +41,26 @@ If you have a bugfix or new feature that you would like to contribute to
 Curator, and you think it will take more than a few minutes to produce the fix
 (ie; write code), it is worth discussing the change with the Curator users and
 developers first! You can reach us via
-[github](https://github.com/elastic/curator/issues).
+[GitHub](https://github.com/polecat-dev/opensearch-curator/issues).
 
 Documentation is in two parts: API and CLI documentation.
 
 API documentation is generated from comments inside the classes and methods
 within the code.  This documentation is rendered and hosted at
-http://curator.readthedocs.io
+http://github.com/opensearch-project/opensearch-curator/tree/main/docs
 
-CLI documentation is in Asciidoc format in the GitHub repository at
-https://github.com/elastic/curator/tree/master/docs/asciidoc.
-This documentation can be changed via a pull request as with any other code
-change.
+CLI documentation lives under `docs/reference/` (Markdown and reStructuredText) in this repository.
+You can update it with a standard pull request, and the HTML output can be verified locally using `sphinx-build`.
 
 ## Contribution Steps
 
-1. Test your changes! Run the test suite ('pytest --cov=curator').  Please note
-   that this requires an Elasticsearch instance. The tests will try to connect
-   to a local elasticsearch instance and run integration tests against it.
-   **This will delete all the data stored there!** You can use the env variable
-   `TEST_ES_SERVER` to point to a different instance (for example
-   'otherhost:9203').
-2. Please make sure you have signed our [Contributor License
-   Agreement](http://www.elastic.co/contributor-agreement/). We are not
-   asking you to assign copyright to us, but to give us the right to distribute
-   your code without restriction. We ask this of all contributors in order to
-   assure our users of the origin and continuing existence of the code. You
-   only need to sign the CLA once.
+1. Test your changes! Run the test suite (`python -m pytest --cov=curator`). This
+   requires an OpenSearch instance. The tests connect to `TEST_ES_SERVER`
+   (defaults to `https://localhost:19200`) and run integration tests against it.
+   **This will delete all data on that cluster.** Point the env var at a disposable
+   instance if you cannot run locally.
+2. Ensure new files retain the Apache 2.0 license header where applicable and that
+   dependencies remain compatible with Python 3.8+.
 3. Send a pull request! Push your changes to your fork of the repository and
    [submit a pull
    request](https://help.github.com/articles/using-pull-requests). In the pull

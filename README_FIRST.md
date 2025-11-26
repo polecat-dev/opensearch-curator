@@ -1,4 +1,4 @@
-# Important Notes - Read First! 📋
+﻿# Important Notes - Read First! ðŸ“‹
 
 
 
@@ -6,29 +6,29 @@
 
 
 
-### 🎯 Start Here
+### ðŸŽ¯ Start Here
 
-- 📊 **[docs/STATUS.md](docs/STATUS.md)** - Current status summary (100% migration complete!)
+- ðŸ“Š **[docs/STATUS.md](docs/STATUS.md)** - Current status summary (100% migration complete!)
 
-- 🚀 **[docs/NEXT_STEPS.md](docs/NEXT_STEPS.md)** - What to do next (CI/CD, release prep)
+- ðŸš€ **[docs/NEXT_STEPS.md](docs/NEXT_STEPS.md)** - What to do next (CI/CD, release prep)
 
 
 
 ###  Developer Guides
 
-- 🧪 **[docs/dev/TESTING.md](docs/dev/TESTING.md)** - Comprehensive guide to running and debugging tests
+- ðŸ§ª **[docs/dev/TESTING.md](docs/dev/TESTING.md)** - Comprehensive guide to running and debugging tests
 
-- 🔧 **[docs/dev/OPENSEARCH_API_FIXES.md](docs/dev/OPENSEARCH_API_FIXES.md)** - OpenSearch-py 3.0 compatibility fixes (8 fixes)
+- ðŸ”§ **[docs/dev/OPENSEARCH_API_FIXES.md](docs/dev/OPENSEARCH_API_FIXES.md)** - OpenSearch-py 3.0 compatibility fixes (8 fixes)
 
-- 📈 **[docs/dev/MIGRATION_PROGRESS.md](docs/dev/MIGRATION_PROGRESS.md)** - Migration status (updated with 100% completion)
+- ðŸ“ˆ **[docs/dev/MIGRATION_PROGRESS.md](docs/dev/MIGRATION_PROGRESS.md)** - Migration status (updated with 100% completion)
 
 
 
-### 🤖 Strategic & Planning
+### ðŸ¤– Strategic & Planning
 
-- 🗺️ **[docs/dev/AGENTS.md](docs/dev/AGENTS.md)** - Strategic analysis and migration complete status
+- ðŸ—ºï¸ **[docs/dev/AGENTS.md](docs/dev/AGENTS.md)** - Strategic analysis and migration complete status
 
-- 📚 **Main Documentation** - `README.rst` (reStructuredText format)
+- ðŸ“š **Main Documentation** - `README.md` (Markdown format)
 
 
 
@@ -36,7 +36,7 @@
 
 
 
-### 1. ⚠️ Always Use `python -m` for Python Modules
+### 1. âš ï¸ Always Use `python -m` for Python Modules
 
 
 
@@ -46,7 +46,7 @@
 
 ```powershell
 
-# ✅ CORRECT
+# âœ… CORRECT
 
 python -m pytest
 
@@ -58,7 +58,7 @@ python -m mypy curator
 
 
 
-# ❌ WRONG - Don't do this!
+# âŒ WRONG - Don't do this!
 
 pytest
 
@@ -70,17 +70,17 @@ black .
 
 
 
-### 2. ⚠️ Makefile vs PowerShell
+### 2. âš ï¸ Makefile vs PowerShell
 
 
 
 **On Windows:**
 
-- ✅ Use `.\make.ps1` (PowerShell script)
+- âœ… Use `.\make.ps1` (PowerShell script)
 
-- ✅ Or use direct commands
+- âœ… Or use direct commands
 
-- ❌ `Makefile` only works in WSL
+- âŒ `Makefile` only works in WSL
 
 
 
@@ -106,9 +106,9 @@ docker-compose -f test-environments/compose/docker-compose.test.yml up -d
 
 **On Linux/Mac/WSL:**
 
-- ✅ Use `make` commands
+- âœ… Use `make` commands
 
-- ✅ Or use direct commands
+- âœ… Or use direct commands
 
 
 
@@ -124,7 +124,7 @@ make docker-up
 
 
 
-### 3. 🔌 Port Configuration
+### 3. ðŸ”Œ Port Configuration
 
 
 
@@ -142,7 +142,7 @@ https://localhost:19200
 
 # Not:
 
-http://localhost:9200  # ❌ Wrong protocol/port!
+http://localhost:9200  # âŒ Wrong protocol/port!
 
 ```
 
@@ -235,7 +235,7 @@ See these files for full details:
 
 
 
-1. **[DEVELOPMENT_CONVENTIONS.md](DEVELOPMENT_CONVENTIONS.md)** - ⭐ Read this first!
+1. **[DEVELOPMENT_CONVENTIONS.md](DEVELOPMENT_CONVENTIONS.md)** - â­ Read this first!
 
    - Python module execution rules
 
@@ -279,7 +279,7 @@ See these files for full details:
 
 
 
-## Don't Repeat These Mistakes! 🚫
+## Don't Repeat These Mistakes! ðŸš«
 
 
 
@@ -287,15 +287,15 @@ Common errors to avoid:
 
 
 
-1. ❌ Using `pytest` directly → Use `python -m pytest`
+1. âŒ Using `pytest` directly â†’ Use `python -m pytest`
 
-2. ❌ Using `pip` directly → Use `python -m pip`
+2. âŒ Using `pip` directly â†’ Use `python -m pip`
 
-3. ❌ Using `make` on Windows PowerShell → Use `.\make.ps1` or WSL
+3. âŒ Using `make` on Windows PowerShell â†’ Use `.\make.ps1` or WSL
 
-4. ❌ Connecting to port 9200 → Use port 19200
+4. âŒ Connecting to port 9200 â†’ Use port 19200
 
-5. ❌ Forgetting to start OpenSearch → `docker-compose -f test-environments/compose/docker-compose.test.yml up -d`
+5. âŒ Forgetting to start OpenSearch â†’ `docker-compose -f test-environments/compose/docker-compose.test.yml up -d`
 
 
 
@@ -303,4 +303,4 @@ Common errors to avoid:
 
 
 
-**Keep this in mind for all development work!** 💡
+**Keep this in mind for all development work!** ðŸ’¡

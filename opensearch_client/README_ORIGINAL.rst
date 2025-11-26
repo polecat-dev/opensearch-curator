@@ -3,7 +3,7 @@
 es_client
 =========
 
-https://es-client.readthedocs.io/
+https://github.com/opensearch-project/opensearch-client/
 
 You may wonder why this even exists, as at first glance it doesn't seem to make
 anything any easier than just using the elasticsearch8 Python module to

@@ -62,18 +62,15 @@ exclude_patterns = ['_build']
 
 pygments_style = "sphinx"
 
-on_rtd = os.environ.get("READTHEDOCS", None) == "True"
+import sphinx_rtd_theme
 
-if not on_rtd:  # only import and set the theme if we're building docs locally
-    import sphinx_rtd_theme
-
-    html_theme = "sphinx_rtd_theme"
-    html_theme_path = [sphinx_rtd_theme.get_html_theme_path()]
+html_theme = "sphinx_rtd_theme"
+html_theme_path = [sphinx_rtd_theme.get_html_theme_path()]
 
 intersphinx_mapping = {
     'python': ('https://docs.python.org/3.12', None),
-    'es_client': ('https://es-client.readthedocs.io/en/v8.17.5', None),
-    'elasticsearch8': ('https://elasticsearch-py.readthedocs.io/en/v8.17.2', None),
+    'es_client': ('https://github.com/opensearch-project/opensearch-client', None),
+    'elasticsearch8': ('https://www.elastic.co/guide/en/elasticsearch/client/python-api/current/index.html', None),
     'voluptuous': ('http://alecthomas.github.io/voluptuous/docs/_build/html', None),
     'click': ('https://click.palletsprojects.com/en/8.1.x', None),
 }

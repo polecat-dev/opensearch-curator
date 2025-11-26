@@ -27,7 +27,7 @@ authors = [
 dynamic = ["version"]
 description = "Tending your OpenSearch indices and snapshots"
 license = {file = "LICENSE"}
-readme = "README.rst"
+readme = "README.md"
 requires-python = ">=3.8"
 classifiers = [
     "Intended Audience :: Developers",

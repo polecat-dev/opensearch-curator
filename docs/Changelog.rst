@@ -584,7 +584,7 @@ which is why I didn't start with 8.6.0 as my release version.
   * Curator has supported ECS logging for a while, but now that there is an official Python module,
     Curator is going to use it. Welcome, ``ecs-logging``! As before, just use ``logformat: ecs``,
     but now it has all of the goodness right there!
-  * rST docs are improved and updated. Check out https://curator.readthedocs.io to see.
+  * rST docs are improved and updated. Check out https://github.com/opensearch-project/opensearch-curator/tree/main/docs to see.
   * Logging turned out to be too verbose due to a shift. Now the ``blacklist`` defaults to
     ``['elastic_transport', 'urllib3']``. Documentation updated accordingly.
   * Default behavior is now to not verify snapshot repository access for Snapshot and Restore
@@ -2154,7 +2154,7 @@ bug fixes done during the alphas.
   * Fix prune_nones to work with Python 2.6. Fixes #619 (untergeek)
   * Fix TimestringSearch to work with Python 2.6. Fixes #622 (untergeek)
   * Add language classifiers to ``setup.py``.  Fixes #640 (untergeek)
-  * Changed references to readthedocs.org to be readthedocs.io.
+  * Updated documentation links to point to the in-repo Sphinx docs.
 
 4.0.0a9 (27 Apr 2016)
 ---------------------
@@ -2612,7 +2612,7 @@ Be sure to read the updated command-line specific docs in the
 [wiki](https://github.com/elasticsearch/curator/wiki) and change your
 command-line arguments accordingly.
 
-The API docs are still at http://curator.readthedocs.io.  Be sure to read the
+The API docs are still at http://github.com/opensearch-project/opensearch-curator/tree/main/docs.  Be sure to read the
 latest docs, or select the docs for 3.0.0.
 
 **General**

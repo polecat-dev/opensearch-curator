@@ -1,11 +1,11 @@
-# OpenSearch Curator - Next Steps
+﻿# OpenSearch Curator - Next Steps
 
 **Date:** November 13, 2025  
-**Current Status:** ✅ Migration Complete - 183/183 Tests Passing (100%)
+**Current Status:** âœ… Migration Complete - 183/183 Tests Passing (100%)
 
 ---
 
-## 🎯 Immediate Priorities
+## ðŸŽ¯ Immediate Priorities
 
 ### 1. CI/CD Setup (HIGHEST PRIORITY)
 
@@ -13,7 +13,7 @@
 
 **Tasks:**
 1. Create `.github/workflows/test.yml`
-   - Test matrix: Python 3.8-3.12 × OpenSearch 2.11, 3.0, 3.1, 3.2
+   - Test matrix: Python 3.8-3.12 Ã— OpenSearch 2.11, 3.0, 3.1, 3.2
    - Run integration tests against Docker OpenSearch
    - Upload coverage reports
 
@@ -76,44 +76,44 @@
 Many overlapping documentation files exist. Consolidate to reduce confusion:
 
 **KEEP (Primary Docs):**
-- ✅ `README.rst` - Main project README
-- ✅ `README_FIRST.md` - Quick start conventions (with links)
-- ✅ `AGENTS.md` - Strategic analysis & migration complete
-- ✅ `TESTING.md` - Comprehensive testing guide
-- ✅ `OPENSEARCH_API_FIXES.md` - API compatibility reference
-- ✅ `MIGRATION_PROGRESS.md` - Updated with 100% completion
-- ✅ `CONTRIBUTING.md` - Contribution guidelines
-- ✅ `LICENSE` - Apache 2.0 license
+- âœ… `README.md` - Main project README
+- âœ… `README_FIRST.md` - Quick start conventions (with links)
+- âœ… `AGENTS.md` - Strategic analysis & migration complete
+- âœ… `TESTING.md` - Comprehensive testing guide
+- âœ… `OPENSEARCH_API_FIXES.md` - API compatibility reference
+- âœ… `MIGRATION_PROGRESS.md` - Updated with 100% completion
+- âœ… `CONTRIBUTING.md` - Contribution guidelines
+- âœ… `LICENSE` - Apache 2.0 license
 
 **CONSOLIDATE OR ARCHIVE:**
-- 🔄 `OPENSEARCH_COMPATIBILITY.md` - Merge into OPENSEARCH_API_FIXES.md
-- 🔄 `OPENSEARCH_PY_3.0.md` - Merge into OPENSEARCH_API_FIXES.md
-- 🔄 `OPENSEARCH_CLIENT_MIGRATION_STATUS.md` - Merge into MIGRATION_PROGRESS.md
-- 🔄 `INTEGRATION_TEST_RESULTS.md` - Outdated, info now in TESTING.md
-- 🔄 `RECENT_UPDATES.md` - Outdated, info now in MIGRATION_PROGRESS.md
-- 🔄 `QUICKSTART.md` - Merge into README.rst or README_FIRST.md
-- 🔄 `README_OPENSEARCH.md` - Duplicate info, merge into main README.rst
-- 🔄 `CONVERT_INDEX_TO_REMOTE_SUMMARY.md` - Move to docs/ or examples/
-- 🔄 `DOCKER_TESTING.md` - Merge into TESTING.md
-- 🔄 `MIGRATION_CHECKLIST.md` - Archive or remove (migration complete)
-- 🔄 `DEVELOPMENT_CONVENTIONS.md` - Merge into CONTRIBUTING.md
+- ðŸ”„ `OPENSEARCH_COMPATIBILITY.md` - Merge into OPENSEARCH_API_FIXES.md
+- ðŸ”„ `OPENSEARCH_PY_3.0.md` - Merge into OPENSEARCH_API_FIXES.md
+- ðŸ”„ `OPENSEARCH_CLIENT_MIGRATION_STATUS.md` - Merge into MIGRATION_PROGRESS.md
+- ðŸ”„ `INTEGRATION_TEST_RESULTS.md` - Outdated, info now in TESTING.md
+- ðŸ”„ `RECENT_UPDATES.md` - Outdated, info now in MIGRATION_PROGRESS.md
+- ðŸ”„ `QUICKSTART.md` - Merge into README.md or README_FIRST.md
+- ðŸ”„ `README_OPENSEARCH.md` - Duplicate info, merge into main README.md
+- ðŸ”„ `CONVERT_INDEX_TO_REMOTE_SUMMARY.md` - Move to docs/ or examples/
+- ðŸ”„ `DOCKER_TESTING.md` - Merge into TESTING.md
+- ðŸ”„ `MIGRATION_CHECKLIST.md` - Archive or remove (migration complete)
+- ðŸ”„ `DEVELOPMENT_CONVENTIONS.md` - Merge into CONTRIBUTING.md
 
 **REMOVE (Temporary/Redundant):**
-- ❌ `test_builder.py` - Temporary test file (root directory)
-- ❌ `test_connection.py` - Temporary test file (root directory)
-- ❌ `load_env.py` - Already in scripts/ or handled by run_tests.ps1
+- âŒ `test_builder.py` - Temporary test file (root directory)
+- âŒ `test_connection.py` - Temporary test file (root directory)
+- âŒ `load_env.py` - Already in scripts/ or handled by run_tests.ps1
 
 **CREATE NEW DIRECTORY:**
 ```
 docs/migration/
-  ├── ELASTICSEARCH_TO_OPENSEARCH.md (consolidation of migration docs)
-  └── API_CHANGES.md (from OPENSEARCH_API_FIXES.md)
+  â”œâ”€â”€ ELASTICSEARCH_TO_OPENSEARCH.md (consolidation of migration docs)
+  â””â”€â”€ API_CHANGES.md (from OPENSEARCH_API_FIXES.md)
 ```
 
 #### Scripts Organization
-- ✅ Keep: `run_tests.ps1`, `run_curator.py`, `run_es_repo_mgr.py`, `run_singleton.py`
-- 🔄 Move to scripts/: `post4docker.py`, `alpine4docker.sh`
-- 🔄 Document purpose of each script in scripts/README.md
+- âœ… Keep: `run_tests.ps1`, `run_curator.py`, `run_es_repo_mgr.py`, `run_singleton.py`
+- ðŸ”„ Move to scripts/: `post4docker.py`, `alpine4docker.sh`
+- ðŸ”„ Document purpose of each script in scripts/README.md
 
 ---
 
@@ -133,7 +133,7 @@ docs/migration/
    - Document any remaining type: ignore
 
 3. **Docstring Updates**
-   - Change "Elasticsearch" → "OpenSearch" in docstrings
+   - Change "Elasticsearch" â†’ "OpenSearch" in docstrings
    - Update examples in docstrings
    - Ensure all public APIs documented
 
@@ -162,7 +162,7 @@ docs/migration/
    - Test snapshot/restore across versions
 
 3. **Compatibility Matrix**
-   - Create table in README.rst
+   - Create table in README.md
    - Document minimum versions for each action
    - Note any version-specific behavior
 
@@ -203,7 +203,7 @@ docs/migration/
 
 ---
 
-## 📋 Suggested Task Order
+## ðŸ“‹ Suggested Task Order
 
 ### Week 1: CI/CD & Cleanup
 - [ ] Day 1-2: Set up GitHub Actions workflows
@@ -226,18 +226,18 @@ docs/migration/
 
 ---
 
-## 🔍 Open Questions
+## ðŸ” Open Questions
 
 1. **Package Name:** Confirm `opensearch-curator` is available on PyPI
 2. **Docker Registry:** Docker Hub vs GitHub Container Registry?
-3. **Documentation Hosting:** ReadTheDocs vs GitHub Pages?
+3. **Documentation Hosting:** Serve the Sphinx docs via GitHub Pages (ReadTheDocs removed).
 4. **OpenSearch Versions:** Which versions to officially support? (2.0+?)
 5. **Security Testing:** Need security scanning in CI?
 6. **License Fork Notice:** Exact wording for fork from Elasticsearch Curator?
 
 ---
 
-## 📚 References
+## ðŸ“š References
 
 - **Testing Guide:** TESTING.md
 - **API Fixes:** OPENSEARCH_API_FIXES.md
@@ -250,3 +250,4 @@ docs/migration/
 **Maintainer:** Development Team  
 **Last Updated:** November 13, 2025  
 **Status:** Ready for CI/CD and Release Preparation
+
