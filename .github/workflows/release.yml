@@ -60,16 +60,17 @@ jobs:
           git push origin "v${VERSION}" --force
 
       - name: Create GitHub Release
-        uses: softprops/action-gh-release@v1
-        with:
-          tag_name: v${{ inputs.version }}
-          name: OpenSearch Curator v${{ inputs.version }}
-          body: |
-            Automated release for v${{ inputs.version }}.
-          files: |
-            dist/*
         env:
+          VERSION: ${{ inputs.version }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          if gh release view "v${VERSION}" >/dev/null 2>&1; then
+            gh release delete "v${VERSION}" -y
+          fi
+          gh release create "v${VERSION}" dist/* \
+            --title "OpenSearch Curator v${VERSION}" \
+            --notes "Automated release for v${VERSION}." \
+            --latest
 
       - name: Upload artifacts
         uses: actions/upload-artifact@v4
