@@ -23,11 +23,13 @@ def _resolve_verify(host):
 
 
 def _resolve_credentials():
-    username = os.environ.get('TEST_ES_USERNAME', 'admin')
+    username = os.environ.get('TEST_ES_USERNAME')
     password = os.environ.get('TEST_ES_PASSWORD') or os.environ.get(
-        'OPENSEARCH_INITIAL_ADMIN_PASSWORD', ''
+        'OPENSEARCH_INITIAL_ADMIN_PASSWORD'
     )
-    return username or '', password or ''
+    if username and password:
+        return username, password
+    return None, None
 
 
 def _build_client_config(host, logfile=None):
@@ -45,11 +47,12 @@ def _build_client_config(host, logfile=None):
     if ca_certs:
         lines.append(f'    ca_certs: {ca_certs}')
     lines.extend(
+        ['  other_settings:', '    master_only: False']
+    )
+    if username and password:
+        lines.extend([f'    username: {username}', f'    password: {password}'])
+    lines.extend(
         [
-            '  other_settings:',
-            '    master_only: False',
-            f'    username: {username}',
-            f'    password: {password}',
             '',
             'logging:',
             '  loglevel: DEBUG',
