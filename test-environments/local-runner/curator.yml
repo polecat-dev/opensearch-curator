@@ -7,9 +7,8 @@ opensearch:
     hosts:
       - https://localhost:19200
     request_timeout: 30
-    # SSL Configuration
-    verify_certs: False  # Set to True in production with ca_certs
-    # ca_certs: ../../certs/generated/ca/root-ca.pem  # Uncomment for cert verification
+    verify_certs: True
+    ca_certs: ../../certs/generated/ca/root-ca.pem
     # client_cert: ../../certs/generated/admin/admin.crt  # Optional: client certificate
     # client_key: ../../certs/generated/admin/admin.key  # Optional: client key
     # ssl_assert_hostname: False  # Set False if using IP addresses
