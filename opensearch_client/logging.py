@@ -544,7 +544,7 @@ class JSONFormatter(logging.Formatter):
         """Format a log record as a JSON string."""
         self.converter = time.gmtime
         fmt = "%Y-%m-%dT%H:%M:%S"
-        mil = str(record.msecs).split(".", maxsplit=1)[0]
+        mil = f"{int(record.msecs):03d}"
         timestamp = f"{self.formatTime(record, datefmt=fmt)}.{mil}Z"
         result = {"@timestamp": timestamp}
         available = record.__dict__
