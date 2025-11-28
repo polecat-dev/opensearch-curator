@@ -11,13 +11,13 @@ RUN apk --no-cache upgrade && apk --no-cache add build-base tar musl-utils opens
 RUN pip3 install setuptools cx_Freeze patchelf-wrapper
 
 COPY . .
-# alpine4docker.sh does some link magic necessary for cx_Freeze execution
+# scripts/alpine4docker.sh does some link magic necessary for cx_Freeze execution.
 # These files are platform dependent because the architecture is in the file name.
 # This script handles it, effectively:
 # ARCH=$(uname -m)
 # ln -s /lib/libc.musl-${ARCH}.so.1 ldd
 # ln -s /lib /lib64
-RUN /bin/sh alpine4docker.sh
+RUN /bin/sh scripts/alpine4docker.sh
 
 # Install Curator locally
 RUN pip3 install .
@@ -41,4 +41,3 @@ RUN mkdir /.curator
 USER nobody:nobody
 ENV LD_LIBRARY_PATH=/curator/lib:\$LD_LIBRARY_PATH
 ENTRYPOINT ["/curator/curator"]
-

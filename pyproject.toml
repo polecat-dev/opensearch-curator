@@ -92,6 +92,9 @@ include = [
   "curator/defaults/*.py",
   "curator/helpers/*.py",
   "curator/validators/*.py",
+  "opensearch_client/*.py",
+  "opensearch_client/helpers/*.py",
+  "opensearch_client/py.typed",
 ]
 
 [tool.hatch.build.targets.sdist]
