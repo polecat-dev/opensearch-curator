@@ -46,9 +46,7 @@ def _build_client_config(host, logfile=None):
     ]
     if ca_certs:
         lines.append(f'    ca_certs: {ca_certs}')
-    lines.extend(
-        ['  other_settings:', '    master_only: False']
-    )
+    lines.extend(['  other_settings:', '    master_only: False'])
     if username and password:
         lines.extend([f'    username: {username}', f'    password: {password}'])
     lines.extend(
