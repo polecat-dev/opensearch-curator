@@ -18,7 +18,7 @@ jobs:
     name: Latest OpenSearch (3.3.0)
     runs-on: ubuntu-latest
     env:
-      PYTHON_VERSION: '3.11'
+      PYTHON_VERSION: '3.12'
       TEST_ES_SERVER: http://localhost:9200
       TEST_S3_BUCKET: curator-test-bucket
       TEST_S3_ENDPOINT: http://localhost:4566
