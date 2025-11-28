@@ -48,9 +48,7 @@ INVALID_HOST_SCHEMA = "Invalid host schema: {host}"
 MUST_PROVIDE_BOTH_AUTH = "Must populate both username and password, or neither"
 MUST_PROVIDE_BOTH_API_KEY = "Must populate both id and api_key, or neither"
 HOSTS_AND_CLOUD_ID_CONFLICT = 'Cannot populate both "hosts" and "cloud_id"'
-INVALID_CLOUD_ID = (
-    'Invalid cloud_id "{value}". Expected "<deployment>:base64(host$es_port[$dashboards_port])".'
-)
+INVALID_CLOUD_ID = 'Invalid cloud_id "{value}". Expected "<deployment>:base64(host$es_port[$dashboards_port])".'
 MULTIPLE_HOSTS_MASTER_ONLY = (
     '"master_only" cannot be True if multiple hosts are specified. Hosts = {hosts}'
 )
