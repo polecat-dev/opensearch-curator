@@ -106,6 +106,22 @@ jobs:
     - name: Download all artifacts
       uses: actions/download-artifact@v4
     
+    - name: Prepare release assets
+      run: |
+        set -euo pipefail
+        mkdir -p release-assets
+        shopt -s nullglob
+        if compgen -G "python-package/*" > /dev/null; then
+          cp python-package/* release-assets/
+        fi
+        if [ -d curator-binary ]; then
+          tar -czf release-assets/opensearch-curator-binary.tar.gz -C curator-binary .
+        fi
+        if compgen -G "docker-image/*" > /dev/null; then
+          cp docker-image/* release-assets/
+        fi
+        ls -l release-assets/
+    
     - name: Publish GitHub Release
       env:
         GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -114,7 +130,7 @@ jobs:
         set -euo pipefail
         TAG_NAME="${GITHUB_REF#refs/tags/}"
         shopt -s nullglob
-        assets=(python-package/* curator-binary/* docker-image/*)
+        assets=(release-assets/*)
         if [ ${#assets[@]} -eq 0 ]; then
           echo "No release assets found"
           exit 1
