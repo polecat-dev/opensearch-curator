@@ -26,7 +26,7 @@ RUN pip3 install .
 RUN cxfreeze build
 
 # Rename 'build/exe.{system().lower()}-{machine()}-{MAJOR}.{MINOR}' to curator_build
-RUN python3 post4docker.py
+RUN python3 scripts/post4docker.py
 
 ### End `builder` segment
 
