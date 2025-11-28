@@ -6,6 +6,19 @@
 
 OpenSearch Curator keeps OpenSearch clusters tidy. It ships a Click-based CLI, CLI singletons, and an API surface you can script against for recurring housekeeping tasks such as delete, snapshot, rollover, and remote store conversion.
 
+## Project Status & Origins
+
+This repository is a fork of the final Elasticsearch Curator release (8.0.21) plus
+the upstream `es_client` helper library. Both projects were Apache 2.0 licensed
+and serve as the base for the OpenSearch-focused rewrite you see here. The
+migration is still ongoing—expect a few edges to be rough while actions, docs,
+and integration tests are reworked for OpenSearch-only clusters. Please file
+issues for any missing parity or behavior regressions you find.
+
+Community help is welcome! Whether it is reviewing code, adding test coverage,
+or proving out new OpenSearch 3.x features, contributions make the port more
+stable for everyone.
+
 ## Highlights
 
 - Supports OpenSearch 2.x and 3.x via `opensearch-py`
@@ -13,6 +26,9 @@ OpenSearch Curator keeps OpenSearch clusters tidy. It ships a Click-based CLI, C
 - Runs full integration (183 tests) and `opensearch_client` unit suites in CI
 - Includes a secure-by-default Docker test stack with custom CA + PKCS#12 tooling
 - Uses Hatch/PEP-517 packaging plus automated release and build workflows
+- Adds a new `convert_index_to_remote` action/CLI singleton that snapshots local
+  indices, restores them as `storage_type="remote_snapshot"`, and optionally
+  aliases them to speed up remote-store migrations
 
 ## Repository Layout
 
@@ -103,3 +119,11 @@ Rendered docs and API references are available in the repository (`docs/` folder
 ## Contributing
 
 See [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines. Issues and feature requests are tracked on [GitHub Issues](https://github.com/polecat-dev/opensearch-curator/issues).
+
+## AI Assistance Disclosure
+
+Refactoring, migration chores, and many of the README/doc updates were drafted
+with the help of large language models (AI). Every generated change was reviewed
+and adjusted by a human maintainer, but the project benefits from that
+automation. Please note this when submitting patches—improvements, audits, and
+fresh eyes are greatly appreciated.

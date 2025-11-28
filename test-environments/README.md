@@ -15,6 +15,20 @@ this directory so the repository root stays focused on the Python code.
   - `create-test-data.(sh|ps1)` - sample data loaders
   - `0X-*.yml` - curated action files used for manual smoke testing
 
+> **⚠️ Demo credentials only**
+>
+> The secure Compose stack ships with intentionally weak defaults:
+> `test-environments/compose/opensearch-security/internal_users.yml` contains
+> bcrypt hashes for the documented demo passwords and
+> `update_admin_password.sh` sets the admin account to a well-known string while
+> the PKCS#12 bundles generated for TLS all reuse the `curatorssl` passphrase.
+> Before exposing these assets outside of your workstation, regenerate the TLS
+> material with `python scripts/generate_test_certs.py`, update every password
+> via the security admin APIs (for example by re-running
+> `update_admin_password.sh` with new hashes produced by `plugins/tools/hash.sh`
+> inside the container), and rotate any `.p12` passphrases referenced by the
+> Compose files.
+
 See `docs/dev/TESTING.md` for the authoritative instructions on when to use
 each environment and how these files tie into TLS assets and the rest of the
 tooling.

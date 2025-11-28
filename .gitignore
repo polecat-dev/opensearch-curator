@@ -9,6 +9,8 @@ docker_test/curatortestenv
 html_docs/
 certs/generated/*
 !certs/generated/.gitkeep
+scancode-report.json
+trufflehog3-report.json
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
