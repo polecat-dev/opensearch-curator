@@ -15,6 +15,8 @@ YAMLCONFIG = "\n".join(
     ["---", "opensearch:", "  client:", "    hosts:", "      - {0}\n"]
 )
 
+VALID_CLOUD_ID = "foo:ZXhhbXBsZS5jb20kNDQz"  # base64("example.com$443")
+
 # pylint: disable=protected-access
 
 
@@ -54,7 +56,7 @@ class TestInit(TestCase):
         """
         test = {
             "opensearch": {
-                "client": {"hosts": ["http://10.1.2.3:4567"], "cloud_id": "foo:bar"}
+                "client": {"hosts": ["http://10.1.2.3:4567"], "cloud_id": VALID_CLOUD_ID}
             }
         }
         with pytest.raises(ConfigurationError):
@@ -66,7 +68,7 @@ class TestInit(TestCase):
         """
         test = {
             "opensearch": {
-                "client": {"hosts": ["http://127.0.0.1:9200"], "cloud_id": "foo:bar"}
+                "client": {"hosts": ["http://127.0.0.1:9200"], "cloud_id": VALID_CLOUD_ID}
             }
         }
         obj = Builder(configdict=test)
