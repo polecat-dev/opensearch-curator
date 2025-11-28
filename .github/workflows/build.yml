@@ -132,14 +132,21 @@ jobs:
     - name: Download all artifacts
       uses: actions/download-artifact@v4
     
-    - name: Create GitHub Release
-      uses: softprops/action-gh-release@v1
-      with:
-        files: |
-          python-package/*
-          curator-binary/*
-        draft: false
-        prerelease: ${{ contains(github.ref, 'rc') || contains(github.ref, 'alpha') || contains(github.ref, 'beta') }}
-        generate_release_notes: true
+    - name: Publish GitHub Release
       env:
+        GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      run: |
+        set -euo pipefail
+        TAG_NAME="${GITHUB_REF#refs/tags/}"
+        shopt -s nullglob
+        assets=(python-package/* curator-binary/*)
+        if [ ${#assets[@]} -eq 0 ]; then
+          echo "No release assets found"
+          exit 1
+        fi
+        args=(--title "$TAG_NAME" --generate-notes)
+        if [[ "$TAG_NAME" == *"rc"* || "$TAG_NAME" == *"alpha"* || "$TAG_NAME" == *"beta"* ]]; then
+          args+=(--prerelease)
+        fi
+        gh release create "$TAG_NAME" "${assets[@]}" "${args[@]}"
