@@ -262,9 +262,9 @@ opensearch:
 
 Current initialization in `curator/cli.py`:
 ```python
-from es_client.builder import Builder
+from opensearch_client.builder import Builder
 
-client = Builder(configdict=config['elasticsearch']).client
+client = Builder(configdict=config['opensearch']).client
 ```
 
 Proposed OpenSearch version:

@@ -210,7 +210,7 @@ def run(ctx: click.Context) -> None:
 
         # Override the timeout, if specified, otherwise use the default.
         if action_def.timeout_override:
-            ctx.obj['configdict']['elasticsearch']['client'][
+            ctx.obj['configdict']['opensearch']['client'][
                 'request_timeout'
             ] = action_def.timeout_override
 
