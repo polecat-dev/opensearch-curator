@@ -1,8 +1,9 @@
-"""Deprecated es_client.helpers.schemacheck module"""
+"""Deprecated opensearch_client.helpers.schemacheck module"""
 
 # pylint: disable=W0401,W0614
+# ruff: noqa: F403
 import warnings
-from ..schemacheck import *
+from ..schemacheck import *  # noqa: F401
 
 warnings.warn(
     (

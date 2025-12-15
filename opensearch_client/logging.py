@@ -31,7 +31,6 @@ import json
 import time
 import logging
 from logging import FileHandler, StreamHandler
-from voluptuous import Schema
 from click import Context, echo as clicho
 import ecs_logging
 from .exceptions import LoggingException
@@ -44,7 +43,7 @@ from .utils import ensure_list, prune_nones
 logger = logging.getLogger('')  # Root logger for this module
 
 
-def check_logging_config(config: t.Dict) -> Schema:
+def check_logging_config(config: t.Dict) -> t.Dict:
     """
     Validate logging configuration using SchemaCheck.
 
@@ -52,8 +51,8 @@ def check_logging_config(config: t.Dict) -> Schema:
         config (dict): Logging configuration data.
 
     Returns:
-        :class:`voluptuous.Schema`: Validated logging configuration from
-            :class:`~es_client.schemacheck.SchemaCheck`.
+        dict: Validated logging configuration from
+            :class:`~opensearch_client.schemacheck.SchemaCheck`.
 
     Ensures the top-level key ``logging`` is in `config`. Sets an empty default
     dictionary if ``logging`` is absent. Passes the result to
@@ -130,7 +129,7 @@ def de_dot(dot_string: str, msg: str) -> t.Dict[str, t.Any]:
         dict: Nested dictionary with `msg` as the leaf value.
 
     Raises:
-        :exc:`~es_client.exceptions.LoggingException`: If dictionary creation fails.
+        :exc:`~opensearch_client.exceptions.LoggingException`: If dictionary creation fails.
 
     Used by :class:`JSONFormatter` to structure log data.
 
@@ -142,7 +141,7 @@ def de_dot(dot_string: str, msg: str) -> t.Dict[str, t.Any]:
     """
     arr = dot_string.split(".")
     arr.append(msg)
-    retval = None
+    retval: t.Dict[str, t.Any] = {}
     for idx in range(len(arr), 1, -1):
         if not retval:
             try:
@@ -257,6 +256,8 @@ def get_logger(log_opts: t.Dict) -> None:
 
     def add_handler(source: t.Literal['logfile', 'stdout', 'stderr']) -> None:
         handler = handler_map[source]
+        if handler is None:
+            return
         handler.setFormatter(format_map[kind])
         handler.setLevel(nll)
         if source == 'stdout':
@@ -467,7 +468,7 @@ class Whitelist(logging.Filter):
         False
     """
 
-    def __init__(self, *whitelist: t.List[str]):
+    def __init__(self, *whitelist: str):
         super().__init__()
         self.whitelist = [logging.Filter(name) for name in whitelist]
 
