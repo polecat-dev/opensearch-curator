@@ -756,10 +756,12 @@ class Builder:
         """
         client_args = prune_nones(self.client_args.toDict())
         # Add sensitive fields from SecretStore
+        # Note: opensearch-py uses 'http_auth' parameter, not 'basic_auth'
         for field in ['basic_auth', 'api_key', 'bearer_auth']:
             secret = self._secrets.get_secret(field)
             if secret is not None and field == 'basic_auth':
-                client_args[field] = tuple(secret)
+                # opensearch-py expects 'http_auth' for basic authentication
+                client_args['http_auth'] = tuple(secret)
             elif secret is not None:
                 client_args[field] = secret
         self.client = OpenSearch(**client_args)
