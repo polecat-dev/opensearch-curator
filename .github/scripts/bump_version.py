@@ -10,10 +10,10 @@ from pathlib import Path
 
 def update_file(path: Path, version: str) -> None:
     text = path.read_text(encoding="utf-8")
-    pattern = re.compile(r"(__version__\s*=\s*['\"])([^'\"]+)(['\"])")
+    pattern = re.compile(r"(?P<prefix>__version__\s*=\s*['\"])(?P<ver>[^'\"]+)(?P<suffix>['\"])")
     if not pattern.search(text):
         raise SystemExit(f"Could not find __version__ in {path}")
-    text = pattern.sub(rf"\1{version}\3", text, count=1)
+    text = pattern.sub(rf"\g<prefix>{version}\g<suffix>", text, count=1)
     path.write_text(text, encoding="utf-8")
 
 
