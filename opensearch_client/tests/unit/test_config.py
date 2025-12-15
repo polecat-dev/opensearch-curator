@@ -131,8 +131,8 @@ class TestCloudIdOverride(TestCase):
         # Test
         configdict, _ = get_configdict(cmdargs, simulator)
         assert configdict
-        assert configdict['elasticsearch']['client'][test_param] == test_value
-        assert 'hosts' not in configdict['elasticsearch']['client']
+        assert configdict['opensearch']['client'][test_param] == test_value
+        assert 'hosts' not in configdict['opensearch']['client']
 
         # Teardown
         file_obj.teardown()
@@ -160,11 +160,10 @@ class TestOverrideClientArgs(TestCase):
         cmdargs = []
         configdict, _ = get_configdict(cmdargs, simulate_override_client_args)
         assert configdict
-        # Check for 'opensearch' key (new) or fall back to 'elasticsearch' (old)
-        config_key = 'opensearch' if 'opensearch' in configdict else 'elasticsearch'
+        # Use the new 'opensearch' key
         assert (
-            ES_DEFAULT['elasticsearch']['client']['hosts']
-            == configdict[config_key]['client']['hosts']
+            ES_DEFAULT['opensearch']['client']['hosts']
+            == configdict['opensearch']['client']['hosts']
         )
 
 
@@ -183,7 +182,7 @@ class TestGetConfig(TestCase):
         # Test
         configdict, _ = get_configdict(cmdargs, simulator)
         assert configdict
-        assert TESTUSER == configdict['elasticsearch']['other_settings']['username']
+        assert TESTUSER == configdict['opensearch']['other_settings']['username']
 
         # Teardown
         file_obj.teardown()
@@ -194,7 +193,7 @@ class TestGetConfig(TestCase):
         cmdargs = []
         configdict, _ = get_configdict(cmdargs, default_config_cmd)
         assert configdict
-        assert TESTPASS == configdict['elasticsearch']['other_settings']['password']
+        assert TESTPASS == configdict['opensearch']['other_settings']['password']
 
     def test_crazy_sauce(self):
         """Test this crazy configuration"""
@@ -229,9 +228,9 @@ class TestGetConfig(TestCase):
         # Test
         configdict, _ = get_configdict(cmdargs, simulator)
         for key in ['cloud_id', 'ca_certs', 'client_certs', 'client_key']:
-            assert key not in configdict['elasticsearch']['client']
+            assert key not in configdict['opensearch']['client']
         for key in ['id', 'api_key', 'token']:
-            assert configdict['elasticsearch']['other_settings']['api_key'][key] is None
+            assert configdict['opensearch']['other_settings']['api_key'][key] is None
 
         # Teardown
         file_obj.teardown()
@@ -246,7 +245,7 @@ class TestGetHosts(TestCase):
         cmdargs = ['--hosts', url]
         configdict, _ = get_configdict(cmdargs, simulator)
         assert configdict
-        assert [url] == configdict['elasticsearch']['client']['hosts']
+        assert [url] == configdict['opensearch']['client']['hosts']
 
     def test_params_has_no_hosts(self):
         """
@@ -257,7 +256,7 @@ class TestGetHosts(TestCase):
         expected = 'http://127.0.0.1:9200'
         configdict, _ = get_configdict(cmdargs, simulator)
         assert configdict
-        assert [expected] == configdict['elasticsearch']['client']['hosts']
+        assert [expected] == configdict['opensearch']['client']['hosts']
 
     def test_raises_on_bad_url(self):
         """Ensure an exception is raised when a host has a bad URL schema"""

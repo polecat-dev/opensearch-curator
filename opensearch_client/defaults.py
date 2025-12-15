@@ -136,8 +136,8 @@ CLICK_SETTINGS: t.Dict[str, t.Dict] = {
 }
 """Default settings used for building :py:class:`click.Option`. Too large to show."""
 
-ES_DEFAULT: t.Dict = {"elasticsearch": {"client": {"hosts": ["http://127.0.0.1:9200"]}}}
-"""Default settings for :py:class:`~.es_client.builder.Builder`"""
+ES_DEFAULT: t.Dict = {"opensearch": {"client": {"hosts": ["http://127.0.0.1:9200"]}}}
+"""Default settings for :py:class:`~.opensearch_client.builder.Builder`"""
 
 ENV_VAR_PREFIX: str = "ESCLIENT"
 """Environment variable prefix"""
@@ -284,7 +284,7 @@ def config_logging() -> Schema:
     )
 
 
-# All elasticsearch client options, with a few additional arguments.
+# All OpenSearch client options, with a few additional arguments.
 def config_schema() -> Schema:
     """
     :returns: A validation schema of all acceptable client configuration parameter

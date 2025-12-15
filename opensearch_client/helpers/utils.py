@@ -1,8 +1,9 @@
-"""Deprecated es_client.helpers.utils module"""
+"""Deprecated opensearch_client.helpers.utils module"""
 
 # pylint: disable=W0401,W0614
+# ruff: noqa: F403
 import warnings
-from ..utils import *
+from ..utils import *  # noqa: F401
 
 warnings.warn(
     (

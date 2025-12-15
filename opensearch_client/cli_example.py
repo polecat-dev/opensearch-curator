@@ -4,14 +4,14 @@ Sample CLI script that will get a client using both config file and CLI args/opt
 
 # pylint: disable=E1120,R0917
 import click
-from elasticsearch8.exceptions import BadRequestError, NotFoundError
-from es_client import config as cfg
-from es_client.defaults import OPTION_DEFAULTS
-from es_client.logging import configure_logging
-from es_client.commands import show_all_options, test_connection, test_stderr
+from opensearchpy.exceptions import RequestError, NotFoundError
+from opensearch_client import config as cfg
+from opensearch_client.defaults import OPTION_DEFAULTS
+from opensearch_client.logging import configure_logging
+from opensearch_client.commands import show_all_options, test_connection, test_stderr
 
 # Since this file will not be imported, we use this to squash the F401 error
-__all__ = ["BadRequestError", "NotFoundError"]
+__all__ = ["RequestError", "NotFoundError"]
 
 
 # The following default options are all automatically added by the decorator:

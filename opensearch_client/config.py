@@ -289,10 +289,10 @@ def generate_configdict(ctx: Context) -> None:
     Example:
         >>> from click import Context, Command
         >>> cfg = {'client': {'hosts': ['http://localhost']}, 'other_settings': {}}
-        >>> ctx = Context(Command('cmd'), obj={'draftcfg': {'elasticsearch': cfg}})
+        >>> ctx = Context(Command('cmd'), obj={'draftcfg': {'opensearch': cfg}})
         >>> ctx.params = {'hosts': ['http://127.0.0.1:9200'], 'config': None}
         >>> generate_configdict(ctx)
-        >>> ctx.obj['configdict']['elasticsearch']['client']['hosts']
+        >>> ctx.obj['configdict']['opensearch']['client']['hosts']
         ['http://127.0.0.1:9200']
 
     Generate a client configuration dictionary from :py:attr:`ctx.params
@@ -322,7 +322,7 @@ def generate_configdict(ctx: Context) -> None:
     override_client_args(ctx)
     override_other_args(ctx)
     ctx.obj["configdict"] = {
-        "elasticsearch": {
+        "opensearch": {
             "client": prune_nones(ctx.obj["client_args"].toDict()),
             "other_settings": prune_nones(ctx.obj["other_args"].toDict()),
         }
@@ -345,7 +345,7 @@ def get_arg_objects(ctx: Context) -> None:
     Example:
         >>> from click import Context, Command
         >>> cfg = {'client': {'hosts': ['http://localhost']}, 'other_settings': {}}
-        >>> ctx = Context(Command('cmd'), obj={'draftcfg': {'elasticsearch': cfg}})
+        >>> ctx = Context(Command('cmd'), obj={'draftcfg': {'opensearch': cfg}})
         >>> get_arg_objects(ctx)
         >>> ctx.obj['client_args'].hosts
         ['http://localhost']
@@ -398,7 +398,7 @@ def get_client(
     Prioritizes `configdict` over `configfile`. Uses defaults if neither is provided.
 
     Example:
-        >>> config = {'elasticsearch': {'client': {'hosts': ['http://localhost:9200']}}}
+        >>> config = {'opensearch': {'client': {'hosts': ['http://localhost:9200']}}}
         >>> client = get_client(configdict=config)
         >>> isinstance(client, OpenSearch)
         True

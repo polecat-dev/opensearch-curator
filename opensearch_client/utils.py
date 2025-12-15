@@ -53,16 +53,16 @@ def check_config(config: dict, quiet: bool = False) -> dict:
     Returns:
         dict: Validated configuration for :class:`~es_client.builder.Builder`.
 
-    Ensures 'elasticsearch', 'client', and 'other_settings' keys are present in
-    `config`, using :data:`~es_client.defaults.ES_DEFAULT` if missing. Validates
-    against :func:`~es_client.defaults.config_schema` via
-    :class:`~es_client.schemacheck.SchemaCheck`.
+    Ensures 'opensearch', 'client', and 'other_settings' keys are present in
+    `config`, using :data:`~opensearch_client.defaults.ES_DEFAULT` if missing. Validates
+    against :func:`~opensearch_client.defaults.config_schema` via
+    :class:`~opensearch_client.schemacheck.SchemaCheck`.
 
     Raises:
         :exc:`~es_client.exceptions.FailedValidation`: If validation fails.
 
     Example:
-        >>> config = {'elasticsearch': {'client': {'hosts': ['http://localhost:9200']}}}
+        >>> config = {'opensearch': {'client': {'hosts': ['http://localhost:9200']}}}
         >>> result = check_config(config, quiet=True)
         >>> result['client']['hosts']
         ['http://localhost:9200']
@@ -95,7 +95,7 @@ def check_config(config: dict, quiet: bool = False) -> dict:
         es_settings[config_key],
         config_schema(),
         "OpenSearch configuration",
-        "elasticsearch",
+        "opensearch",
     ).result()
     retval = dict(_)
     debug.lv5(f'Return value = "{password_filter(retval)}"')

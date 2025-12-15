@@ -68,7 +68,7 @@ class SchemaCheck:
         config (dict): Configuration dictionary to validate.
         schema (:class:`voluptuous.Schema`): Schema to validate against.
         test_what (str): Description of the configuration block (e.g., 'Client Config').
-        location (str): Context of the configuration (e.g., 'elasticsearch.client').
+        location (str): Context of the configuration (e.g., 'opensearch.client').
 
     Attributes:
         config (dict): The configuration dictionary.
@@ -158,12 +158,12 @@ class SchemaCheck:
             self.badvalue = "(could not determine)"
 
     @begin_end()
-    def result(self) -> t.Any:
+    def result(self) -> t.Dict[str, t.Any]:
         """
         Validate the configuration and return the result.
 
         Returns:
-            :class:`voluptuous.Schema`: Validated configuration from
+            dict: Validated configuration from
                 :attr:`config` if successful.
 
         Raises:

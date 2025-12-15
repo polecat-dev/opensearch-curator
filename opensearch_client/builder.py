@@ -16,7 +16,6 @@ import logging
 import warnings
 from dotmap import DotMap  # type: ignore
 from cryptography.fernet import Fernet
-import tiered_debug as debug
 from elastic_transport import ObjectApiResponse
 from opensearchpy import OpenSearch
 from .debug import debug, begin_end
@@ -136,18 +135,18 @@ class Builder:
             node is not the cluster manager.
 
     Examples:
-        >>> config = {'elasticsearch': {'client': {'hosts': ['http://localhost:9200']}}}
+        >>> config = {'opensearch': {'client': {'hosts': ['http://localhost:9200']}}}
         >>> builder = Builder(configdict=config)
         >>> builder.client_args.hosts
         ['http://localhost:9200']
         >>> builder.master_only = True
         >>> builder.master_only
         True
-        >>> cfg = {'elasticsearch': {'client': {'hosts': ['ftp://invalid']}}})
+        >>> cfg = {'opensearch': {'client': {'hosts': ['ftp://invalid']}}}
         >>> Builder(configdict=cfg)
         Traceback (most recent call last):
             ...
-        es_client.exceptions.ConfigurationError: Invalid host schema: ftp://invalid
+        opensearch_client.exceptions.ConfigurationError: Invalid host schema: ftp://invalid
     """
 
     def __init__(
@@ -161,18 +160,18 @@ class Builder:
         debug.lv2('Initializing Builder object...')
         self.attributes = DotMap()
         self.config = DotMap()
-        self.config.client = DotMap()
-        self.config.client.hosts = []
-        self.config.other_settings = DotMap()
+        self.config.client = DotMap()  # type: ignore[attr-defined]
+        self.config.client.hosts = []  # type: ignore[attr-defined]
+        self.config.other_settings = DotMap()  # type: ignore[attr-defined]
         self._secrets = SecretStore()
         self.set_client_defaults()
         self.set_other_defaults()
         self.client = OpenSearch(hosts="http://127.0.0.1:9200")
         self.process_config_opts(configdict, configfile)
         # Validate host schemas immediately
-        if self.config.client.get("hosts"):
+        if self.config.client.get("hosts"):  # type: ignore[attr-defined]
             verified_hosts = []
-            for host in ensure_list(self.config.client["hosts"]):
+            for host in ensure_list(self.config.client["hosts"]):  # type: ignore[attr-defined]
                 try:
                     debug.lv4(f'TRY: validate host {host}')
                     verified_hosts.append(verify_url_schema(host))
@@ -183,7 +182,7 @@ class Builder:
                     raise ConfigurationError(
                         INVALID_HOST_SCHEMA.format(host=host)
                     ) from exc
-            self.config.client["hosts"] = verified_hosts
+            self.config.client["hosts"] = verified_hosts  # type: ignore[attr-defined]
         self.version_max = version_max
         self.version_min = version_min
         self.update_config()
@@ -202,7 +201,7 @@ class Builder:
 
         Example:
             >>> config = {
-            ...     'elasticsearch': {
+            ...     'opensearch': {
             ...         'client': {
             ...             'hosts': ['http://localhost:9200'],
             ...             'cloud_id': 'my_cloud_id'
@@ -214,7 +213,7 @@ class Builder:
             "Builder(hosts=['http://localhost:9200'], master_only=False,
             version_min=(8, 0, 0), cloud_id='my_cloud_id', ...)"
             >>> config = {
-                'elasticsearch': {
+                'opensearch': {
                     'client': {'hosts': ['http://localhost:9200']}
                 }
             }
@@ -283,7 +282,7 @@ class Builder:
 
         Example:
             >>> config = {
-            ...     'elasticsearch': {
+            ...     'opensearch': {
             ...         'client': {'hosts': ['http://localhost:9200']}
             ...     }
             ... }
@@ -428,12 +427,12 @@ class Builder:
 
         Args:
             configdict (dict, optional): Configuration dictionary with an
-                'elasticsearch' key containing 'client' and 'other_settings' subkeys.
+                'opensearch' key containing 'client' and 'other_settings' subkeys.
             configfile (str, optional): Path to a YAML file with the same structure as
                 configdict.
 
         Prioritizes configdict over configfile. If neither is provided, uses
-        :const:`~es_client.defaults.ES_DEFAULT`, which sets hosts to
+        :const:`~opensearch_client.defaults.ES_DEFAULT`, which sets hosts to
         'http://127.0.0.1:9200'.
 
         Example:
@@ -449,7 +448,7 @@ class Builder:
             self.config = check_config(configdict)
         else:
             debug.lv2("No configuration provided. Using ES_DEFAULT.")
-            self.config = check_config(ES_DEFAULT["elasticsearch"])
+            self.config = check_config(ES_DEFAULT["opensearch"])
 
     @begin_end()
     def update_config(self) -> None:
@@ -496,7 +495,7 @@ class Builder:
                 as missing authentication credentials or invalid cloud ID.
 
         Example:
-            >>> config = {'elasticsearch': {'client': {'ssl_version': 'TLSv1'}}}
+            >>> config = {'opensearch': {'client': {'ssl_version': 'TLSv1'}}}
             >>> builder = Builder(configdict=config)  # doctest: +ELLIPSIS
             ... # Warning: ssl_version is experimental; use ssl_context instead
         """

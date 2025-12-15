@@ -214,7 +214,7 @@ class TestLoggerSetup(unittest.TestCase):
 
             try:
                 os.unlink(tmpfile_name)
-            except:
+            except OSError:
                 pass
 
     def test_get_logger_without_logfile(self):

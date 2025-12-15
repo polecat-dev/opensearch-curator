@@ -1,8 +1,9 @@
-"""Deprecated es_client.helpers.logging module"""
+"""Deprecated opensearch_client.helpers.logging module"""
 
 # pylint: disable=W0401,W0614
+# ruff: noqa: F403
 import warnings
-from ..logging import *
+from ..logging import *  # noqa: F401
 
 warnings.warn(
     (
