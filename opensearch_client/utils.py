@@ -91,6 +91,18 @@ def check_config(config: dict, quiet: bool = False) -> dict:
             es_settings[config_key][key] = {}
         else:
             es_settings[config_key][key] = prune_nones(es_settings[config_key][key])
+    # Migrate username/password from client to other_settings if found in wrong location
+    # This provides backwards compatibility for configs that put auth in client section
+    client_cfg = es_settings[config_key].get("client", {})
+    other_cfg = es_settings[config_key].get("other_settings", {})
+    for auth_key in ["username", "password"]:
+        if auth_key in client_cfg:
+            if not quiet:
+                logger.warning(
+                    f"Found '{auth_key}' in 'client' section. "
+                    f"Moving to 'other_settings' (recommended location)."
+                )
+            other_cfg[auth_key] = client_cfg.pop(auth_key)
     _ = SchemaCheck(
         es_settings[config_key],
         config_schema(),

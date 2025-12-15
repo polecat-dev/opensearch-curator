@@ -109,6 +109,46 @@ class TestReadCerts:
             pytest.fail("Unexpected Exception...")
 
 
+class TestCheckConfig:
+    """Test the u.check_config function"""
+
+    def test_migrate_username_from_client(self):
+        """Test that username/password in client section are migrated to other_settings"""
+        config = {
+            "opensearch": {
+                "client": {
+                    "hosts": ["https://localhost:9200"],
+                    "username": "testuser",
+                    "password": "testpass",
+                },
+                "other_settings": {},
+            }
+        }
+        result = u.check_config(config, quiet=True)
+        # username/password should be moved to other_settings
+        assert "username" not in result["client"]
+        assert "password" not in result["client"]
+        assert result["other_settings"]["username"] == "testuser"
+        assert result["other_settings"]["password"] == "testpass"
+
+    def test_username_in_other_settings_unchanged(self):
+        """Test that username/password in other_settings remain there"""
+        config = {
+            "opensearch": {
+                "client": {
+                    "hosts": ["https://localhost:9200"],
+                },
+                "other_settings": {
+                    "username": "testuser",
+                    "password": "testpass",
+                },
+            }
+        }
+        result = u.check_config(config, quiet=True)
+        assert result["other_settings"]["username"] == "testuser"
+        assert result["other_settings"]["password"] == "testpass"
+
+
 class TestEnvVars:
     """Test the ability to read environment variables"""
 
