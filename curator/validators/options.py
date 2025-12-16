@@ -92,6 +92,7 @@ def action_specific(action):
             option_defaults.search_pattern(),
             option_defaults.delay(),
             option_defaults.max_num_segments(),
+            option_defaults.batch_size(),
         ],
         'index_settings': [
             option_defaults.search_pattern(),

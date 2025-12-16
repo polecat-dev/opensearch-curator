@@ -9,18 +9,40 @@ from curator.helpers.testers import verify_index_list
 from curator.helpers.utils import report_failure, show_dry_run
 
 
+def _batch_indices(indices, batch_size):
+    """
+    Split a list of indices into batches of the specified size.
+
+    :param indices: List of index names
+    :param batch_size: Maximum number of indices per batch
+
+    :type indices: list
+    :type batch_size: int
+
+    :returns: Generator yielding lists of indices
+    :rtype: generator
+    """
+    for i in range(0, len(indices), batch_size):
+        yield indices[i:i + batch_size]
+
+
 class ForceMerge:
     """ForceMerge Action Class"""
 
-    def __init__(self, ilo, max_num_segments=None, delay=0):
+    def __init__(self, ilo, max_num_segments=None, delay=0, batch_size=None):
         """
         :param ilo: An IndexList Object
         :param max_num_segments: Number of segments per shard to forceMerge
         :param delay: Number of seconds to delay between forceMerge operations
+        :param batch_size: Number of indices to process per forcemerge request.
+            If None, indices are processed one at a time (default behavior).
+            Setting this groups indices into batches for more efficient processing,
+            but may cause issues on some OpenSearch versions with large batches.
 
         :type ilo: :py:class:`~.curator.indexlist.IndexList`
         :type max_num_segments: int
         :type delay: int
+        :type batch_size: int
         """
         verify_index_list(ilo)
         if not max_num_segments:
@@ -35,6 +57,8 @@ class ForceMerge:
         self.max_num_segments = max_num_segments
         #: Object attribute that gets the value of param ``delay``.
         self.delay = delay
+        #: Object attribute that gets the value of param ``batch_size``.
+        self.batch_size = batch_size
         self.loggit = logging.getLogger('curator.actions.forcemerge')
 
     def do_dry_run(self):
@@ -44,12 +68,16 @@ class ForceMerge:
             'forcemerge',
             max_num_segments=self.max_num_segments,
             delay=self.delay,
+            batch_size=self.batch_size,
         )
 
     def do_action(self):
         """
-        :py:meth:`~.elasticsearch.client.IndicesClient.forcemerge` indices in
+        :py:meth:`~.opensearchpy.client.IndicesClient.forcemerge` indices in
         :py:attr:`index_list`
+
+        If :py:attr:`batch_size` is set, indices are processed in batches.
+        Otherwise, indices are processed one at a time (default behavior).
         """
         self.index_list.filter_closed()
         self.index_list.filter_forceMerged(max_num_segments=self.max_num_segments)
@@ -60,20 +88,47 @@ class ForceMerge:
         )
         self.loggit.info(msg)
         try:
-            for index_name in self.index_list.indices:
-                msg = (
-                    f'forceMerging index {index_name} to {self.max_num_segments} '
-                    f'segments per shard. Please wait...'
-                )
-                self.loggit.info(msg)
-                self.client.indices.forcemerge(
-                    index=index_name, max_num_segments=self.max_num_segments
-                )
-                if self.delay > 0:
-                    self.loggit.info(
-                        'Pausing for %s seconds before continuing...', self.delay
+            if self.batch_size:
+                # Process indices in batches
+                index_batches = list(_batch_indices(
+                    self.index_list.indices,
+                    self.batch_size
+                ))
+                total_batches = len(index_batches)
+                for batch_num, batch in enumerate(index_batches, 1):
+                    msg = (
+                        f'forceMerging batch {batch_num}/{total_batches} '
+                        f'({len(batch)} indices) to {self.max_num_segments} '
+                        f'segments per shard. Please wait...'
                     )
-                    sleep(self.delay)
+                    self.loggit.info(msg)
+                    self.loggit.debug('Batch %s indices: %s', batch_num, batch)
+                    self.client.indices.forcemerge(
+                        index=','.join(batch),
+                        max_num_segments=self.max_num_segments
+                    )
+                    # Apply delay between batches, but not after the last one
+                    if self.delay > 0 and batch_num < total_batches:
+                        self.loggit.info(
+                            'Pausing for %s seconds before next batch...', self.delay
+                        )
+                        sleep(self.delay)
+            else:
+                # Default behavior: process indices one at a time
+                for index_name in self.index_list.indices:
+                    msg = (
+                        f'forceMerging index {index_name} to {self.max_num_segments} '
+                        f'segments per shard. Please wait...'
+                    )
+                    self.loggit.info(msg)
+                    self.client.indices.forcemerge(
+                        index=index_name, max_num_segments=self.max_num_segments
+                    )
+                    if self.delay > 0:
+                        self.loggit.info(
+                            'Pausing for %s seconds before continuing...', self.delay
+                        )
+                        sleep(self.delay)
         # pylint: disable=broad-except
         except Exception as err:
             report_failure(err)

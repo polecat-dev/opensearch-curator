@@ -259,6 +259,19 @@ def max_num_segments():
     return {Required('max_num_segments'): All(Coerce(int), Range(min=1, max=32768))}
 
 
+def batch_size():
+    """
+    :returns:
+        {Optional('batch_size', default=None):
+            Any(None, All(Coerce(int), Range(min=1, max=1000)))}
+    """
+    return {
+        Optional('batch_size', default=None): Any(
+            None, All(Coerce(int), Range(min=1, max=1000))
+        )
+    }
+
+
 # pylint: disable=unused-argument
 def max_wait(action):
     """

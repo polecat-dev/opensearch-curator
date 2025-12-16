@@ -64,3 +64,42 @@ class TestActionForceMerge(TestCase):
         self.client.indices.optimize.side_effect = testvars.fake_fail
         fmo = ForceMerge(self.ilo, max_num_segments=2)
         self.assertRaises(FailedExecution, fmo.do_action)
+
+    def test_init_with_batch_size(self):
+        self.builder()
+        fmo = ForceMerge(self.ilo, max_num_segments=2, batch_size=10)
+        self.assertEqual(10, fmo.batch_size)
+
+    def test_init_without_batch_size(self):
+        self.builder()
+        fmo = ForceMerge(self.ilo, max_num_segments=2)
+        self.assertIsNone(fmo.batch_size)
+
+    def test_do_action_with_batch_size(self):
+        self.builder()
+        self.client.indices.forcemerge.return_value = None
+        fmo = ForceMerge(self.ilo, max_num_segments=2, batch_size=1)
+        # Mock filter methods to preserve our test indices
+        fmo.index_list.filter_closed = Mock()
+        fmo.index_list.filter_forceMerged = Mock()
+        fmo.index_list.indices = ['idx1', 'idx2', 'idx3']
+        fmo.do_action()
+        # With batch_size=1, should have made 3 calls (one per index)
+        self.assertEqual(3, self.client.indices.forcemerge.call_count)
+
+    def test_do_action_batch_grouping(self):
+        self.builder()
+        self.client.indices.forcemerge.return_value = None
+        fmo = ForceMerge(self.ilo, max_num_segments=2, batch_size=2)
+        # Mock filter methods to preserve our test indices
+        fmo.index_list.filter_closed = Mock()
+        fmo.index_list.filter_forceMerged = Mock()
+        fmo.index_list.indices = ['idx1', 'idx2', 'idx3', 'idx4', 'idx5']
+        fmo.do_action()
+        # Should have made 3 calls: batch(idx1,idx2), batch(idx3,idx4), batch(idx5)
+        self.assertEqual(3, self.client.indices.forcemerge.call_count)
+        # Verify the call arguments include comma-separated indices for batches
+        calls = self.client.indices.forcemerge.call_args_list
+        self.assertEqual('idx1,idx2', calls[0][1]['index'])
+        self.assertEqual('idx3,idx4', calls[1][1]['index'])
+        self.assertEqual('idx5', calls[2][1]['index'])
