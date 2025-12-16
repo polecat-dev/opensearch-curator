@@ -272,6 +272,23 @@ def batch_size():
     }
 
 
+def skip_if_running():
+    """
+    :returns:
+        {Optional('skip_if_running', default=False):
+            Any(bool, All(Any(str), Boolean()))}
+
+    When True, the action will check if there are already running OpenSearch tasks
+    for this action type. If found, affected indices will be skipped or the action
+    will be skipped entirely, rather than failing or duplicating work.
+    """
+    return {
+        Optional('skip_if_running', default=False): Any(
+            bool, All(Any(str), Boolean())
+        )
+    }
+
+
 # pylint: disable=unused-argument
 def max_wait(action):
     """
@@ -717,14 +734,14 @@ def wait_interval(action):
             Any(All(Coerce(int), Range(min=minval, max=maxval)), None)}
             where ``minval`` = ``1``, ``maxval`` = ``30``, and ``defval`` is ``3``,
             unless the action is one of
-            ``['restore', 'snapshot', 'reindex', 'shrink']``, and then ``defval``
+            ``['restore', 'snapshot', 'reindex', 'shrink', 'forcemerge']``, and then ``defval``
             is ``9``.
     """
     minval = 1
     maxval = 30
     # if action in ['allocation', 'cluster_routing', 'replicas']:
     defval = 3
-    if action in ['restore', 'snapshot', 'reindex', 'shrink']:
+    if action in ['restore', 'snapshot', 'reindex', 'shrink', 'forcemerge']:
         defval = 9
     return {
         Optional('wait_interval', default=defval): Any(

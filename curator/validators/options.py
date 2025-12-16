@@ -70,12 +70,6 @@ def action_specific(action):
             option_defaults.skip_repo_fs_check(),
         ],
         'create_index': [
-            option_defaults.search_pattern(),
-            option_defaults.c2f_index_settings(),
-            option_defaults.c2f_ignore_index_settings(),
-            option_defaults.wait_for_completion('cold2frozen'),
-        ],
-        'create_index': [
             option_defaults.name(action),
             option_defaults.ignore_existing(),
             option_defaults.extra_settings(),
@@ -93,6 +87,10 @@ def action_specific(action):
             option_defaults.delay(),
             option_defaults.max_num_segments(),
             option_defaults.batch_size(),
+            option_defaults.skip_if_running(),
+            option_defaults.wait_for_completion(action),
+            option_defaults.wait_interval(action),
+            option_defaults.max_wait(action),
         ],
         'index_settings': [
             option_defaults.search_pattern(),
