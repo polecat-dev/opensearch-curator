@@ -1,6 +1,5 @@
 """Rollover singleton"""
 
-import logging
 import click
 from opensearch_client.utils import prune_nones
 from curator.cli_singletons.object_class import CLIAction

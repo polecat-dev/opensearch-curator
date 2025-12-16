@@ -1,7 +1,7 @@
 """Task management helpers for checking and managing OpenSearch running tasks"""
 
 import logging
-from typing import Dict, List, Optional, Set
+from typing import Any, Dict, List, Optional, Set
 
 logger = logging.getLogger(__name__)
 
@@ -41,7 +41,7 @@ def get_running_tasks(
     :returns: Dictionary of running tasks grouped by node
     :rtype: dict
     """
-    params = {'detailed': detailed}
+    params: Dict[str, Any] = {'detailed': detailed}
     if actions:
         params['actions'] = ','.join(actions)
 
@@ -69,7 +69,7 @@ def get_tasks_for_action(client, curator_action: str) -> List[Dict]:
     if not opensearch_actions:
         logger.warning(
             'No OpenSearch task action mapping found for curator action: %s',
-            curator_action
+            curator_action,
         )
         return []
 
@@ -82,20 +82,14 @@ def get_tasks_for_action(client, curator_action: str) -> List[Dict]:
     for node_id, node_data in nodes.items():
         tasks = node_data.get('tasks', {})
         for task_id, task_data in tasks.items():
-            task_info = {
-                'task_id': task_id,
-                'node_id': node_id,
-                **task_data
-            }
+            task_info = {'task_id': task_id, 'node_id': node_id, **task_data}
             matching_tasks.append(task_info)
 
     return matching_tasks
 
 
 def get_tasks_for_indices(
-    client,
-    curator_action: str,
-    indices: List[str]
+    client, curator_action: str, indices: List[str]
 ) -> List[Dict]:
     """
     Get running tasks for a specific curator action that affect any of the given indices.
@@ -150,9 +144,7 @@ def is_action_running(client, curator_action: str) -> bool:
 
 
 def is_action_running_for_indices(
-    client,
-    curator_action: str,
-    indices: List[str]
+    client, curator_action: str, indices: List[str]
 ) -> bool:
     """
     Check if there are running tasks for a specific action affecting given indices.
@@ -173,9 +165,7 @@ def is_action_running_for_indices(
 
 
 def get_conflicting_indices(
-    client,
-    curator_action: str,
-    indices: List[str]
+    client, curator_action: str, indices: List[str]
 ) -> Set[str]:
     """
     Get the subset of indices that have running tasks for the specified action.

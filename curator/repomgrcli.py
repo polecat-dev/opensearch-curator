@@ -3,8 +3,6 @@
 import sys
 import logging
 import pprint
-import traceback
-from os.path import expanduser
 import click
 from opensearchpy import TransportError, NotFoundError
 from opensearch_client.defaults import LOGGING_SETTINGS, SHOW_OPTION
@@ -14,7 +12,6 @@ from opensearch_client.config import (
     context_settings,
     generate_configdict,
     get_config,
-    options_from_dict,
 )
 from opensearch_client.logging import configure_logging
 from opensearch_client.utils import option_wrapper

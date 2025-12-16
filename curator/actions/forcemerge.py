@@ -28,7 +28,7 @@ def _batch_indices(indices, batch_size):
     :rtype: generator
     """
     for i in range(0, len(indices), batch_size):
-        yield indices[i:i + batch_size]
+        yield indices[i : i + batch_size]
 
 
 class ForceMerge:
@@ -100,17 +100,17 @@ class ForceMerge:
     def _filter_running_tasks(self):
         """
         Filter out indices that already have forcemerge tasks running.
-        
+
         Returns the list of indices that were skipped due to running tasks.
         """
         if not self.skip_if_running:
             return []
 
         self.loggit.info('Checking for running forcemerge tasks...')
-        
+
         # First check if any forcemerge tasks are running at all
         running_tasks = get_tasks_for_action(self.client, 'forcemerge')
-        
+
         if not running_tasks:
             self.loggit.info('No running forcemerge tasks found.')
             return []
@@ -118,7 +118,7 @@ class ForceMerge:
         self.loggit.info(
             'Found %d running forcemerge task(s):\n%s',
             len(running_tasks),
-            format_running_tasks(running_tasks)
+            format_running_tasks(running_tasks),
         )
 
         # Find which of our target indices have running tasks
@@ -130,7 +130,7 @@ class ForceMerge:
             self.loggit.warning(
                 'Skipping %d indices with running forcemerge tasks: %s',
                 len(conflicting),
-                sorted(conflicting)
+                sorted(conflicting),
             )
             # Remove conflicting indices from the list
             for idx in conflicting:
@@ -177,7 +177,8 @@ class ForceMerge:
             if task_id:
                 self.loggit.info(
                     'ForceMerge task started with task_id: %s. '
-                    'Use the Tasks API to check status.', task_id
+                    'Use the Tasks API to check status.',
+                    task_id,
                 )
             return task_id
         return None
@@ -217,10 +218,9 @@ class ForceMerge:
         try:
             if self.batch_size:
                 # Process indices in batches
-                index_batches = list(_batch_indices(
-                    self.index_list.indices,
-                    self.batch_size
-                ))
+                index_batches = list(
+                    _batch_indices(self.index_list.indices, self.batch_size)
+                )
                 total_batches = len(index_batches)
                 for batch_num, batch in enumerate(index_batches, 1):
                     msg = (
@@ -268,7 +268,8 @@ class ForceMerge:
             if task_ids:
                 self.loggit.info(
                     'Started %d async forcemerge task(s). Task IDs: %s',
-                    len(task_ids), task_ids
+                    len(task_ids),
+                    task_ids,
                 )
         # pylint: disable=broad-except
         except Exception as err:

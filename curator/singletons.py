@@ -1,13 +1,11 @@
 """Singleton functions for Curator"""
 
-import logging
 import click
 from opensearch_client.defaults import SHOW_EVERYTHING
 from opensearch_client.config import (
     cli_opts,
     context_settings,
     generate_configdict,
-    get_client,
     get_config,
     options_from_dict,
 )

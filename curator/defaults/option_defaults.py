@@ -283,9 +283,7 @@ def skip_if_running():
     will be skipped entirely, rather than failing or duplicating work.
     """
     return {
-        Optional('skip_if_running', default=False): Any(
-            bool, All(Any(str), Boolean())
-        )
+        Optional('skip_if_running', default=False): Any(bool, All(Any(str), Boolean()))
     }
 
 

@@ -2,7 +2,6 @@
 
 import logging
 import time
-from opensearch_client.utils import ensure_list
 from curator.helpers.date_ops import parse_datemath, parse_date_pattern
 from curator.helpers.getters import get_indices
 from curator.helpers.testers import (
@@ -15,7 +14,6 @@ from curator.helpers.utils import report_failure, to_csv
 from curator.helpers.waiters import wait_for_it
 from curator.exceptions import (
     ActionError,
-    CuratorException,
     FailedExecution,
     MissingArgument,
     SnapshotInProgress,
