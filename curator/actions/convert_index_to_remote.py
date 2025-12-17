@@ -44,6 +44,7 @@ class ConvertIndexToRemote:
         repository=None,
         snapshot_name=None,
         use_existing_snapshot=False,
+        snapshot_per_index=False,
         remote_store_repository=None,
         remote_index_suffix='_remote',
         create_alias=True,
@@ -62,8 +63,13 @@ class ConvertIndexToRemote:
         :param repository: Snapshot repository name for backup/restore operations
         :param snapshot_name: Name for the snapshot. Supports date math. If
             use_existing_snapshot=True, this should be an existing snapshot name.
+            If snapshot_per_index=True, this is used as a prefix and the index
+            name is appended (e.g., 'backup_' becomes 'backup_myindex').
         :param use_existing_snapshot: Use an existing snapshot instead of creating
             a new one. The snapshot must contain all indices in the IndexList.
+        :param snapshot_per_index: Create a separate snapshot for each index,
+            naming it using the snapshot_name as prefix and index name as suffix.
+            (default: False - creates one snapshot with all indices)
         :param remote_store_repository: The remote store repository configured in
             the cluster (from node.attr.remote_store.segment.repository). If None,
             will attempt to use the same repository as snapshots.
@@ -87,6 +93,7 @@ class ConvertIndexToRemote:
         :type repository: str
         :type snapshot_name: str
         :type use_existing_snapshot: bool
+        :type snapshot_per_index: bool
         :type remote_store_repository: str
         :type remote_index_suffix: str
         :type create_alias: bool
@@ -131,6 +138,8 @@ class ConvertIndexToRemote:
         )
         #: Whether to use existing snapshot
         self.use_existing_snapshot = use_existing_snapshot
+        #: Whether to create separate snapshot per index
+        self.snapshot_per_index = snapshot_per_index
         #: Suffix for remote index names
         self.remote_index_suffix = remote_index_suffix
         #: Whether to create alias
@@ -158,6 +167,9 @@ class ConvertIndexToRemote:
         self.snapshot_state = None
         self.remote_indices = {}  # Maps original_index -> remote_index
         self.created_aliases = {}  # Maps alias_name -> remote_index
+        self.index_snapshots = (
+            {}
+        )  # Maps original_index -> snapshot_name (for snapshot_per_index)
 
         self.loggit.debug('ConvertIndexToRemote initialized')
         self.loggit.debug('Repository: %s', self.repository)
@@ -175,12 +187,6 @@ class ConvertIndexToRemote:
             )
             return self._verify_existing_snapshot()
 
-        self.loggit.info(
-            'Creating snapshot %s in repository %s',
-            self.snapshot_name,
-            self.repository,
-        )
-
         if not self.skip_repo_fs_check:
             verify_repository(self.client, self.repository)
 
@@ -188,6 +194,23 @@ class ConvertIndexToRemote:
             raise SnapshotInProgress(
                 'Cannot create snapshot while another snapshot is in progress.'
             )
+
+        if self.snapshot_per_index:
+            return self._create_snapshots_per_index()
+        else:
+            return self._create_single_snapshot()
+
+    def _create_single_snapshot(self):
+        """Create a single snapshot containing all indices"""
+        self.loggit.info(
+            'Creating snapshot %s in repository %s',
+            self.snapshot_name,
+            self.repository,
+        )
+
+        # Map all indices to the same snapshot
+        for index_name in self.index_list.indices:
+            self.index_snapshots[index_name] = self.snapshot_name
 
         try:
             # OpenSearch-py 3.0 changed API: params moved to body dict, wait_for_completion to params
@@ -225,6 +248,104 @@ class ConvertIndexToRemote:
             self.loggit.error('Failed to create snapshot: %s', err)
             raise
 
+    def _create_snapshots_per_index(self):
+        """Create a separate snapshot for each index, named using the index name"""
+        self.loggit.info(
+            'Creating separate snapshots for %d indices in repository %s',
+            len(self.index_list.indices),
+            self.repository,
+        )
+
+        snapshot_results = []
+
+        for index_name in self.index_list.indices:
+            # Build snapshot name: prefix + index_name
+            # If snapshot_name ends with a separator like '-' or '_', use it directly
+            # Otherwise, add an underscore separator
+            if self.snapshot_name.endswith(('-', '_')):
+                index_snapshot_name = f'{self.snapshot_name}{index_name}'
+            else:
+                index_snapshot_name = f'{self.snapshot_name}_{index_name}'
+
+            self.index_snapshots[index_name] = index_snapshot_name
+
+            self.loggit.info(
+                'Creating snapshot %s for index %s',
+                index_snapshot_name,
+                index_name,
+            )
+
+            try:
+                # Wait for any running snapshot to complete before starting next
+                if snapshot_running(self.client):
+                    self.loggit.info('Waiting for previous snapshot to complete...')
+                    # Simple wait loop for running snapshots
+                    max_attempts = 60  # 10 minutes max
+                    for _ in range(max_attempts):
+                        if not snapshot_running(self.client):
+                            break
+                        time.sleep(10)
+                    else:
+                        raise SnapshotInProgress(
+                            'Timed out waiting for previous snapshot to complete'
+                        )
+
+                self.client.snapshot.create(
+                    repository=self.repository,
+                    snapshot=index_snapshot_name,
+                    body={
+                        'ignore_unavailable': self.ignore_unavailable,
+                        'include_global_state': False,
+                        'indices': [index_name],
+                        'partial': self.partial,
+                    },
+                    params={'wait_for_completion': 'false'},
+                )
+
+                if self.wait_for_completion:
+                    self.loggit.info(
+                        'Waiting for snapshot %s to complete...', index_snapshot_name
+                    )
+                    wait_for_it(
+                        self.client,
+                        'snapshot',
+                        snapshot=index_snapshot_name,
+                        repository=self.repository,
+                        wait_interval=self.wait_interval,
+                        max_wait=self.max_wait,
+                    )
+
+                    # Get and verify snapshot state
+                    snapshot_info = self.client.snapshot.get(
+                        repository=self.repository, snapshot=index_snapshot_name
+                    )['snapshots'][0]
+
+                    state = snapshot_info['state']
+                    if state == 'SUCCESS':
+                        self.loggit.info(
+                            'Snapshot %s completed successfully', index_snapshot_name
+                        )
+                    elif state == 'PARTIAL' and self.partial:
+                        self.loggit.warning(
+                            'Snapshot %s is PARTIAL, continuing because partial=True',
+                            index_snapshot_name,
+                        )
+                    else:
+                        raise ActionError(
+                            f'Snapshot {index_snapshot_name} failed with state: {state}'
+                        )
+
+                    snapshot_results.append(snapshot_info)
+
+            except Exception as err:
+                self.loggit.error(
+                    'Failed to create snapshot for index %s: %s', index_name, err
+                )
+                raise
+
+        self.loggit.info('Successfully created %d snapshots', len(self.index_snapshots))
+        return snapshot_results
+
     def _verify_existing_snapshot(self):
         """Verify that existing snapshot contains all required indices"""
         try:
@@ -260,6 +381,11 @@ class ConvertIndexToRemote:
                 'Verified existing snapshot %s contains all required indices',
                 self.snapshot_name,
             )
+
+            # Map all indices to this snapshot
+            for index_name in self.index_list.indices:
+                self.index_snapshots[index_name] = self.snapshot_name
+
             return snapshot_info
 
         except Exception as err:
@@ -303,9 +429,15 @@ class ConvertIndexToRemote:
         to restore the index as a remote-backed index. The cluster must have
         remote repositories configured (segment and translog repositories).
         """
-        self.loggit.info(
-            'Restoring indices as remote-backed from snapshot %s', self.snapshot_name
-        )
+        if self.snapshot_per_index:
+            self.loggit.info(
+                'Restoring indices as remote-backed from individual snapshots'
+            )
+        else:
+            self.loggit.info(
+                'Restoring indices as remote-backed from snapshot %s',
+                self.snapshot_name,
+            )
 
         if not self.skip_repo_fs_check:
             verify_repository(self.client, self.repository)
@@ -317,8 +449,16 @@ class ConvertIndexToRemote:
             remote_index = f'{original_index}{self.remote_index_suffix}'
             self.remote_indices[original_index] = remote_index
 
+            # Get the snapshot name for this index (may differ in snapshot_per_index mode)
+            snapshot_for_index = self.index_snapshots.get(
+                original_index, self.snapshot_name
+            )
+
             self.loggit.info(
-                'Restoring %s as remote index %s', original_index, remote_index
+                'Restoring %s as remote index %s (from snapshot: %s)',
+                original_index,
+                remote_index,
+                snapshot_for_index,
             )
 
             try:
@@ -344,7 +484,7 @@ class ConvertIndexToRemote:
 
                 self.client.snapshot.restore(
                     repository=self.repository,
-                    snapshot=self.snapshot_name,
+                    snapshot=snapshot_for_index,
                     body=restore_body,
                     params={'wait_for_completion': 'false'},
                 )
@@ -569,12 +709,28 @@ class ConvertIndexToRemote:
         self.loggit.info('DRY-RUN: Would convert indices to remote storage:')
         self.loggit.info('  Repository: %s', self.repository)
         self.loggit.info('  Remote store repository: %s', self.remote_store_repository)
-        self.loggit.info('  Snapshot name: %s', self.snapshot_name)
+        self.loggit.info('  Snapshot name pattern: %s', self.snapshot_name)
         self.loggit.info('  Use existing snapshot: %s', self.use_existing_snapshot)
+        self.loggit.info('  Snapshot per index: %s', self.snapshot_per_index)
 
         for original_index in self.index_list.indices:
             remote_index = f'{original_index}{self.remote_index_suffix}'
-            self.loggit.info('DRY-RUN: %s -> %s', original_index, remote_index)
+
+            # Compute snapshot name for this index
+            if self.snapshot_per_index:
+                if self.snapshot_name.endswith(('-', '_')):
+                    snapshot_for_index = f'{self.snapshot_name}{original_index}'
+                else:
+                    snapshot_for_index = f'{self.snapshot_name}_{original_index}'
+            else:
+                snapshot_for_index = self.snapshot_name
+
+            self.loggit.info(
+                'DRY-RUN: %s -> %s (snapshot: %s)',
+                original_index,
+                remote_index,
+                snapshot_for_index,
+            )
 
             if self.create_alias:
                 alias = self.alias_name or original_index

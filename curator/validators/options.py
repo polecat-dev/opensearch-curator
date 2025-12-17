@@ -56,6 +56,7 @@ def action_specific(action):
             option_defaults.repository(),
             option_defaults.snapshot_name(),
             option_defaults.use_existing_snapshot(),
+            option_defaults.snapshot_per_index(),
             option_defaults.remote_store_repository(),
             option_defaults.remote_index_suffix(),
             option_defaults.create_alias(),

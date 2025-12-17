@@ -774,6 +774,23 @@ def use_existing_snapshot():
     }
 
 
+def snapshot_per_index():
+    """
+    :returns:
+        {Optional('snapshot_per_index', default=False):
+            Any(bool, All(Any(str), Boolean()))}
+
+    When True, creates a separate snapshot for each index instead of one snapshot
+    containing all indices. Each snapshot is named using the snapshot_name as a
+    prefix and the index name as a suffix (e.g., 'backup_myindex').
+    """
+    return {
+        Optional('snapshot_per_index', default=False): Any(
+            bool, All(Any(str), Boolean())
+        )
+    }
+
+
 def remote_store_repository():
     """
     :returns:
