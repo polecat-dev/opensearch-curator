@@ -2,6 +2,7 @@
 
 import logging
 import time
+from opensearchpy.exceptions import NotFoundError, TransportError
 from curator.helpers.date_ops import parse_datemath, parse_date_pattern
 from curator.helpers.getters import get_indices
 from curator.helpers.testers import (
@@ -196,27 +197,32 @@ class ConvertIndexToRemote:
             'Checking indices for existing remote store type to exclude'
         )
         indices_to_remove = []
+        try:
+            all_settings = ilo.client.indices.get_settings(
+                index=','.join(ilo.indices)
+            )
+        except (NotFoundError, TransportError) as err:
+            self.loggit.warning(
+                'Could not retrieve index settings for filtering: %s', err
+            )
+            return
+
         for index_name in ilo.indices:
-            try:
-                settings = ilo.client.indices.get_settings(index=index_name)
-                store_type = (
-                    settings.get(index_name, {})
-                    .get('settings', {})
-                    .get('index', {})
-                    .get('store', {})
-                    .get('type', None)
+            index_settings = all_settings.get(index_name, {})
+            store_type = (
+                index_settings
+                .get('settings', {})
+                .get('index', {})
+                .get('store', {})
+                .get('type', None)
+            )
+            if store_type == 'remote_snapshot':
+                self.loggit.info(
+                    'Excluding index %s: already remote '
+                    '(index.store.type=remote_snapshot)',
+                    index_name,
                 )
-                if store_type == 'remote_snapshot':
-                    self.loggit.info(
-                        'Excluding index %s: already remote '
-                        '(index.store.type=remote_snapshot)',
-                        index_name,
-                    )
-                    indices_to_remove.append(index_name)
-            except Exception as err:
-                self.loggit.warning(
-                    'Could not check settings for index %s: %s', index_name, err
-                )
+                indices_to_remove.append(index_name)
 
         for index_name in indices_to_remove:
             ilo.indices.remove(index_name)
