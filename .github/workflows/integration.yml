@@ -41,10 +41,11 @@ jobs:
           --health-retries 20
 
       localstack:
-        image: localstack/localstack:3
+        image: localstack/localstack:latest
         env:
           SERVICES: s3
           DEFAULT_REGION: us-east-1
+          LOCALSTACK_AUTH_TOKEN: ${{ secrets.LOCALSTACK_AUTH_TOKEN }}
         ports:
           - 4566:4566
         options: >-
@@ -129,10 +130,11 @@ jobs:
           --health-retries 20
 
       localstack:
-        image: localstack/localstack:3
+        image: localstack/localstack:latest
         env:
           SERVICES: s3
           DEFAULT_REGION: us-east-1
+          LOCALSTACK_AUTH_TOKEN: ${{ secrets.LOCALSTACK_AUTH_TOKEN }}
         ports:
           - 4566:4566
         options: >-
