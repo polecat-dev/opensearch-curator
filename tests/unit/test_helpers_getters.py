@@ -5,6 +5,7 @@ from unittest.mock import Mock
 import pytest
 from elastic_transport import ApiResponseMeta
 from opensearchpy import NotFoundError, TransportError
+from curator.defaults.settings import EXCLUDE_SYSTEM
 from curator.exceptions import CuratorException, FailedExecution, MissingArgument
 from curator.helpers import getters
 
@@ -92,6 +93,10 @@ class TestGetIndices(TestCase):
         client = Mock()
         client.cat.indices.return_value = {}
         self.assertEqual([], getters.get_indices(client))
+
+    def test_excludes_top_queries_system_index(self):
+        """Verify top_queries* indices are excluded from default listings."""
+        assert '-top_queries*' in EXCLUDE_SYSTEM
 
 
 class TestGetRepository(TestCase):
