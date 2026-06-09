@@ -23,7 +23,6 @@ from curator.cli import cli
 
 from . import testvars
 
-
 client = None
 
 DATEMAP = {

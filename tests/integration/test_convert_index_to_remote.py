@@ -23,7 +23,6 @@ from curator import IndexList
 from curator.actions import ConvertIndexToRemote
 from . import CuratorTestCase
 
-
 # LocalStack configuration
 LOCALSTACK_ENDPOINT = os.environ.get('LOCALSTACK_ENDPOINT', 'http://localhost:4566')
 AWS_REGION = 'us-east-1'

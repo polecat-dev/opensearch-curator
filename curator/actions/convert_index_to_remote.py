@@ -193,14 +193,10 @@ class ConvertIndexToRemote:
         Remove indices from the index list that are already converted to
         remote-backed storage (index.store.type == 'remote_snapshot').
         """
-        self.loggit.debug(
-            'Checking indices for existing remote store type to exclude'
-        )
+        self.loggit.debug('Checking indices for existing remote store type to exclude')
         indices_to_remove = []
         try:
-            all_settings = ilo.client.indices.get_settings(
-                index=','.join(ilo.indices)
-            )
+            all_settings = ilo.client.indices.get_settings(index=','.join(ilo.indices))
         except (NotFoundError, TransportError) as err:
             self.loggit.warning(
                 'Could not retrieve index settings for filtering: %s', err
@@ -210,8 +206,7 @@ class ConvertIndexToRemote:
         for index_name in ilo.indices:
             index_settings = all_settings.get(index_name, {})
             store_type = (
-                index_settings
-                .get('settings', {})
+                index_settings.get('settings', {})
                 .get('index', {})
                 .get('store', {})
                 .get('type', None)
