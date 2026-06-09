@@ -45,6 +45,7 @@ jobs:
         env:
           SERVICES: s3
           DEFAULT_REGION: us-east-1
+          LOCALSTACK_AUTH_TOKEN: ${{ secrets.LOCALSTACK_AUTH_TOKEN }}
         ports:
           - 4566:4566
         options: >-
@@ -133,6 +134,7 @@ jobs:
         env:
           SERVICES: s3
           DEFAULT_REGION: us-east-1
+          LOCALSTACK_AUTH_TOKEN: ${{ secrets.LOCALSTACK_AUTH_TOKEN }}
         ports:
           - 4566:4566
         options: >-
