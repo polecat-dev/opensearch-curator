@@ -152,10 +152,10 @@ class TestConvertIndexToRemote(CuratorTestCase):
 
     def tearDown(self):
         """Clean up test indices and snapshots"""
-        # Delete all test indices (original and remote) - use expand_wildcards to catch all
+        # Delete all test indices (original and remote), including custom suffixes
         try:
             self.client.indices.delete(
-                index='test-convert-*,*_remote', expand_wildcards='all', ignore=[404]
+                index='test-convert-*,*_remote*', expand_wildcards='all', ignore=[404]
             )
         except Exception as e:
             print(f"Error deleting indices with pattern: {e}")
@@ -167,7 +167,7 @@ class TestConvertIndexToRemote(CuratorTestCase):
             test_indices = [
                 idx['index']
                 for idx in all_indices
-                if 'test-convert' in idx['index'] or idx['index'].endswith('_remote')
+                if 'test-convert' in idx['index'] or '_remote' in idx['index']
             ]
             if test_indices:
                 self.client.indices.delete(index=','.join(test_indices), ignore=[404])
