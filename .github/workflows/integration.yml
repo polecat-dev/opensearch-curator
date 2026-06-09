@@ -41,7 +41,7 @@ jobs:
           --health-retries 20
 
       localstack:
-        image: localstack/localstack:latest
+        image: localstack/localstack:3
         env:
           SERVICES: s3
           DEFAULT_REGION: us-east-1
@@ -129,7 +129,7 @@ jobs:
           --health-retries 20
 
       localstack:
-        image: localstack/localstack:latest
+        image: localstack/localstack:3
         env:
           SERVICES: s3
           DEFAULT_REGION: us-east-1
