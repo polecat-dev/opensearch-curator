@@ -232,7 +232,7 @@ class ConvertIndexToRemote:
                 all_settings.update(batch_settings)
             except (NotFoundError, TransportError) as err:
                 self.loggit.warning(
-                    'Could not retrieve index settings for batch of %d ' 'indices: %s',
+                    'Could not retrieve index settings for batch of %d indices: %s',
                     len(batch),
                     err,
                 )
