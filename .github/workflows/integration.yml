@@ -15,7 +15,7 @@ on:
 
 jobs:
   latest:
-    name: Latest OpenSearch (3.3.0)
+    name: Latest OpenSearch (3.6.0)
     runs-on: ubuntu-latest
     env:
       PYTHON_VERSION: '3.12'
@@ -26,7 +26,7 @@ jobs:
       AWS_SECRET_ACCESS_KEY: test
     services:
       opensearch:
-        image: opensearchproject/opensearch:3.3.0
+        image: opensearchproject/opensearch:3.6.0
         env:
           discovery.type: single-node
           DISABLE_SECURITY_PLUGIN: true
@@ -55,7 +55,7 @@ jobs:
           --health-retries 5
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
 
       - name: Set up Python ${{ env.PYTHON_VERSION }}
         uses: actions/setup-python@v5
@@ -97,7 +97,7 @@ jobs:
         with:
           file: ./coverage.xml
           flags: integration-latest
-          name: opensearch-3.3.0
+          name: opensearch-3.6.0
           fail_ci_if_error: false
 
   legacy:
