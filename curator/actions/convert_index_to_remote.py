@@ -830,8 +830,8 @@ class ConvertIndexToRemote:
         Execute the full remote index conversion process:
         1. Create/verify snapshot
         2. Restore as remote indices
-        3. Create aliases (optional)
-        4. Delete old indices (optional, with verification)
+        3. Delete old indices (optional, with verification)
+        4. Create aliases (optional, after deletion so same-name aliases work)
         """
         self.loggit.info(
             'Starting conversion of %s indices to remote storage',
@@ -847,16 +847,16 @@ class ConvertIndexToRemote:
             self.loggit.info('Step 2/4: Restoring indices with remote storage')
             self._restore_as_remote()
 
-            # Step 3: Create aliases
-            self.loggit.info('Step 3/4: Creating aliases')
-            self._create_aliases()
-
-            # Step 4: Delete old indices (optional)
+            # Step 3: Delete old indices (optional)
             if self.delete_after:
-                self.loggit.info('Step 4/4: Deleting original indices')
+                self.loggit.info('Step 3/4: Deleting original indices')
                 self._delete_old_indices()
             else:
-                self.loggit.info('Step 4/4: Skipping deletion (delete_after=False)')
+                self.loggit.info('Step 3/4: Skipping deletion (delete_after=False)')
+
+            # Step 4: Create aliases (after deletion so same-name aliases work)
+            self.loggit.info('Step 4/4: Creating aliases')
+            self._create_aliases()
 
             self.loggit.info(
                 'Successfully converted %s indices to remote storage',
