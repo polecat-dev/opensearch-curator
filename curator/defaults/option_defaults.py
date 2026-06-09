@@ -837,6 +837,19 @@ def verify_availability():
     }
 
 
+def exclude_already_remote():
+    """
+    :returns:
+        {Optional('exclude_already_remote', default=False):
+            Any(bool, All(Any(str), Boolean()))}
+    """
+    return {
+        Optional('exclude_already_remote', default=False): Any(
+            bool, All(Any(str), Boolean())
+        )
+    }
+
+
 def snapshot_name():
     """
     :returns:

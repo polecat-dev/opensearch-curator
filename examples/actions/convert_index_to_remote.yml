@@ -63,6 +63,11 @@ actions:
       # (default: True) - Recommended to keep enabled
       verify_availability: True
       
+      # Exclude indices that are already remote-backed from processing
+      # (default: False) - When True, indices with index.store.type=remote_snapshot
+      # will be filtered out before conversion
+      exclude_already_remote: True
+      
       # Snapshot/restore options
       ignore_unavailable: False
       partial: False

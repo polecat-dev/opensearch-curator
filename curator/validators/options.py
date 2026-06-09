@@ -63,6 +63,7 @@ def action_specific(action):
             option_defaults.alias_name(),
             option_defaults.delete_after(),
             option_defaults.verify_availability(),
+            option_defaults.exclude_already_remote(),
             option_defaults.ignore_unavailable(),
             option_defaults.partial(),
             option_defaults.wait_for_completion(action),
