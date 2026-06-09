@@ -192,16 +192,50 @@ class ConvertIndexToRemote:
         """
         Remove indices from the index list that are already converted to
         remote-backed storage (index.store.type == 'remote_snapshot').
+
+        Requests are batched to avoid exceeding the HTTP URL length limit
+        when there are many indices.
         """
         self.loggit.debug('Checking indices for existing remote store type to exclude')
         indices_to_remove = []
-        try:
-            all_settings = ilo.client.indices.get_settings(index=','.join(ilo.indices))
-        except (NotFoundError, TransportError) as err:
-            self.loggit.warning(
-                'Could not retrieve index settings for filtering: %s', err
-            )
-            return
+
+        # Batch indices to keep the comma-joined URL well under the 4096-byte
+        # HTTP line limit.  A conservative max of 3000 characters for the index
+        # portion leaves room for the rest of the request line.
+        max_url_len = 3000
+        batches = []
+        current_batch = []
+        current_len = 0
+        for idx in ilo.indices:
+            # +1 for the comma separator
+            addition = len(idx) + (1 if current_batch else 0)
+            if current_len + addition > max_url_len and current_batch:
+                batches.append(current_batch)
+                current_batch = [idx]
+                current_len = len(idx)
+            else:
+                current_batch.append(idx)
+                current_len += addition
+        if current_batch:
+            batches.append(current_batch)
+
+        self.loggit.debug(
+            'Fetching index settings in %d batches for %d indices',
+            len(batches),
+            len(ilo.indices),
+        )
+
+        all_settings = {}
+        for batch in batches:
+            try:
+                batch_settings = ilo.client.indices.get_settings(index=','.join(batch))
+                all_settings.update(batch_settings)
+            except (NotFoundError, TransportError) as err:
+                self.loggit.warning(
+                    'Could not retrieve index settings for batch of %d indices: %s',
+                    len(batch),
+                    err,
+                )
 
         for index_name in ilo.indices:
             index_settings = all_settings.get(index_name, {})
