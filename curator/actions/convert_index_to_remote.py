@@ -2,6 +2,7 @@
 
 import logging
 import time
+from opensearchpy.exceptions import NotFoundError, TransportError
 from curator.helpers.date_ops import parse_datemath, parse_date_pattern
 from curator.helpers.getters import get_indices
 from curator.helpers.testers import (
@@ -51,6 +52,7 @@ class ConvertIndexToRemote:
         alias_name=None,
         delete_after=False,
         verify_availability=True,
+        exclude_already_remote=False,
         ignore_unavailable=False,
         partial=False,
         wait_for_completion=True,
@@ -82,6 +84,9 @@ class ConvertIndexToRemote:
             index creation and verification (default: False)
         :param verify_availability: Verify the remote index is available and has
             the same document count before deleting the old index (default: True)
+        :param exclude_already_remote: Filter out indices that are already
+            remote-backed (have index.store.type set to 'remote_snapshot')
+            from the list before processing (default: False)
         :param ignore_unavailable: Ignore unavailable shards/indices during snapshot
         :param partial: Allow partial snapshots/restores
         :param wait_for_completion: Wait for operations to complete before returning
@@ -100,6 +105,7 @@ class ConvertIndexToRemote:
         :type alias_name: str
         :type delete_after: bool
         :type verify_availability: bool
+        :type exclude_already_remote: bool
         :type ignore_unavailable: bool
         :type partial: bool
         :type wait_for_completion: bool
@@ -109,6 +115,13 @@ class ConvertIndexToRemote:
         """
         verify_index_list(ilo)
         ilo.empty_list_check()
+
+        self.loggit = logging.getLogger('curator.actions.convert_index_to_remote')
+
+        # Filter out indices that are already remote-backed if requested
+        if exclude_already_remote:
+            self._filter_already_remote(ilo)
+            ilo.empty_list_check()
 
         if not repository:
             raise MissingArgument('No value for "repository" provided.')
@@ -121,8 +134,6 @@ class ConvertIndexToRemote:
 
         if not snapshot_name:
             raise MissingArgument('No value for "snapshot_name" provided.')
-
-        self.loggit = logging.getLogger('curator.actions.convert_index_to_remote')
 
         #: The IndexList object
         self.index_list = ilo
@@ -176,6 +187,52 @@ class ConvertIndexToRemote:
         self.loggit.debug('Remote store repository: %s', self.remote_store_repository)
         self.loggit.debug('Snapshot name: %s', self.snapshot_name)
         self.loggit.debug('Indices to convert: %s', ilo.indices)
+
+    def _filter_already_remote(self, ilo):
+        """
+        Remove indices from the index list that are already converted to
+        remote-backed storage (index.store.type == 'remote_snapshot').
+        """
+        self.loggit.debug(
+            'Checking indices for existing remote store type to exclude'
+        )
+        indices_to_remove = []
+        try:
+            all_settings = ilo.client.indices.get_settings(
+                index=','.join(ilo.indices)
+            )
+        except (NotFoundError, TransportError) as err:
+            self.loggit.warning(
+                'Could not retrieve index settings for filtering: %s', err
+            )
+            return
+
+        for index_name in ilo.indices:
+            index_settings = all_settings.get(index_name, {})
+            store_type = (
+                index_settings
+                .get('settings', {})
+                .get('index', {})
+                .get('store', {})
+                .get('type', None)
+            )
+            if store_type == 'remote_snapshot':
+                self.loggit.info(
+                    'Excluding index %s: already remote '
+                    '(index.store.type=remote_snapshot)',
+                    index_name,
+                )
+                indices_to_remove.append(index_name)
+
+        for index_name in indices_to_remove:
+            ilo.indices.remove(index_name)
+
+        if indices_to_remove:
+            self.loggit.info(
+                'Excluded %d already-remote indices: %s',
+                len(indices_to_remove),
+                indices_to_remove,
+            )
 
     def _create_snapshot(self):
         """Create a snapshot of the indices if not using existing snapshot"""

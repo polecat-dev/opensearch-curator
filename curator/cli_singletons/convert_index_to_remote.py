@@ -65,6 +65,12 @@ from curator.cli_singletons.utils import validate_filter_json
     help='Verify remote index availability and document count before deletion',
 )
 @click.option(
+    '--exclude_already_remote/--no-exclude_already_remote',
+    default=False,
+    show_default=True,
+    help='Exclude indices that are already remote-backed (index.store.type=remote_snapshot)',
+)
+@click.option(
     '--ignore_unavailable',
     is_flag=True,
     show_default=True,
@@ -138,6 +144,7 @@ def convert_index_to_remote(
     alias_name,
     delete_after,
     verify_availability,
+    exclude_already_remote,
     ignore_unavailable,
     partial,
     wait_for_completion,
@@ -194,6 +201,7 @@ def convert_index_to_remote(
         'alias_name': alias_name,
         'delete_after': delete_after,
         'verify_availability': verify_availability,
+        'exclude_already_remote': exclude_already_remote,
         'ignore_unavailable': ignore_unavailable,
         'partial': partial,
         'wait_for_completion': wait_for_completion,
