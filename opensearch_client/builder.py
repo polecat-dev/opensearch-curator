@@ -755,6 +755,11 @@ class Builder:
         the secure store.
         """
         client_args = prune_nones(self.client_args.toDict())
+        # opensearch-py's Connection takes 'timeout', not 'request_timeout'.
+        # Without this translation the value is swallowed by **kwargs and the
+        # client silently falls back to the 10 second default.
+        if 'request_timeout' in client_args:
+            client_args['timeout'] = client_args.pop('request_timeout')
         # Add sensitive fields from SecretStore
         # Note: opensearch-py uses 'http_auth' parameter, not 'basic_auth'
         for field in ['basic_auth', 'api_key', 'bearer_auth']:
