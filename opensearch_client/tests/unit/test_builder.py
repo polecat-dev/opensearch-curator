@@ -1,6 +1,7 @@
 """Test schemacheck module"""
 
 from unittest import TestCase
+from unittest.mock import patch
 from copy import deepcopy
 import certifi
 import click
@@ -255,6 +256,34 @@ class TestCheckSSL(TestCase):
         https["opensearch"]["client"]["hosts"] = "https://127.0.0.1:9200"
         with pytest.raises(ConfigurationError):
             Builder(configdict=https)
+
+
+class TestGetClient(TestCase):
+    """Ensure client_args are translated correctly for opensearch-py"""
+
+    def test_request_timeout_mapped_to_timeout(self):
+        """
+        request_timeout (es_client / curator timeout_override naming) must be passed
+        to opensearch-py as 'timeout', otherwise the client silently uses its 10s
+        default
+        """
+        cfg = deepcopy(DEFAULT)
+        cfg["opensearch"]["client"]["request_timeout"] = 300
+        obj = Builder(configdict=cfg)
+        with patch("opensearch_client.builder.OpenSearch") as mock_os:
+            obj._get_client()
+        kwargs = mock_os.call_args.kwargs
+        assert kwargs["timeout"] == 300
+        assert "request_timeout" not in kwargs
+
+    def test_no_timeout_when_request_timeout_unset(self):
+        """No 'timeout' kwarg is injected when request_timeout is not configured"""
+        obj = Builder(configdict=deepcopy(DEFAULT))
+        with patch("opensearch_client.builder.OpenSearch") as mock_os:
+            obj._get_client()
+        kwargs = mock_os.call_args.kwargs
+        assert "timeout" not in kwargs
+        assert "request_timeout" not in kwargs
 
     # def test_context_for_empty_cloud_id(self):
     #     """Test to see contents of ctx"""
